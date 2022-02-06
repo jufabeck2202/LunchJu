@@ -1,6 +1,10 @@
 import { supabase } from '$lib/supabaseclient';
 import type { ApiError, User } from '@supabase/supabase-js';
 
+export function getUser() {
+	return supabase.auth.user()
+}
+
 export const signIn = async (email, password) => {
 	const { user: userDetails, error } = await supabase.auth.signIn({
 		email: email,

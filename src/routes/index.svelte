@@ -1,10 +1,15 @@
-<script context="module" lang="ts">
-	export const prerender = true;
-</script>
+
 
 <script lang="ts">
+import { browser } from "$app/env";
 
-	loadChat();
+import { goto } from "$app/navigation";
+
+import { getUser } from "$lib/stores/userStore";
+
+
+	const user = getUser();
+	if (browser && !user) goto('/login');
 </script>
 
 <svelte:head>

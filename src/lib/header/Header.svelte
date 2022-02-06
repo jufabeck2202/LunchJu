@@ -1,12 +1,20 @@
 <script lang="ts">
+	import { browser } from '$app/env';
+	import { goto } from '$app/navigation';
+
 	import { page } from '$app/stores';
-	import { supabase } from '$lib/supabaseclient';
-	import { user } from '$lib/userWritableStore';
+	import { getUser, signOut } from '$lib/stores/userStore';
 
 	let mobile;
 	const toggleNav = () => {
 		mobile = !mobile;
 	};
+
+
+	async function handleSignout() {
+		await signOut();
+		goto('/login');
+	}
 </script>
 
 <header>
@@ -55,6 +63,7 @@
 						About
 					</a>
 				</div>
+				<button class="button primary" on:click|once={handleSignout}> Log out </button>
 			</div>
 		</nav>
 	</section>

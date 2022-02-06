@@ -1,14 +1,22 @@
 <script>
-	import { signIn, signOut, signUp } from '$lib/stores/userStore';
-	import { supabase } from '$lib/supabaseclient';
-	import { user } from '$lib/userWritableStore';
+	import { browser } from '$app/env';
+
+	import { goto } from '$app/navigation';
+
+	import { getUser, signIn, signOut, signUp } from '$lib/stores/userStore';
 	let username = 'beju@beju.de';
 	let password = 'Juliansssss1123';
 	let loading;
+
+	const user = getUser();
+	console.log(user);
+	if (browser && user) goto('/');
+
 	const signInWithEmail = async () => {
 		try {
 			loading = true;
 			const [user, error] = await signIn(username, password);
+			if (browser && user) goto('/'); 
 		} catch (error) {
 			alert(error.error_description || error.message);
 		} finally {
@@ -38,7 +46,7 @@
 	<div class="container">
 		<div class="card">
 			<div class="add-username">
-				<form on:submit|preventDefault={signInWithEmail}>
+				<form on:submit|preventDefault>
 					<div class="field">
 						<!-- svelte-ignore a11y-label-has-associated-control -->
 						<label class="label">Username</label>
