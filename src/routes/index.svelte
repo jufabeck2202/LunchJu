@@ -1,12 +1,10 @@
-
-
 <script lang="ts">
-import { browser } from "$app/env";
+	import { browser } from '$app/env';
 
-import { goto } from "$app/navigation";
+	import { goto } from '$app/navigation';
 
-import { getUser } from "$lib/stores/userStore";
-
+	import { checkIfUserFamilyExists, getUser } from '$lib/stores/userStore';
+	import CreateFamily from '$lib/components/createFamily.svelte';
 
 	const user = getUser();
 	if (browser && !user) goto('/login');
@@ -18,44 +16,13 @@ import { getUser } from "$lib/stores/userStore";
 
 <section>
 	<div class="section">
-		<div class="container">
-			<div class="notification is-primary">
-				This container is <strong>centered</strong> on desktop and larger viewports.
-			</div>
-		</div>
-	</div>
-	<div class="columns is-centered ">
-		<div class="column is-5 m-2">
-			<div class="card">
-				<div class="card-image">
-					<figure class="image is-4by3">
-						<img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image" />
-					</figure>
-				</div>
-				<div class="card-content">
-					<div class="media">
-						<div class="media-left">
-							<figure class="image is-48x48">
-								<img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image" />
-							</figure>
-						</div>
-						<div class="media-content">
-							<p class="title is-4">John Smith</p>
-							<p class="subtitle is-6">@johnsmith</p>
-						</div>
-					</div>
-
-					<div class="content">
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris. <a
-							>@bulmaio</a
-						>.
-						<a href="#">#css</a> <a href="#">#responsive</a>
-						<br />
-						<time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-					</div>
-				</div>
-			</div>
-		</div>
+		{#await checkIfUserFamilyExists() then familyExists}
+			{#if familyExists}
+				welcome to your family
+			{:else}
+				<CreateFamily />
+			{/if}
+		{/await}
 	</div>
 </section>
 
