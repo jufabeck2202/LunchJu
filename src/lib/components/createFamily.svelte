@@ -1,14 +1,30 @@
 <script lang="ts">
-	import { checkIfUserFamilyExists, createFamily } from '$lib/stores/userStore';
-
-	// your script goes here
-	let familyName: string;
+	import { createFamily } from '$lib/stores/userStore';
+	import { toast } from '@zerodevx/svelte-toast';
+	let familyName: string = '';
+	let isLoading: boolean = false;
 
 	const handleCreateFamily = async () => {
-		const result = await createFamily(familyName);
+		isLoading = true;
+		const error = await createFamily(familyName);
 		if (error) {
 			alert(error.message);
+			return
+			
 		}
+
+		console.log('toast');
+		toast.push('Family created successfully', {
+			duration: 1000,
+			theme: {
+				'--toastBackground': '#00c4a7',
+				'--toastColor': 'white',
+				'--toastBarBackground': '#f5f5f5',
+				'--toastBorderRadius': '7px'
+			}
+		});
+
+		isLoading = false;
 	};
 </script>
 
@@ -22,11 +38,16 @@
 			</div>
 			<div class="field">
 				<div class="control">
-					<input class="input " type="text" bind:value={familyName} placeholder="Text input" />
+					<input class="input " type="text" bind:value={familyName} placeholder="Family Name" />
 				</div>
 			</div>
 			<div class="control">
-				<button class="button is-primary" on:click={handleCreateFamily}>Create Family</button>
+				<button
+					class="button is-primary"
+					disabled={isLoading || familyName.length < 3}
+					is-loading={isLoading}
+					on:click={handleCreateFamily}>Create Family</button
+				>
 			</div>
 		</div>
 	</div>

@@ -1,10 +1,9 @@
 import { supabase } from '$lib/supabaseclient';
-import type { ApiError, User } from '@supabase/supabase-js';
+import type { ApiError, PostgrestError, User } from '@supabase/supabase-js';
 import type { definitions } from '$lib/models';
 import { user } from '$lib/userWritableStore';
 import { writable } from 'svelte/store';
 
-export const familyID = writable<string | null>(null);
 export const family = writable<definitions['families'] | null>(null);
 
 export function getUser() {
@@ -38,27 +37,51 @@ export const checkIfUserFamilyExists = async (): Promise<boolean> => {
 		.from<definitions['users_to_families']>('users_to_families')
 		.select('*')
 		.eq('user_id', getUser().id)
-		.single();
-	if (error || !data || !data.user_id) {
+
+	if (error || !data[0] || !data[0].families_id) {
 		return false;
 	}
-	familyID.set(data.families_id);
-	console.log("User's family exists");
-
+	const familyObject = await getFamily(data[0].families_id);
+	if (familyObject || familyObject.id) {
+		family.set(familyObject);
+	}
 	return true;
 };
 
-export const getFamily = async (): Promise<definitions['families']> => {
-	const { data, error } = await supabase.from<definitions['families']>('families');
+export const getFamily = async (family_id): Promise<definitions['families']> => {
+	const { data, error } = await supabase
+		.from<definitions['families']>('families')
+		.select('*')
+		.eq('id', family_id)
+		.single();
+	return data;
 };
 
-export const createFamily = async (familyName) => {
-	console.log('creating Family');
+export const createFamily = async (familyName): Promise<PostgrestError | Error | null> => {
+	const { data: alreadyExists, error: userExistsError } = await supabase
+		.from<definitions['users_to_families']>('users_to_families')
+		.select('*')
+		.eq('user_id', getUser().id)
+
+	if (alreadyExists && alreadyExists.length > 0) {
+		return new Error("You're already in a family");
+	}
+	if (userExistsError) {
+		return userExistsError;
+	}
 	const { data: families, error } = await supabase
 		.from<definitions['families']>('families')
 		.insert({ name: familyName, creator_id: getUser().id });
+	
+		if (error) {
+		return error;
+	}
 
-	await supabase
+	const { error: userToFamilies } = await supabase
 		.from<definitions['users_to_families']>('users_to_families')
 		.insert({ families_id: families[0].id, user_id: getUser().id });
+	if (userToFamilies) {
+		return userToFamilies;
+	}
+	family.set(families[0]);
 };
