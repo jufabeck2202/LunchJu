@@ -1,14 +1,46 @@
 import { supabase } from '$lib/supabaseclient';
-import type { ApiError, PostgrestError, User } from '@supabase/supabase-js';
+import type { ApiError, PostgrestError, RealtimeSubscription, User } from '@supabase/supabase-js';
 import type { definitions } from '$lib/models';
 import { user } from '$lib/userWritableStore';
 import { writable } from 'svelte/store';
 
 export const family = writable<definitions['families'] | null>(null);
 
+export const lunches = writable<definitions['lunchs'][] | []>([]);
 export function getUser() {
 	return supabase.auth.user();
 }
+
+let familyID: string | null = null;
+let lunchSubscription: RealtimeSubscription;
+
+const familySubscription = family.subscribe(async (family) => {
+	if (family) {
+		await fetchLunches(family.id);
+		familyID = family.id;
+	}
+});
+
+export const fetchLunches = async (family_id) => {
+	const { data, error } = await supabase
+		.from<definitions['lunchs']>('lunchs')
+		.select('*')
+		.order('created_at', { ascending: false })
+		.eq('family_id', family_id)
+		.limit(3);
+	console.log(data, error);
+	lunches.set(data);
+};
+
+export const createLunch = async (): Promise<PostgrestError | Error | null> => {
+	const { data, error } = await supabase
+		.from<definitions['lunchs']>('lunchs')
+		.insert({ family_id: familyID, created_by: getUser().id });
+	if (error) {
+		return error;
+	}
+	await fetchLunches(familyID);
+};
 
 export const signIn = async (email, password) => {
 	const { user: userDetails, error } = await supabase.auth.signIn({
@@ -36,7 +68,7 @@ export const checkIfUserFamilyExists = async (): Promise<boolean> => {
 	const { data, error } = await supabase
 		.from<definitions['users_to_families']>('users_to_families')
 		.select('*')
-		.eq('user_id', getUser().id)
+		.eq('user_id', getUser().id);
 
 	if (error || !data[0] || !data[0].families_id) {
 		return false;
@@ -61,7 +93,7 @@ export const createFamily = async (familyName): Promise<PostgrestError | Error |
 	const { data: alreadyExists, error: userExistsError } = await supabase
 		.from<definitions['users_to_families']>('users_to_families')
 		.select('*')
-		.eq('user_id', getUser().id)
+		.eq('user_id', getUser().id);
 
 	if (alreadyExists && alreadyExists.length > 0) {
 		return new Error("You're already in a family");
@@ -72,8 +104,8 @@ export const createFamily = async (familyName): Promise<PostgrestError | Error |
 	const { data: families, error } = await supabase
 		.from<definitions['families']>('families')
 		.insert({ name: familyName, creator_id: getUser().id });
-	
-		if (error) {
+
+	if (error) {
 		return error;
 	}
 
