@@ -3,57 +3,56 @@
 </script>
 
 <script lang="ts">
-	import Counter from '$lib/Counter.svelte';
+
+	loadChat();
 </script>
 
 <svelte:head>
-	<title>Home</title>
+	<title>LunchJu</title>
 </svelte:head>
 
 <section>
-	<h1>
-		<div class="welcome">
-			<picture>
-				<source srcset="svelte-welcome.webp" type="image/webp" />
-				<img src="svelte-welcome.png" alt="Welcome" />
-			</picture>
+	<div class="section">
+		<div class="container">
+			<div class="notification is-primary">
+				This container is <strong>centered</strong> on desktop and larger viewports.
+			</div>
 		</div>
+	</div>
+	<div class="columns is-centered ">
+		<div class="column is-5 m-2">
+			<div class="card">
+				<div class="card-image">
+					<figure class="image is-4by3">
+						<img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image" />
+					</figure>
+				</div>
+				<div class="card-content">
+					<div class="media">
+						<div class="media-left">
+							<figure class="image is-48x48">
+								<img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image" />
+							</figure>
+						</div>
+						<div class="media-content">
+							<p class="title is-4">John Smith</p>
+							<p class="subtitle is-6">@johnsmith</p>
+						</div>
+					</div>
 
-		to your new<br />SvelteKit app
-	</h1>
-
-	<h2>
-		try editing <strong>src/routes/index.svelte</strong>
-	</h2>
-
-	<Counter />
+					<div class="content">
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris. <a
+							>@bulmaio</a
+						>.
+						<a href="#">#css</a> <a href="#">#responsive</a>
+						<br />
+						<time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </section>
 
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex: 1;
-	}
-
-	h1 {
-		width: 100%;
-	}
-
-	.welcome {
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
-	}
 </style>
