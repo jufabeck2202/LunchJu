@@ -17,9 +17,21 @@ let lunchSubscription: RealtimeSubscription;
 const familySubscription = family.subscribe(async (family) => {
 	if (family) {
 		await fetchLunches(family.id);
+		lunchSubscription = await supabase
+			.from<definitions['lunchs']>('lunchs')
+			.on('INSERT', (lunch) => {
+				console.log(lunch.new)
+				lunches.update((l) => [lunch.new, ...l]);
+			
+			})
+			.subscribe();
 		familyID = family.id;
 	}
 });
+
+const destory = () => {
+	lunchSubscription.unsubscribe();
+};
 
 export const fetchLunches = async (family_id) => {
 	const { data, error } = await supabase
@@ -39,7 +51,6 @@ export const createLunch = async (): Promise<PostgrestError | Error | null> => {
 	if (error) {
 		return error;
 	}
-	await fetchLunches(familyID);
 };
 
 export const signIn = async (email, password) => {
