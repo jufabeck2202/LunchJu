@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 import isToday from 'dayjs/plugin/isToday';
 dayjs.extend(isToday);
@@ -11,3 +13,7 @@ console.log(dayjs.utc('2022-02-06T21:28:18.069584').local().format('YYYY-MM-DD H
 
 //checks if day is today
 console.log(dayjs.utc('2022-02-06T22:28:18.069584').local().isToday());
+
+export const ToLocalTime = (date: string) => {
+	return dayjs.utc(date).local().fromNow();
+};
