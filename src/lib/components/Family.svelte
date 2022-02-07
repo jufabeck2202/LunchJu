@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createLunch, family, lunches } from '$lib/stores/userStore';
-	import Lunch from './Lunch.svelte';
+	import Lunch from './Lunches.svelte';
 
 	const handleCreateLunch = async () => {
 		const error = await createLunch();

@@ -7,7 +7,7 @@ import { ToLocalTime } from '$lib/helpers/time';
 <div>
 	<div class="columns is-centered is-mobile">
 		<div
-			class="column is-full-mobile is-two-thirds-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd"
+			class="column is-full-mobile is-three-thirds-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd"
 		>
 			{#each $lunches as lunch, i}
 				<div class="card p-3 mb-3">
