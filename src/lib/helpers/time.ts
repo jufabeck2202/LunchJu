@@ -17,3 +17,7 @@ console.log(dayjs.utc('2022-02-06T22:28:18.069584').local().isToday());
 export const ToLocalTime = (date: string) => {
 	return dayjs.utc(date).local().fromNow();
 };
+
+export const IsDateToday = (date: string) => {
+	return dayjs.utc(date).local().isToday();
+};

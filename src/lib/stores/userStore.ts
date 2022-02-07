@@ -3,6 +3,7 @@ import type { ApiError, PostgrestError, RealtimeSubscription, User } from '@supa
 import type { definitions } from '$lib/models';
 import { user } from '$lib/userWritableStore';
 import { writable } from 'svelte/store';
+import { IsDateToday } from '$lib/helpers/time';
 
 export const family = writable<definitions['families'] | null>(null);
 
@@ -10,19 +11,19 @@ export const lunches = writable<definitions['lunchs'][] | []>([]);
 export function getUser() {
 	return supabase.auth.user();
 }
-
 let familyID: string | null = null;
 let lunchSubscription: RealtimeSubscription;
 
 const familySubscription = family.subscribe(async (family) => {
 	if (family) {
-		await fetchLunches(family.id);
+		await initalFetchLunches(family.id);
 		lunchSubscription = await supabase
 			.from<definitions['lunchs']>('lunchs')
 			.on('INSERT', (lunch) => {
-				console.log(lunch.new)
-				lunches.update((l) => [lunch.new, ...l]);
-			
+				//TODO: add to RLS
+				if (lunch.new.family_id == family.id) {
+					lunches.update((l) => [lunch.new, ...l]);
+				}
 			})
 			.subscribe();
 		familyID = family.id;
@@ -33,15 +34,15 @@ const destory = () => {
 	lunchSubscription.unsubscribe();
 };
 
-export const fetchLunches = async (family_id) => {
+export const initalFetchLunches = async (family_id) => {
 	const { data, error } = await supabase
 		.from<definitions['lunchs']>('lunchs')
 		.select('*')
 		.order('created_at', { ascending: false })
 		.eq('family_id', family_id)
 		.limit(3);
-	console.log(data, error);
-	lunches.set(data);
+	const lunchesCreatedToday = data.filter((lunch) => IsDateToday(lunch.created_at));
+	lunches.set(lunchesCreatedToday);
 };
 
 export const createLunch = async (): Promise<PostgrestError | Error | null> => {
