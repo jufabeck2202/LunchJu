@@ -3,6 +3,8 @@
 	import Lunch from './Lunches.svelte';
 	import Users from '$lib/components/Users.svelte';
 	import CreateLunch from '$lib/components/CreateLunch.svelte';
+import CreateProposal from './CreateProposal.svelte';
+import Suggestion from './Suggestion.svelte';
 </script>
 
 <svelte:head>
@@ -19,7 +21,10 @@
 					<Lunch />
 					<CreateLunch />
 				</div>
-				<div class="column is-one-quarter" />
+				<div class="column is-one-quarter" >
+					<CreateProposal />
+					<Suggestion />					
+				</div>
 				<div class="column is-one-quarter">
 					<Users />
 				</div>
