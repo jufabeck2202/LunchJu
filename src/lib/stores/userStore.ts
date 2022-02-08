@@ -6,32 +6,51 @@ import { writable } from 'svelte/store';
 import { IsDateToday } from '$lib/helpers/time';
 
 export const family = writable<definitions['families'] | null>(null);
-
 export const lunches = writable<definitions['lunchs'][] | []>([]);
+export const familyUsers = writable<definitions['users_to_families'][] | []>([]);
+
 export function getUser() {
 	return supabase.auth.user();
 }
 let familyID: string | null = null;
 let lunchSubscription: RealtimeSubscription;
-
+let userSubscription: RealtimeSubscription;
 const familySubscription = family.subscribe(async (family) => {
 	if (family) {
-		await initalFetchLunches(family.id);
-		lunchSubscription = await supabase
-			.from<definitions['lunchs']>('lunchs')
-			.on('INSERT', (lunch) => {
-				//TODO: add to RLS
-				if (lunch.new.family_id == family.id) {
-					lunches.update((l) => [lunch.new, ...l]);
-				}
-			})
-			.subscribe();
 		familyID = family.id;
+		await initalFetchLunches(family.id);
+		await subscribeLunch();
+		await initalFetchUsers();
+		await subscribeUsers();
 	}
 });
 
+const subscribeLunch = async () => {
+	lunchSubscription = await supabase
+		.from<definitions['lunchs']>('lunchs')
+		.on('INSERT', (lunch) => {
+			//TODO: add to RLS
+			if (lunch.new.family_id == familyID) {
+				lunches.update((l) => [lunch.new, ...l]);
+			}
+		})
+		.subscribe();
+};
+const subscribeUsers = async () => {
+	userSubscription = await supabase
+		.from<definitions['users_to_families']>('users_to_families')
+		.on('INSERT', (user) => {
+			//TODO: add to RLS
+			if (user.new.families_id == familyID) {
+				familyUsers.update((usr) => [user.new, ...usr]);
+			}
+		})
+		.subscribe();
+};
+
 const destory = () => {
 	lunchSubscription.unsubscribe();
+	userSubscription.unsubscribe();
 };
 
 export const initalFetchLunches = async (family_id) => {
@@ -43,6 +62,14 @@ export const initalFetchLunches = async (family_id) => {
 		.limit(3);
 	const lunchesCreatedToday = data.filter((lunch) => IsDateToday(lunch.created_at));
 	lunches.set(lunchesCreatedToday);
+};
+
+export const initalFetchUsers = async () => {
+	const { data, error } = await supabase
+		.from<definitions['users_to_families']>('users_to_families')
+		.select('*')
+		.eq('families_id', familyID);
+	familyUsers.set(data);
 };
 
 export const createLunch = async (): Promise<PostgrestError | Error | null> => {
