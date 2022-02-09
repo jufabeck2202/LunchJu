@@ -16,7 +16,7 @@
 						<figure class="image is-32x32">
 							<img
 								class="is-rounded"
-								src={`https://avatars.dicebear.com/api/initials/julian.svg`}
+								src={`https://avatars.dicebear.com/api/pixel-art/julian.svg`}
 								alt="avatar"
 							/>
 						</figure>

@@ -15,15 +15,32 @@ export function getUser() {
 let familyID: string | null = null;
 let lunchSubscription: RealtimeSubscription;
 let userSubscription: RealtimeSubscription;
+let familyUsersLocal: definitions['users_to_families'][] = [];
 const familySubscription = family.subscribe(async (family) => {
 	if (family) {
 		familyID = family.id;
-		await initalFetchLunches(family.id);
-		await subscribeLunch();
 		await initalFetchUsers();
 		await subscribeUsers();
+		await initalFetchLunches(family.id);
+		await subscribeLunch();
 	}
 });
+
+const userLocalSubscription = familyUsers.subscribe(async (users) => {
+	lunches.update((l) => l);
+	familyUsersLocal = users;
+});
+
+export const getUserByID = (id: string) => {
+	const user = familyUsersLocal.find((user) => user.user_id === id);
+	console.log('user', user);
+	return user;
+};
+
+export const setCookForLunch = async (lunch: definitions['lunchs']) => {
+	lunch.cook_id = getUser().id;
+	await supabase.from<definitions['lunchs']>('lunchs').update(lunch).eq('id', lunch.id);
+};
 
 const subscribeLunch = async () => {
 	lunchSubscription = await supabase
@@ -33,6 +50,16 @@ const subscribeLunch = async () => {
 			if (lunch.new.family_id == familyID) {
 				lunches.update((l) => [lunch.new, ...l]);
 			}
+		})
+		.on('UPDATE', (newLunch) => {
+			console.log('update', newLunch.new);
+			lunches.update((l) => {
+				const index = l.findIndex((lunch) => lunch.id === newLunch.new.id);
+				if (index !== -1) {
+					l[index] = newLunch.new;
+				}
+				return l;
+			});
 		})
 		.subscribe();
 };
