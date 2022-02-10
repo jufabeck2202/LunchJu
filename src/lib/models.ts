@@ -108,6 +108,105 @@ export interface paths {
       };
     };
   };
+  "/lunch_members": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.lunch_members.id"];
+          user_id?: parameters["rowFilter.lunch_members.user_id"];
+          lunch_id?: parameters["rowFilter.lunch_members.lunch_id"];
+          familiy_id?: parameters["rowFilter.lunch_members.familiy_id"];
+          username?: parameters["rowFilter.lunch_members.username"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["lunch_members"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** lunch_members */
+          lunch_members?: definitions["lunch_members"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.lunch_members.id"];
+          user_id?: parameters["rowFilter.lunch_members.user_id"];
+          lunch_id?: parameters["rowFilter.lunch_members.lunch_id"];
+          familiy_id?: parameters["rowFilter.lunch_members.familiy_id"];
+          username?: parameters["rowFilter.lunch_members.username"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.lunch_members.id"];
+          user_id?: parameters["rowFilter.lunch_members.user_id"];
+          lunch_id?: parameters["rowFilter.lunch_members.lunch_id"];
+          familiy_id?: parameters["rowFilter.lunch_members.familiy_id"];
+          username?: parameters["rowFilter.lunch_members.username"];
+        };
+        body: {
+          /** lunch_members */
+          lunch_members?: definitions["lunch_members"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
   "/lunch_proposal": {
     get: {
       parameters: {
@@ -820,6 +919,32 @@ export interface definitions {
     /** Format: uuid */
     creator_id: string;
   };
+  /** @description checks what people join a specific lunch */
+  lunch_members: {
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     * @default extensions.uuid_generate_v4()
+     */
+    id: string;
+    /** Format: uuid */
+    user_id: string;
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Foreign Key to `lunchs.id`.<fk table='lunchs' column='id'/>
+     */
+    lunch_id: string;
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Foreign Key to `families.id`.<fk table='families' column='id'/>
+     */
+    familiy_id: string;
+    /** Format: text */
+    username: string;
+  };
   /** @description votes for meals */
   lunch_proposal: {
     /**
@@ -1042,6 +1167,18 @@ export interface parameters {
   "rowFilter.families.name": string;
   /** Format: uuid */
   "rowFilter.families.creator_id": string;
+  /** @description lunch_members */
+  "body.lunch_members": definitions["lunch_members"];
+  /** Format: uuid */
+  "rowFilter.lunch_members.id": string;
+  /** Format: uuid */
+  "rowFilter.lunch_members.user_id": string;
+  /** Format: uuid */
+  "rowFilter.lunch_members.lunch_id": string;
+  /** Format: uuid */
+  "rowFilter.lunch_members.familiy_id": string;
+  /** Format: text */
+  "rowFilter.lunch_members.username": string;
   /** @description lunch_proposal */
   "body.lunch_proposal": definitions["lunch_proposal"];
   /** Format: uuid */
