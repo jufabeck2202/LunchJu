@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
+import utc from 'dayjs/plugin/utc.js';
 import relativeTime from 'dayjs/plugin/relativeTime.js';
 import isToday from 'dayjs/plugin/isToday.js';
 import weekday from 'dayjs/plugin/weekday.js';
