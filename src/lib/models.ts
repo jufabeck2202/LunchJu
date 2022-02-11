@@ -113,9 +113,10 @@ export interface paths {
       parameters: {
         query: {
           id?: parameters["rowFilter.lunch_members.id"];
-          user_id?: parameters["rowFilter.lunch_members.user_id"];
+          created_at?: parameters["rowFilter.lunch_members.created_at"];
+          family_id?: parameters["rowFilter.lunch_members.family_id"];
           lunch_id?: parameters["rowFilter.lunch_members.lunch_id"];
-          familiy_id?: parameters["rowFilter.lunch_members.familiy_id"];
+          user_id?: parameters["rowFilter.lunch_members.user_id"];
           username?: parameters["rowFilter.lunch_members.username"];
           /** Filtering Columns */
           select?: parameters["select"];
@@ -168,9 +169,10 @@ export interface paths {
       parameters: {
         query: {
           id?: parameters["rowFilter.lunch_members.id"];
-          user_id?: parameters["rowFilter.lunch_members.user_id"];
+          created_at?: parameters["rowFilter.lunch_members.created_at"];
+          family_id?: parameters["rowFilter.lunch_members.family_id"];
           lunch_id?: parameters["rowFilter.lunch_members.lunch_id"];
-          familiy_id?: parameters["rowFilter.lunch_members.familiy_id"];
+          user_id?: parameters["rowFilter.lunch_members.user_id"];
           username?: parameters["rowFilter.lunch_members.username"];
         };
         header: {
@@ -187,9 +189,10 @@ export interface paths {
       parameters: {
         query: {
           id?: parameters["rowFilter.lunch_members.id"];
-          user_id?: parameters["rowFilter.lunch_members.user_id"];
+          created_at?: parameters["rowFilter.lunch_members.created_at"];
+          family_id?: parameters["rowFilter.lunch_members.family_id"];
           lunch_id?: parameters["rowFilter.lunch_members.lunch_id"];
-          familiy_id?: parameters["rowFilter.lunch_members.familiy_id"];
+          user_id?: parameters["rowFilter.lunch_members.user_id"];
           username?: parameters["rowFilter.lunch_members.username"];
         };
         body: {
@@ -919,7 +922,6 @@ export interface definitions {
     /** Format: uuid */
     creator_id: string;
   };
-  /** @description checks what people join a specific lunch */
   lunch_members: {
     /**
      * Format: uuid
@@ -928,22 +930,27 @@ export interface definitions {
      * @default extensions.uuid_generate_v4()
      */
     id: string;
-    /** Format: uuid */
-    user_id: string;
     /**
-     * Format: uuid
-     * @description Note:
-     * This is a Foreign Key to `lunchs.id`.<fk table='lunchs' column='id'/>
+     * Format: timestamp with time zone
+     * @default now()
      */
-    lunch_id: string;
+    created_at?: string;
     /**
      * Format: uuid
      * @description Note:
      * This is a Foreign Key to `families.id`.<fk table='families' column='id'/>
      */
-    familiy_id: string;
+    family_id?: string;
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Foreign Key to `lunchs.id`.<fk table='lunchs' column='id'/>
+     */
+    lunch_id?: string;
+    /** Format: uuid */
+    user_id?: string;
     /** Format: text */
-    username: string;
+    username?: string;
   };
   /** @description votes for meals */
   lunch_proposal: {
@@ -1171,12 +1178,14 @@ export interface parameters {
   "body.lunch_members": definitions["lunch_members"];
   /** Format: uuid */
   "rowFilter.lunch_members.id": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.lunch_members.created_at": string;
   /** Format: uuid */
-  "rowFilter.lunch_members.user_id": string;
+  "rowFilter.lunch_members.family_id": string;
   /** Format: uuid */
   "rowFilter.lunch_members.lunch_id": string;
   /** Format: uuid */
-  "rowFilter.lunch_members.familiy_id": string;
+  "rowFilter.lunch_members.user_id": string;
   /** Format: text */
   "rowFilter.lunch_members.username": string;
   /** @description lunch_proposal */

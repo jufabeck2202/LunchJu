@@ -8,24 +8,25 @@ export const family = writable<definitions['families'] | null>(null);
 export const lunches = writable<definitions['lunchs'][] | []>([]);
 export const familyUsers = writable<definitions['users_to_families'][] | []>([]);
 export const lunchMembers = writable<definitions['lunch_members'][] | []>([]);
+
 let unserName: string | null = null;
 let familyID: string | null = null;
 let lunchSubscription: RealtimeSubscription;
 let lunchMemberSubscription: RealtimeSubscription;
 let userSubscription: RealtimeSubscription;
+
 let familyUsersLocal: definitions['users_to_families'][] = [];
 let lunchsLocal: definitions['lunchs'][] = [];
 
 const familySubscription = family.subscribe(async (family) => {
 	if (family) {
 		familyID = family.id;
+		await initalFetchLunchMembers();
+		await subscribeLunchMemers();
 		await initalFetchUsers();
 		await subscribeUsers();
 		await initalFetchLunches(family.id);
 		await subscribeLunch();
-		await initalFetchLunchMembers();
-		await subscribeLunchMemers();
-		
 	}
 });
 
@@ -72,21 +73,27 @@ const subscribeLunch = async () => {
 
 const subscribeLunchMemers = async () => {
 	lunchMemberSubscription = await supabase
-		.from<definitions['lunch_members']>('lunchs_members')
+		.from<definitions['lunch_members']>('lunch_members')
 		.on('INSERT', (lunchMember) => {
-			//TODO: add to RLS
-			if (lunchMember.new.familiy_id == familyID) {
+			if (lunchMember.new.family_id == familyID) {
 				lunchMembers.update((l) => [lunchMember.new, ...l]);
 			}
 		})
 		.on('UPDATE', (newLunch) => {
-			lunchMembers.update((l) => {
-				const index = l.findIndex((lunchMember) => lunchMember.id === newLunch.new.id);
-				if (index !== -1) {
-					l[index] = newLunch.new;
-				}
-				return l;
-			});
+			if (newLunch.new.family_id == familyID) {
+				lunchMembers.update((l) => {
+					const index = l.findIndex((lunchMember) => lunchMember.id === newLunch.new.id);
+					if (index !== -1) {
+						l[index] = newLunch.new;
+					}
+					return l;
+				});
+			}
+		})
+		.on('DELETE', (deleted) => {
+			// removes from lunchMembers
+			console.log('id');
+			lunchMembers.update((l) => l.filter((lunchMember) => lunchMember.id !== deleted.old.id));
 		})
 		.subscribe();
 };
@@ -134,7 +141,7 @@ export const initalFetchLunchMembers = async () => {
 	const { data, error } = await supabase
 		.from<definitions['lunch_members']>('lunch_members')
 		.select('*')
-		.eq('familiy_id', familyID);
+		.eq('family_id', familyID);
 	lunchMembers.set(data);
 };
 export const createLunch = async (): Promise<PostgrestError | Error | null> => {
@@ -158,18 +165,35 @@ export const joinLunch = async (
 	const { data, error } = await supabase
 		.from<definitions['lunch_members']>('lunch_members')
 		.insert({
-			familiy_id: familyID,
+			family_id: familyID,
 			user_id: getUser().id,
 			lunch_id: lunch.id,
 			username: unserName
-			
-		})
+		});
 	if (error) {
 		console.log(error);
 		return error;
 	}
 };
 
+export const leaveLunch = async (
+	lunch: definitions['lunchs']
+): Promise<PostgrestError | Error | null> => {
+	// ALTER TABLE table ADD UNIQUE (book_id, author_id)
+	const { data, error } = await supabase
+		.from<definitions['lunch_members']>('lunch_members')
+		.delete()
+		.match({
+			family_id: familyID,
+			user_id: getUser().id,
+			lunch_id: lunch.id
+		});
+
+	if (error) {
+		console.log(error);
+		return error;
+	}
+};
 export const signIn = async (email, password) => {
 	const { user: userDetails, error } = await supabase.auth.signIn({
 		email: email,
@@ -245,8 +269,6 @@ export const createFamily = async (familyName): Promise<PostgrestError | Error |
 	}
 	family.set(families[0]);
 };
-
-
 
 export function getUser() {
 	return supabase.auth.user();
