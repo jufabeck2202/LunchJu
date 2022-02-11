@@ -91,8 +91,6 @@ const subscribeLunchMemers = async () => {
 			}
 		})
 		.on('DELETE', (deleted) => {
-			// removes from lunchMembers
-			console.log('id');
 			lunchMembers.update((l) => l.filter((lunchMember) => lunchMember.id !== deleted.old.id));
 		})
 		.subscribe();

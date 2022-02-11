@@ -1509,6 +1509,11 @@
     "svelte-preprocess" "^4.0.0"
     "typescript" "*"
 
+"svelte-clipboard@^1.0.0":
+  "integrity" "sha512-md6HhnK2byql47mVEzMV2jor3BU465TVDqc0ExYq+pRvzdTn6V+gSDnA2WUDJPxuYUvIhzempPq05BfOMvnOPA=="
+  "resolved" "https://registry.npmjs.org/svelte-clipboard/-/svelte-clipboard-1.0.0.tgz"
+  "version" "1.0.0"
+
 "svelte-hmr@^0.14.9":
   "integrity" "sha512-bKE9+4qb4sAnA+TKHiYurUl970rjA0XmlP9TEP7K/ncyWz3m81kA4HOgmlZK/7irGK7gzZlaPDI3cmf8fp/+tg=="
   "resolved" "https://registry.npmjs.org/svelte-hmr/-/svelte-hmr-0.14.9.tgz"
