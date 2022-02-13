@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/env';
-	import { goto } from '$app/navigation';
-	import { signIn, signUp } from '$lib/stores/userStore';
+	import { signUp } from '$lib/stores/userStore';
 
-	import { supabase } from '$lib/supabaseclient';
-	import Auth from 'supabase-ui-svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -53,8 +50,9 @@
 			</div>
 		</div>
 		<button class="button is-primary" is-loading={loading} on:click={handleSignUp}>
-			Sign In
+			Create Account
 		</button>
-		<button class="button is-primary"> Create Account </button>
+		<!-- TODO: Handle Login -->
+		<button class="button is-primary"> Login </button>
 	</form>
 </div>

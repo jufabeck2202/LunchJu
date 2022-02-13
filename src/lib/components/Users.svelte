@@ -5,12 +5,12 @@
 </script>
 
 <div>
-	{#each $familyUsers as user, i}
 		<div class="card has-background-light pb-3 is card-radius-">
 			<header class="card-header">
 				<p class="card-header-title">Family Members:</p>
 			</header>
 			<div class="content">
+				{#each $familyUsers as user, i}
 				<div class="level pt-2 is-mobile">
 					<div class="level-item has-text-centered">
 						<figure class="image is-32x32">
@@ -28,9 +28,10 @@
 						<span class="tag is-success"> online </span>
 					</div>
 				</div>
+
+				{/each}
 			</div>
 		</div>
-	{/each}
 </div>
 
 <style>
