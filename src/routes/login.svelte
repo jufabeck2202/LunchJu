@@ -70,9 +70,9 @@
 							/>
 						</div>
 					</div>
-					<button class="button primary" on:click|once={signInWithEmail}> SignIn </button>
-					<button class="button primary" on:click|once={signUpWithEmail}> SignUp </button>
-					<button class="button primary" on:click|once={signOutForm}> Log out </button>
+					<button class="button primary" on:click={signInWithEmail}> SignIn </button>
+					<button class="button primary" on:click={signUpWithEmail}> SignUp </button>
+					<button class="button primary" on:click={signOutForm}> Log out </button>
 				</form>
 			</div>
 		</div>

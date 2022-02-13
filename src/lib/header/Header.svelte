@@ -4,6 +4,7 @@
 
 	import { page } from '$app/stores';
 	import { getUser, signOut } from '$lib/stores/userStore';
+import { SvelteToast } from '@zerodevx/svelte-toast';
 
 	let mobile;
 	const toggleNav = () => {
@@ -67,6 +68,7 @@
 			</div>
 		</nav>
 	</section>
+	<SvelteToast />
 </header>
 
 <style>

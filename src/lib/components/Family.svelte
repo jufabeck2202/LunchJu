@@ -48,7 +48,7 @@
 						</header>
 						<div class="card-content">
 							<Clipboard
-								text={url + 'join?family=' + $family.id}
+								text={url + 'join/' + $family.id}
 								let:copy
 								on:copy={() => {
 									console.log('Has Copied');
