@@ -20,3 +20,7 @@ export const GetDay = (date: string) => {
 export const IsDateToday = (date: string) => {
 	return dayjs.utc(date).local().isToday();
 };
+
+export const GetDateMonthYear = (date: string) => {
+	return dayjs.utc(date).local().format('DD MMM YYYY');
+};

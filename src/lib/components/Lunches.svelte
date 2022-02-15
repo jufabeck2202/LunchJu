@@ -30,7 +30,6 @@
 		// check if user is in the members list
 		if (members.some((member) => member.user_id === getUser().id)) {
 			hasJoinedlunch = true;
-			console.log('has joined lunch');
 		} else {
 			hasJoinedlunch = false;
 		}
@@ -66,7 +65,7 @@
 						>👨‍🍳 &nbsp; You are the cook</button
 					>
 				{:else}
-					<button class="button is-warning is-rounded" on:click|once={() => handleImTheCook(lunch)}
+					<button class="m-1 button is-warning is-rounded" on:click|once={() => handleImTheCook(lunch)}
 						>👨‍🍳 &nbsp; I'm the cook</button
 					>
 					<!-- else content here -->

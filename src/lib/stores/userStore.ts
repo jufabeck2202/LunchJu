@@ -3,6 +3,7 @@ import type { ApiError, PostgrestError, RealtimeSubscription, User } from '@supa
 import type { definitions } from '$lib/models';
 import { writable } from 'svelte/store';
 import { IsDateToday } from '$lib/helpers/time';
+import dayjs from 'dayjs';
 
 export const family = writable<definitions['families'] | null>(null);
 export const lunches = writable<definitions['lunchs'][] | []>([]);
@@ -118,11 +119,11 @@ export const initalFetchLunches = async (family_id) => {
 	const { data, error } = await supabase
 		.from<definitions['lunchs']>('lunchs')
 		.select('*')
-		.order('created_at', { ascending: false })
+		.order('created_at', { ascending: true })
 		.eq('family_id', family_id)
-		.limit(3);
-	const lunchesCreatedToday = data.filter((lunch) => IsDateToday(lunch.created_at));
-	lunches.set(lunchesCreatedToday);
+		.limit(7);
+	// const lunchesCreatedToday = data.filter((lunch) => IsDateToday(lunch.created_at));
+	lunches.set(data);
 };
 
 export const initalFetchUsers = async () => {
@@ -268,13 +269,46 @@ export const createFamily = async (familyName): Promise<PostgrestError | Error |
 	family.set(families[0]);
 };
 
-export const joinFamily = async (familyId: string, name: string): Promise<PostgrestError | Error | null> => {
+export const joinFamily = async (
+	familyId: string,
+	name: string
+): Promise<PostgrestError | Error | null> => {
 	const { error } = await supabase
 		.from<definitions['users_to_families']>('users_to_families')
-		.insert({ families_id: familyId, user_id: getUser().id ,name: name});
+		.insert({ families_id: familyId, user_id: getUser().id, name: name });
 	return error;
 };
 
 export function getUser() {
 	return supabase.auth.user();
 }
+
+export const loadLunches = async () => {
+	await initalFetchLunches(familyID);
+	// get the next 7 days
+	const today = dayjs.utc();
+	const next7days = [today];
+	console.log(dayjs().isSame('2022-02-20', 'day'));
+	for (let i = 1; i < 7; i++) {
+		next7days.push(dayjs.utc().add(i, 'day'));
+	}
+	const toCreate = [];
+	next7days.forEach(day => {
+		let containtsDay = false
+		for (const lunch of lunchsLocal) {
+			if (dayjs.utc(lunch.created_at).local().isSame(day, 'day')) {
+				containtsDay = true;
+			}
+		}		
+		if (! containtsDay){
+			toCreate.push(day);
+		}
+	});
+	console.log(toCreate);
+	for (const date of toCreate) {
+		const { data, error } = await supabase
+		.from<definitions['lunchs']>('lunchs')
+		.insert({ family_id: familyID, created_by: getUser().id , created_at: date.toISOString() });
+		
+	}
+};

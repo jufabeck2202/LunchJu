@@ -89,7 +89,7 @@
 					<h1 class="title">Join {tempFamily?.name}</h1>
 					<div class="subtitle is-6 pt-3 ">
 						You have been invited to join the family {tempFamily?.name} <br />
-						<span class="has-text-weight-semibold">Enter your name and click the button if you want to join</span>
+						<span class="has-text-weight-semibold">Enter your name and  the button if you want to join</span>
 					</div>
 					<div class="field">
 						<!-- svelte-ignore a11y-label-has-associated-control -->
