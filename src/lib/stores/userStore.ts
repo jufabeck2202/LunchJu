@@ -2,7 +2,6 @@ import { supabase } from '$lib/supabaseclient';
 import type { ApiError, PostgrestError, RealtimeSubscription, User } from '@supabase/supabase-js';
 import type { definitions } from '$lib/models';
 import { writable } from 'svelte/store';
-import { IsDateToday } from '$lib/helpers/time';
 import dayjs from 'dayjs';
 
 export const family = writable<definitions['families'] | null>(null);
@@ -57,7 +56,8 @@ const subscribeLunch = async () => {
 		.on('INSERT', (lunch) => {
 			//TODO: add to RLS
 			if (lunch.new.family_id == familyID) {
-				lunches.update((l) => [lunch.new, ...l]);
+				lunches.update((l) => [lunch.new, ...l].sort((a,b)=>a.created_at-b.created_at));
+
 			}
 		})
 		.on('UPDATE', (newLunch) => {
@@ -304,11 +304,10 @@ export const loadLunches = async () => {
 			toCreate.push(day);
 		}
 	});
-	console.log(toCreate);
 	for (const date of toCreate) {
 		const { data, error } = await supabase
 		.from<definitions['lunchs']>('lunchs')
-		.insert({ family_id: familyID, created_by: getUser().id , created_at: date.toISOString() });
+		.insert({ family_id: familyID, created_by: getUser().id , created_at: date.toISOString(), lunch_date: date.toISOString() });
 		
 	}
 };

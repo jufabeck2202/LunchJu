@@ -25,8 +25,6 @@
 	<div class="columns is-multiline">
 		{#each $lunches as lunch}
 			<LunchCard {lunch} />
-		
 		{/each}
 	</div>
 </div>
-

@@ -31,7 +31,7 @@
 	});
 </script>
 
-<div class="column is-one-quarter">
+<div class="column is-one-quarter-desktop is-half-tablet is-one-fifth-widescreen">
 	<div class="card p-5 m-3">
 		<div class="level pb-5">
 			<!-- Left side -->

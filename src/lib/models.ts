@@ -523,6 +523,9 @@ export interface paths {
           cook_id?: parameters["rowFilter.lunchs.cook_id"];
           selected_lunch_vote_id?: parameters["rowFilter.lunchs.selected_lunch_vote_id"];
           family_id?: parameters["rowFilter.lunchs.family_id"];
+          lunch_date?: parameters["rowFilter.lunchs.lunch_date"];
+          description?: parameters["rowFilter.lunchs.description"];
+          lunch_type?: parameters["rowFilter.lunchs.lunch_type"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -579,6 +582,9 @@ export interface paths {
           cook_id?: parameters["rowFilter.lunchs.cook_id"];
           selected_lunch_vote_id?: parameters["rowFilter.lunchs.selected_lunch_vote_id"];
           family_id?: parameters["rowFilter.lunchs.family_id"];
+          lunch_date?: parameters["rowFilter.lunchs.lunch_date"];
+          description?: parameters["rowFilter.lunchs.description"];
+          lunch_type?: parameters["rowFilter.lunchs.lunch_type"];
         };
         header: {
           /** Preference */
@@ -599,6 +605,9 @@ export interface paths {
           cook_id?: parameters["rowFilter.lunchs.cook_id"];
           selected_lunch_vote_id?: parameters["rowFilter.lunchs.selected_lunch_vote_id"];
           family_id?: parameters["rowFilter.lunchs.family_id"];
+          lunch_date?: parameters["rowFilter.lunchs.lunch_date"];
+          description?: parameters["rowFilter.lunchs.description"];
+          lunch_type?: parameters["rowFilter.lunchs.lunch_type"];
         };
         body: {
           /** lunchs */
@@ -1073,6 +1082,15 @@ export interface definitions {
      * This is a Foreign Key to `families.id`.<fk table='families' column='id'/>
      */
     family_id: string;
+    /** Format: date */
+    lunch_date: string;
+    /** Format: character varying */
+    description?: string;
+    /**
+     * Format: character varying
+     * @default lunch
+     */
+    lunch_type: string;
   };
   meals: {
     /**
@@ -1242,6 +1260,12 @@ export interface parameters {
   "rowFilter.lunchs.selected_lunch_vote_id": string;
   /** Format: uuid */
   "rowFilter.lunchs.family_id": string;
+  /** Format: date */
+  "rowFilter.lunchs.lunch_date": string;
+  /** Format: character varying */
+  "rowFilter.lunchs.description": string;
+  /** Format: character varying */
+  "rowFilter.lunchs.lunch_type": string;
   /** @description meals */
   "body.meals": definitions["meals"];
   /** Format: uuid */
