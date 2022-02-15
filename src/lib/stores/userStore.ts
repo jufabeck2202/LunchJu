@@ -16,7 +16,7 @@ let lunchMemberSubscription: RealtimeSubscription;
 let userSubscription: RealtimeSubscription;
 
 let familyUsersLocal: definitions['users_to_families'][] = [];
-let lunchsLocal: definitions['lunchs'][] = [];
+export let lunchsLocal: definitions['lunchs'][] = [];
 
 const familySubscription = family.subscribe(async (family) => {
 	if (family) {
@@ -56,8 +56,7 @@ const subscribeLunch = async () => {
 		.on('INSERT', (lunch) => {
 			//TODO: add to RLS
 			if (lunch.new.family_id == familyID) {
-				lunches.update((l) => [lunch.new, ...l].sort((a,b)=>a.created_at-b.created_at));
-
+				lunches.update((l) => [lunch.new, ...l].sort((a, b) => a.created_at - b.created_at));
 			}
 		})
 		.on('UPDATE', (newLunch) => {
@@ -293,21 +292,25 @@ export const loadLunches = async () => {
 		next7days.push(dayjs.utc().add(i, 'day'));
 	}
 	const toCreate = [];
-	next7days.forEach(day => {
-		let containtsDay = false
+	next7days.forEach((day) => {
+		let containtsDay = false;
 		for (const lunch of lunchsLocal) {
 			if (dayjs.utc(lunch.created_at).local().isSame(day, 'day')) {
 				containtsDay = true;
 			}
-		}		
-		if (! containtsDay){
+		}
+		if (!containtsDay) {
 			toCreate.push(day);
 		}
 	});
 	for (const date of toCreate) {
 		const { data, error } = await supabase
-		.from<definitions['lunchs']>('lunchs')
-		.insert({ family_id: familyID, created_by: getUser().id , created_at: date.toISOString(), lunch_date: date.toISOString() });
-		
+			.from<definitions['lunchs']>('lunchs')
+			.insert({
+				family_id: familyID,
+				created_by: getUser().id,
+				created_at: date.toISOString(),
+				lunch_date: date.toISOString()
+			});
 	}
 };

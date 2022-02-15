@@ -19,7 +19,6 @@
 	import { page } from '$app/stores';
 	import {
 		checkIfUserFamilyExists,
-		family,
 		getFamily,
 		getUser,
 		joinFamily,
@@ -27,12 +26,10 @@
 	} from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	import LoginComponent from '$lib/components/LoginComponent.svelte';
-	const familyID = $page.params['family'];
 	import { fade } from 'svelte/transition';
-	import { user } from '$lib/userWritableStore';
 	import { ErrorToast, SuccessToast } from '$lib/helpers/toast';
-	import { SvelteToast, toast } from '@zerodevx/svelte-toast';
 
+	const familyID = $page.params['family'];
 	let tempFamily: definitions['families'] = null;
 	let isLoading: boolean = false;
 	let hasJoinedFamily = false;
