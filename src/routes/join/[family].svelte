@@ -36,14 +36,18 @@
 	let tempFamily: definitions['families'] = null;
 	let isLoading: boolean = false;
 	let hasJoinedFamily = false;
-	let name : string = '';
-
+	let name: string = '';
 	onMount(async () => {
+		if (!getUser()) {
+			goto('/login');
+			return;
+		}
 		const data = await getFamily(familyID);
 		if (!data) {
 			goto('/404');
 		}
 		tempFamily = data;
+		console.log(getUser());
 		if (getUser()) {
 			console.log('user is logged in');
 			if (await checkIfUserFamilyExists()) {
@@ -71,7 +75,7 @@
 	};
 
 	const handleSignUp = async (user) => {
-		const error = await joinFamily(tempFamily.id,name);
+		const error = await joinFamily(tempFamily.id, name);
 		if (error) {
 			ErrorToast(error.message);
 		} else {
@@ -89,18 +93,15 @@
 					<h1 class="title">Join {tempFamily?.name}</h1>
 					<div class="subtitle is-6 pt-3 ">
 						You have been invited to join the family {tempFamily?.name} <br />
-						<span class="has-text-weight-semibold">Enter your name and  the button if you want to join</span>
+						<span class="has-text-weight-semibold"
+							>Enter your name and the button if you want to join</span
+						>
 					</div>
 					<div class="field">
 						<!-- svelte-ignore a11y-label-has-associated-control -->
 						<label class="label">Your Name</label>
 						<div class="control">
-							<input
-								class="input"
-								type="text"
-								placeholder="Enter your name"
-								bind:value={name}
-							/>
+							<input class="input" type="text" placeholder="Enter your name" bind:value={name} />
 						</div>
 					</div>
 
