@@ -281,6 +281,9 @@ export const joinFamily = async (
 export function getUser() {
 	return supabase.auth.user();
 }
+export async function getUserAsync() {
+	return await supabase.auth.user();
+}
 
 export const loadLunches = async () => {
 	await initalFetchLunches(familyID);

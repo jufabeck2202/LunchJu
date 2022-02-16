@@ -23,7 +23,6 @@
 	lunchMembers.subscribe((members) => {
 		// check if user is in the members list
 		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
-			
 			hasJoinedlunch = true;
 		} else {
 			hasJoinedlunch = false;
@@ -72,6 +71,12 @@
 			</div>
 		</div>
 
-		<button class="button is-fullwidth is-warning is-rounded mt-2">Open Lunch</button>
+		<a
+			class="button is-fullwidth is-warning is-rounded mt-2"
+			sveltekit:prefetch
+			href="/lunch/{lunch.id}/"
+		>
+			Open Lunch</a
+		>
 	</div>
 </div>

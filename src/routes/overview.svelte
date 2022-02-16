@@ -1,5 +1,5 @@
 <script lang="ts">
-import { goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 
 	import LunchCard from '$lib/components/LunchCard.svelte';
 	import { GetDay, ToLocalTime } from '$lib/helpers/time';
@@ -18,7 +18,7 @@ import { goto } from '$app/navigation';
 	} from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	onMount(async () => {
-		if(!getUser()){
+		if (!getUser()) {
 			goto('/login');
 		}
 		await checkIfUserFamilyExists();

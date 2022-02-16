@@ -10,13 +10,13 @@
 
 	const user = getUser();
 	console.log(user);
-	if (browser && user) goto('/');
+	if (browser && user) goto('/overview');
 
 	const signInWithEmail = async () => {
 		try {
 			loading = true;
 			const [user, error] = await signIn(username, password);
-			if (browser && user) goto('/'); 
+			if (browser && user) goto('/overview'); 
 		} catch (error) {
 			alert(error.error_description || error.message);
 		} finally {

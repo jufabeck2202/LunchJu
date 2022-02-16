@@ -12,6 +12,7 @@
 	} from '$lib/stores/userStore';
 
 	export let lunch: definitions['lunchs'];
+	let localLunchMembers: definitions['lunch_members'][] = [];
 
 	const handleImTheCook = async (lunch) => {
 		const error = await setCookForLunch(lunch);
@@ -25,10 +26,14 @@
 		const error = await leaveLunch(lunch);
 	};
 	let hasJoinedlunch = false;
+	lunchMembers.subscribe((members) => {
+		// check if user is in the members list
+		localLunchMembers = members.filter((member) => member.lunch_id === lunch.id);
+	});
 
 	lunchMembers.subscribe((members) => {
 		// check if user is in the members list
-		if (members.some((member) => member.user_id === getUser().id)) {
+		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
 			hasJoinedlunch = true;
 		} else {
 			hasJoinedlunch = false;
@@ -44,7 +49,7 @@
 		</p>
 
 		<div>
-			{#each $lunchMembers as members}
+			{#each localLunchMembers as members}
 				<button class="m-1 button is-success is-rounded is-outlined" disabled
 					>{members.username}</button
 				>
@@ -65,8 +70,9 @@
 						>👨‍🍳 &nbsp; You are the cook</button
 					>
 				{:else}
-					<button class="m-1 button is-warning is-rounded" on:click|once={() => handleImTheCook(lunch)}
-						>👨‍🍳 &nbsp; I'm the cook</button
+					<button
+						class="m-1 button is-warning is-rounded"
+						on:click|once={() => handleImTheCook(lunch)}>👨‍🍳 &nbsp; I'm the cook</button
 					>
 					<!-- else content here -->
 				{/if}
