@@ -69,7 +69,7 @@
 								class="button is-link"
 								disabled={isLoading || mealName.length < 3}
 								is-loading={isLoading}
-								on:click={handleCreateLunchProposal}>Create Food</button
+								on:click={handleCreateLunchProposal}>Create Suggestion</button
 							>
 						</div>
 						<div class="control">

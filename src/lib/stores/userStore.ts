@@ -28,7 +28,7 @@ const familySubscription = family.subscribe(async (family) => {
 		await subscribeLunchMemers();
 		await initalFetchUsers();
 		await subscribeUsers();
-		await initalFetchLunches(family.id);
+		await initalFetchLunches();
 		await subscribeLunch();
 	}
 });
@@ -117,12 +117,12 @@ const destory = () => {
 	lunchMemberSubscription.unsubscribe();
 };
 
-export const initalFetchLunches = async (family_id) => {
+export const initalFetchLunches = async () => {
 	const { data, error } = await supabase
 		.from<definitions['lunchs']>('lunchs')
 		.select('*')
 		.order('created_at', { ascending: false })
-		.eq('family_id', family_id)
+		.eq('family_id', familyID)
 		.limit(7);
 	// const lunchesCreatedToday = data.filter((lunch) => IsDateToday(lunch.created_at));
 	lunches.set(data.reverse());
@@ -146,7 +146,7 @@ export const initalFetchLunchMembers = async () => {
 	lunchMembers.set(data);
 };
 export const createLunch = async (): Promise<PostgrestError | Error | null> => {
-	await initalFetchLunches(familyID);
+	await initalFetchLunches();
 	//curently only one lunch can be created per family per day
 	if (lunchsLocal.length > 0) {
 		return;
