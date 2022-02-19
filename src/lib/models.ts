@@ -217,9 +217,9 @@ export interface paths {
           id?: parameters["rowFilter.lunch_proposal.id"];
           created_at?: parameters["rowFilter.lunch_proposal.created_at"];
           user_id?: parameters["rowFilter.lunch_proposal.user_id"];
-          meal_id?: parameters["rowFilter.lunch_proposal.meal_id"];
           lunch_id?: parameters["rowFilter.lunch_proposal.lunch_id"];
           family_id?: parameters["rowFilter.lunch_proposal.family_id"];
+          meal_type?: parameters["rowFilter.lunch_proposal.meal_type"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -273,9 +273,9 @@ export interface paths {
           id?: parameters["rowFilter.lunch_proposal.id"];
           created_at?: parameters["rowFilter.lunch_proposal.created_at"];
           user_id?: parameters["rowFilter.lunch_proposal.user_id"];
-          meal_id?: parameters["rowFilter.lunch_proposal.meal_id"];
           lunch_id?: parameters["rowFilter.lunch_proposal.lunch_id"];
           family_id?: parameters["rowFilter.lunch_proposal.family_id"];
+          meal_type?: parameters["rowFilter.lunch_proposal.meal_type"];
         };
         header: {
           /** Preference */
@@ -293,9 +293,9 @@ export interface paths {
           id?: parameters["rowFilter.lunch_proposal.id"];
           created_at?: parameters["rowFilter.lunch_proposal.created_at"];
           user_id?: parameters["rowFilter.lunch_proposal.user_id"];
-          meal_id?: parameters["rowFilter.lunch_proposal.meal_id"];
           lunch_id?: parameters["rowFilter.lunch_proposal.lunch_id"];
           family_id?: parameters["rowFilter.lunch_proposal.family_id"];
+          meal_type?: parameters["rowFilter.lunch_proposal.meal_type"];
         };
         body: {
           /** lunch_proposal */
@@ -630,9 +630,10 @@ export interface paths {
         query: {
           id?: parameters["rowFilter.meals.id"];
           created_at?: parameters["rowFilter.meals.created_at"];
-          created_by?: parameters["rowFilter.meals.created_by"];
-          name?: parameters["rowFilter.meals.name"];
+          lunch_id?: parameters["rowFilter.meals.lunch_id"];
           family_id?: parameters["rowFilter.meals.family_id"];
+          name?: parameters["rowFilter.meals.name"];
+          created_by?: parameters["rowFilter.meals.created_by"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -685,9 +686,10 @@ export interface paths {
         query: {
           id?: parameters["rowFilter.meals.id"];
           created_at?: parameters["rowFilter.meals.created_at"];
-          created_by?: parameters["rowFilter.meals.created_by"];
-          name?: parameters["rowFilter.meals.name"];
+          lunch_id?: parameters["rowFilter.meals.lunch_id"];
           family_id?: parameters["rowFilter.meals.family_id"];
+          name?: parameters["rowFilter.meals.name"];
+          created_by?: parameters["rowFilter.meals.created_by"];
         };
         header: {
           /** Preference */
@@ -704,9 +706,10 @@ export interface paths {
         query: {
           id?: parameters["rowFilter.meals.id"];
           created_at?: parameters["rowFilter.meals.created_at"];
-          created_by?: parameters["rowFilter.meals.created_by"];
-          name?: parameters["rowFilter.meals.name"];
+          lunch_id?: parameters["rowFilter.meals.lunch_id"];
           family_id?: parameters["rowFilter.meals.family_id"];
+          name?: parameters["rowFilter.meals.name"];
+          created_by?: parameters["rowFilter.meals.created_by"];
         };
         body: {
           /** meals */
@@ -967,6 +970,7 @@ export interface definitions {
      * Format: uuid
      * @description Note:
      * This is a Primary Key.<pk/>
+     * @default extensions.uuid_generate_v4()
      */
     id: string;
     /**
@@ -979,12 +983,6 @@ export interface definitions {
     /**
      * Format: uuid
      * @description Note:
-     * This is a Foreign Key to `meals.id`.<fk table='meals' column='id'/>
-     */
-    meal_id: string;
-    /**
-     * Format: uuid
-     * @description Note:
      * This is a Foreign Key to `lunchs.id`.<fk table='lunchs' column='id'/>
      */
     lunch_id: string;
@@ -994,6 +992,12 @@ export interface definitions {
      * This is a Foreign Key to `families.id`.<fk table='families' column='id'/>
      */
     family_id: string;
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Foreign Key to `meals.id`.<fk table='meals' column='id'/>
+     */
+    meal_type: string;
   };
   lunch_proposal_comments: {
     /**
@@ -1105,16 +1109,22 @@ export interface definitions {
      * @default now()
      */
     created_at?: string;
-    /** Format: uuid */
-    created_by: string;
-    /** Format: text */
-    name: string;
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Foreign Key to `lunchs.id`.<fk table='lunchs' column='id'/>
+     */
+    lunch_id: string;
     /**
      * Format: uuid
      * @description Note:
      * This is a Foreign Key to `families.id`.<fk table='families' column='id'/>
      */
     family_id: string;
+    /** Format: character varying */
+    name: string;
+    /** Format: uuid */
+    created_by?: string;
   };
   test: {
     /**
@@ -1215,11 +1225,11 @@ export interface parameters {
   /** Format: uuid */
   "rowFilter.lunch_proposal.user_id": string;
   /** Format: uuid */
-  "rowFilter.lunch_proposal.meal_id": string;
-  /** Format: uuid */
   "rowFilter.lunch_proposal.lunch_id": string;
   /** Format: uuid */
   "rowFilter.lunch_proposal.family_id": string;
+  /** Format: uuid */
+  "rowFilter.lunch_proposal.meal_type": string;
   /** @description lunch_proposal_comments */
   "body.lunch_proposal_comments": definitions["lunch_proposal_comments"];
   /** Format: bigint */
@@ -1273,11 +1283,13 @@ export interface parameters {
   /** Format: timestamp with time zone */
   "rowFilter.meals.created_at": string;
   /** Format: uuid */
-  "rowFilter.meals.created_by": string;
-  /** Format: text */
-  "rowFilter.meals.name": string;
+  "rowFilter.meals.lunch_id": string;
   /** Format: uuid */
   "rowFilter.meals.family_id": string;
+  /** Format: character varying */
+  "rowFilter.meals.name": string;
+  /** Format: uuid */
+  "rowFilter.meals.created_by": string;
   /** @description test */
   "body.test": definitions["test"];
   /** Format: bigint */

@@ -17,13 +17,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import {
-		family,
-		getUserAsync,
-		loadLunches,
-		lunchsLocal,
-		mountFamily
-	} from '$lib/stores/userStore';
+	import { family, getUserAsync, lunchsLocal, mountFamily } from '$lib/stores/userStore';
 	import Clipboard from 'svelte-clipboard';
 	import { onMount } from 'svelte';
 	import CreateProposal from '$lib/components/CreateProposal.svelte';
@@ -44,11 +38,6 @@
 		if (!(await mountFamily())) {
 			goto('/login');
 		}
-		await loadLunches();
-		if (!lunchId) {
-			goto('/overview');
-		}
-		console.log(lunchsLocal);
 		if (!lunchsLocal.some((l) => l.id === lunchId)) {
 			goto('/overview');
 		}
@@ -82,7 +71,7 @@
 					<!-- <CreateLunch /> -->
 				</div>
 				<div class="column is-one-quarter">
-					<CreateProposal />
+					<CreateProposal {lunchId} />
 					<Suggestion />
 				</div>
 				<div class="column is-one-quarter">

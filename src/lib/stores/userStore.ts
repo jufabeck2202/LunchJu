@@ -159,6 +159,52 @@ export const createLunch = async (): Promise<PostgrestError | Error | null> => {
 	}
 };
 
+export const createMeal = async (lunchId: string, name: string): Promise<definitions['meals']> => {
+	const { data, error } = await supabase
+		.from<definitions['meals']>('meals')
+		.insert({
+			lunch_id: lunchId,
+			name: name,
+			family_id: familyID,
+			created_by: getUser().id
+		})
+		.single();
+	if (error) {
+		throw error;
+	}
+	return data;
+};
+
+export const createLunchProposal = async (
+	lunchId: string,
+	lunchName: string,
+	mealId: string | null = null
+): Promise<PostgrestError | Error | null> => {
+	mealId = mealId || (await createMeal(lunchId, lunchName)).id;
+	const { data, error } = await supabase
+		.from<definitions['lunch_proposal']>('lunch_proposal')
+		.insert({
+			lunch_id: lunchId,
+			user_id: getUser().id,
+			meal_type: mealId,
+			family_id: familyID
+		});
+	if (error) {
+		return error;
+	}
+};
+
+export const fetchMeals = async (lunchId: string): Promise<definitions['meals'][]> => {
+	const { data, error } = await supabase
+		.from<definitions['meals']>('meals')
+		.select('*')
+		.eq('lunch_id', lunchId);
+	if (error) {
+		return [];
+	}
+	return data;
+};
+
 export const joinLunch = async (
 	lunch: definitions['lunchs']
 ): Promise<PostgrestError | Error | null> => {
@@ -311,13 +357,11 @@ export const createLunchesForWeek = async () => {
 		}
 	});
 	for (const date of toCreate) {
-		const { data, error } = await supabase
-			.from<definitions['lunchs']>('lunchs')
-			.insert({
-				family_id: familyID,
-				created_by: getUser().id,
-				created_at: date.toISOString(),
-				lunch_date: date.toISOString()
-			});
+		const { data, error } = await supabase.from<definitions['lunchs']>('lunchs').insert({
+			family_id: familyID,
+			created_by: getUser().id,
+			created_at: date.toISOString(),
+			lunch_date: date.toISOString()
+		});
 	}
 };
