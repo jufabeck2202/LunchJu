@@ -2,27 +2,15 @@
 	import { goto } from '$app/navigation';
 
 	import LunchCard from '$lib/components/LunchCard.svelte';
-	import { GetDay, ToLocalTime } from '$lib/helpers/time';
-	import type { definitions } from '$lib/models';
 
-	import {
-		checkIfUserFamilyExists,
-		getUser,
-		getUserByID,
-		joinLunch,
-		leaveLunch,
-		loadLunches,
-		lunches,
-		lunchMembers,
-		setCookForLunch
-	} from '$lib/stores/userStore';
+	import { mountFamily, getUser, createLunchesForWeek, lunches } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	onMount(async () => {
 		if (!getUser()) {
 			goto('/login');
 		}
-		await checkIfUserFamilyExists();
-		await loadLunches();
+		await mountFamily();
+		await createLunchesForWeek();
 	});
 </script>
 

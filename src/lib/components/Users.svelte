@@ -1,4 +1,7 @@
 <script lang="ts">
+import { user } from "$lib/userWritableStore";
+
+
 	import { user } from '$lib/userWritableStore';
 
 	import { familyUsers } from '$lib/stores/userStore';
@@ -16,7 +19,7 @@
 						<figure class="image is-32x32">
 							<img
 								class="is-rounded"
-								src={`https://avatars.dicebear.com/api/pixel-art/julian.svg`}
+								src={`https://avatars.dicebear.com/api/pixel-art/${user.name}.svg`}
 								alt="avatar"
 							/>
 						</figure>

@@ -18,13 +18,11 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import {
-		checkIfUserFamilyExists,
 		family,
-		getUser,
 		getUserAsync,
 		loadLunches,
-		lunches,
-		lunchsLocal
+		lunchsLocal,
+		mountFamily
 	} from '$lib/stores/userStore';
 	import Clipboard from 'svelte-clipboard';
 	import { onMount } from 'svelte';
@@ -34,7 +32,6 @@
 	import CreateLunch from '$lib/components/CreateLunch.svelte';
 	import Lunch from '$lib/components/Lunches.svelte';
 	import Users from '$lib/components/Users.svelte';
-	import LunchCard from '$lib/components/LunchCard.svelte';
 
 	let isShareModelOpen = false;
 	let url = '';
@@ -44,18 +41,15 @@
 		if (!(await getUserAsync())) {
 			goto('/login');
 		}
-		if (!(await checkIfUserFamilyExists())) {
-			console.log('family not found');
+		if (!(await mountFamily())) {
 			goto('/login');
 		}
 		await loadLunches();
 		if (!lunchId) {
-			console.log('no lunch id');
 			goto('/overview');
 		}
 		console.log(lunchsLocal);
 		if (!lunchsLocal.some((l) => l.id === lunchId)) {
-			console.log('lunch not found');
 			goto('/overview');
 		}
 		url = window.location.href;

@@ -17,13 +17,7 @@
 	import { goto } from '$app/navigation';
 	import type { definitions } from '$lib/models';
 	import { page } from '$app/stores';
-	import {
-		checkIfUserFamilyExists,
-		getFamily,
-		getUser,
-		joinFamily,
-		signOut
-	} from '$lib/stores/userStore';
+	import { mountFamily, getFamily, getUser, joinFamily, signOut } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	import LoginComponent from '$lib/components/LoginComponent.svelte';
 	import { fade } from 'svelte/transition';
@@ -44,11 +38,9 @@
 			goto('/404');
 		}
 		tempFamily = data;
-		console.log(getUser());
 		if (getUser()) {
 			console.log('user is logged in');
-			if (await checkIfUserFamilyExists()) {
-				console.log('hi');
+			if (await mountFamily()) {
 				ErrorToast(
 					'<strong>You have already joined a family.</strong> <br>Please create a new account if you wish to join another family.'
 				);

@@ -3,15 +3,11 @@
 
 	import { goto } from '$app/navigation';
 
-	import { checkIfUserFamilyExists, family, getUser } from '$lib/stores/userStore';
 	import CreateFamily from '$lib/components/createFamily.svelte';
-	import Family from '$lib/components/Family.svelte';
-	import { SvelteToast } from '@zerodevx/svelte-toast';
+	import { getUser } from '$lib/stores/userStore';
 
 	const user = getUser();
 	if (browser && !user) goto('/login');
-
-	// checkIfUserFamilyExists()
 </script>
 
 <svelte:head>
@@ -19,16 +15,7 @@
 </svelte:head>
 
 <section>
-	{#await checkIfUserFamilyExists() then _}
-		{#if $family}
-			<Family />
-		{:else}
-			<CreateFamily />
-		{/if}
-		{$family}
-	{/await}
-	
-	<SvelteToast />
+	<h1>Welcome to LunchJu</h1>
 </section>
 
 <style>
