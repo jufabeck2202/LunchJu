@@ -37,7 +37,7 @@
 		<div class="modal-content">
 			<div class="card">
 				<header class="card-header">
-					<p class="card-header-title">Create Lunch Proposal</p>
+					<p class="card-header-title">Create Proposal</p>
 				</header>
 				<div class="card-content">
 					<div class="subtitle">What food do you want to eat?</div>
@@ -69,7 +69,7 @@
 								class="button is-link"
 								disabled={isLoading || mealName.length < 3}
 								is-loading={isLoading}
-								on:click={handleCreateLunchProposal}>Create Suggestion</button
+								on:click={handleCreateLunchProposal}>Create Proposal</button
 							>
 						</div>
 						<div class="control">

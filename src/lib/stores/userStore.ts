@@ -138,6 +138,19 @@ export const initalFetchUsers = async () => {
 	unserName = userNames?.[0];
 };
 
+export const initalFetchLunchProposals = async (
+	lunchId: string
+): Promise<definitions['lunch_proposal'][]> => {
+	const { data, error } = await supabase
+		.from<definitions['lunch_proposal']>('lunch_proposal')
+		.select('*')
+		.eq('lunch_id', lunchId);
+	if (error) {
+		throw error;
+	}
+	return data;
+};
+
 export const initalFetchLunchMembers = async () => {
 	const { data, error } = await supabase
 		.from<definitions['lunch_members']>('lunch_members')

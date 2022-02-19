@@ -9,8 +9,7 @@
 		const error = await createFamily(familyName);
 		if (error) {
 			alert(error.message);
-			return
-			
+			return;
 		}
 
 		console.log('toast');
@@ -34,7 +33,7 @@
 			<h1 class="title">Family</h1>
 			<div class="subtitle is-6 pt-3 ">
 				Your User does not belong to a Family. <br />
-				<span class="has-text-weight-semibold	">Please create a new Family</span>
+				<span class="has-text-weight-semibold">Please create a new Family</span>
 			</div>
 			<div class="field">
 				<div class="control">
