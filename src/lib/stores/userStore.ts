@@ -19,6 +19,9 @@ let familyUsersLocal: definitions['users_to_families'][] = [];
 export let lunchsLocal: definitions['lunchs'][] = [];
 
 const familySubscription = family.subscribe(async (family) => {
+	/**
+	 * Family exists, start subscribing to all updates
+	 */
 	if (family) {
 		familyID = family.id;
 		await initalFetchLunchMembers();
@@ -118,11 +121,11 @@ export const initalFetchLunches = async (family_id) => {
 	const { data, error } = await supabase
 		.from<definitions['lunchs']>('lunchs')
 		.select('*')
-		.order('created_at', { ascending: true })
+		.order('created_at', { ascending: false })
 		.eq('family_id', family_id)
 		.limit(7);
 	// const lunchesCreatedToday = data.filter((lunch) => IsDateToday(lunch.created_at));
-	lunches.set(data);
+	lunches.set(data.reverse());
 };
 
 export const initalFetchUsers = async () => {
@@ -213,8 +216,11 @@ export const signOut = async (): Promise<ApiError> => {
 	console.log('After logut', await supabase.auth.user());
 	return error;
 };
-
-export const checkIfUserFamilyExists = async (): Promise<boolean> => {
+/**
+ * Check if user belongs to a family and starts subscribing to updates
+ * @returns family exists or not
+ */
+export const mountFamily = async (): Promise<boolean> => {
 	const { data, error } = await supabase
 		.from<definitions['users_to_families']>('users_to_families')
 		.select('*')
@@ -285,12 +291,10 @@ export async function getUserAsync() {
 	return await supabase.auth.user();
 }
 
-export const loadLunches = async () => {
-	await initalFetchLunches(familyID);
+export const createLunchesForWeek = async () => {
 	// get the next 7 days
 	const today = dayjs.utc();
 	const next7days = [today];
-	console.log(dayjs().isSame('2022-02-20', 'day'));
 	for (let i = 1; i < 7; i++) {
 		next7days.push(dayjs.utc().add(i, 'day'));
 	}
