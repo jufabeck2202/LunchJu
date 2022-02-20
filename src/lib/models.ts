@@ -423,6 +423,7 @@ export interface paths {
           user_id?: parameters["rowFilter.lunch_proposal_vote.user_id"];
           family_id?: parameters["rowFilter.lunch_proposal_vote.family_id"];
           lunch_proposal_id?: parameters["rowFilter.lunch_proposal_vote.lunch_proposal_id"];
+          upvote?: parameters["rowFilter.lunch_proposal_vote.upvote"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -478,6 +479,7 @@ export interface paths {
           user_id?: parameters["rowFilter.lunch_proposal_vote.user_id"];
           family_id?: parameters["rowFilter.lunch_proposal_vote.family_id"];
           lunch_proposal_id?: parameters["rowFilter.lunch_proposal_vote.lunch_proposal_id"];
+          upvote?: parameters["rowFilter.lunch_proposal_vote.upvote"];
         };
         header: {
           /** Preference */
@@ -497,6 +499,7 @@ export interface paths {
           user_id?: parameters["rowFilter.lunch_proposal_vote.user_id"];
           family_id?: parameters["rowFilter.lunch_proposal_vote.family_id"];
           lunch_proposal_id?: parameters["rowFilter.lunch_proposal_vote.lunch_proposal_id"];
+          upvote?: parameters["rowFilter.lunch_proposal_vote.upvote"];
         };
         body: {
           /** lunch_proposal_vote */
@@ -1055,6 +1058,8 @@ export interface definitions {
      * This is a Foreign Key to `lunch_proposal.id`.<fk table='lunch_proposal' column='id'/>
      */
     lunch_proposal_id: string;
+    /** Format: boolean */
+    upvote: boolean;
   };
   /** @description Daily lunch votes */
   lunchs: {
@@ -1256,6 +1261,8 @@ export interface parameters {
   "rowFilter.lunch_proposal_vote.family_id": string;
   /** Format: uuid */
   "rowFilter.lunch_proposal_vote.lunch_proposal_id": string;
+  /** Format: boolean */
+  "rowFilter.lunch_proposal_vote.upvote": string;
   /** @description lunchs */
   "body.lunchs": definitions["lunchs"];
   /** Format: uuid */

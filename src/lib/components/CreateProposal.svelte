@@ -20,7 +20,7 @@
 	const getItems = async (keyword) => {
 		isLoading = true;
 		mealName = keyword;
-		const lunches = await fetchMeals(lunchId);
+		const lunches = await fetchMeals();
 		isLoading = false;
 		return lunches;
 	};

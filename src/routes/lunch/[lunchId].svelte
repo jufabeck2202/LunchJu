@@ -80,7 +80,7 @@
 				</div>
 				<div class="column is-one-quarter">
 					<CreateProposal {lunchId} />
-					<Suggestion {lunchId} />
+					<Suggestion {lunch} />
 				</div>
 				<div class="column is-one-quarter">
 					<Users />
