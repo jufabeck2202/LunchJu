@@ -23,7 +23,7 @@ import { SvelteToast } from '@zerodevx/svelte-toast';
 		<nav class="navbar is-light is-fixed-top has-shadow">
 			<!--Logo-->
 			<div class="navbar-brand">
-				<div href="" class="navbar-item" style="font-weight:800">LunchJu</div>
+				<a href="/overview" class="navbar-item" style="font-weight:800">LunchJu</a>
 				<a class="navbar-burger" class:is-active={mobile} id="burger" on:click={toggleNav}>
 					<span />
 					<span />
@@ -38,9 +38,9 @@ import { SvelteToast } from '@zerodevx/svelte-toast';
 						class="navbar-item"
 						class:is-active={$page.url.pathname === '/'}
 						sveltekit:prefetch
-						href="/"
+						href="/stats"
 					>
-						Join Room
+						Statistic
 					</a>
 					<!--Item-->
 					<a

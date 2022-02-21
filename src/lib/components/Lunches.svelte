@@ -8,6 +8,7 @@
 		joinLunch,
 		leaveLunch,
 		lunchMembers,
+		removeCookForLunch,
 		setCookForLunch
 	} from '$lib/stores/userStore';
 
@@ -18,6 +19,10 @@
 		const error = await setCookForLunch(lunch);
 	};
 
+	const handleImNotTheCook = async (lunch) => {
+		const error = await removeCookForLunch(lunch);
+	};
+
 	const handleJoinLunch = async (lunch) => {
 		const error = await joinLunch(lunch);
 	};
@@ -26,11 +31,7 @@
 		const error = await leaveLunch(lunch);
 	};
 	let hasJoinedlunch = false;
-	lunchMembers.subscribe((members) => {
-		// check if user is in the members list
-		localLunchMembers = members.filter((member) => member.lunch_id === lunch.id);
-	});
-
+	let isMouseOnLunch = false;
 	lunchMembers.subscribe((members) => {
 		// check if user is in the members list
 		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
@@ -38,6 +39,7 @@
 		} else {
 			hasJoinedlunch = false;
 		}
+		localLunchMembers = members.filter((member) => member.lunch_id === lunch.id);
 	});
 </script>
 
@@ -51,9 +53,9 @@
 		<div>
 			{#each localLunchMembers as members}
 				<button class="m-1 button is-success is-rounded is-outlined" disabled
-					>{members.username}</button
+					>{members.username}
+					{#if lunch.cook_id === members.user_id} 👨‍🍳 {/if}</button
 				>
-				<!-- content here -->
 			{/each}
 		</div>
 		<div>
@@ -65,10 +67,25 @@
 				<button class="m-1 button  is-rounded is-danger" on:click={() => handleLeaveLunch(lunch)}
 					>Leave Lunch</button
 				>
-				{#if lunch.cook_id}
-					<button class="m-1 button  is-rounded is-outlined" disabled
-						>👨‍🍳 &nbsp; You are the cook</button
-					>
+				{#if lunch.cook_id == getUser().id}
+					{#if isMouseOnLunch}
+						<button
+							on:focus={() => (isMouseOnLunch = true)}
+							on:blur={() => (isMouseOnLunch = false)}
+							on:mouseover={() => (isMouseOnLunch = true)}
+							on:mouseout={() => (isMouseOnLunch = false)}
+							on:click={() => handleImNotTheCook(lunch)}
+							class="m-1 button is-rounded is-outlined is-danger">I don't want to cook</button
+						>{:else}
+						<button
+							on:focus={() => (isMouseOnLunch = true)}
+							on:blur={() => (isMouseOnLunch = false)}
+							on:mouseover={() => (isMouseOnLunch = true)}
+							on:mouseout={() => (isMouseOnLunch = false)}
+							on:click={() => handleImNotTheCook(lunch)}
+							class="m-1 button is-rounded is-outlined">👨‍🍳 &nbsp; You are the cook</button
+						>
+					{/if}
 				{:else}
 					<button
 						class="m-1 button is-warning is-rounded"
@@ -80,3 +97,6 @@
 		</div>
 	</div>
 </div>
+
+<style>
+</style>

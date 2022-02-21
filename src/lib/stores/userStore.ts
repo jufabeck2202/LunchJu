@@ -53,6 +53,10 @@ export const setCookForLunch = async (lunch: definitions['lunchs']) => {
 	await supabase.from<definitions['lunchs']>('lunchs').update(lunch).eq('id', lunch.id);
 };
 
+export const removeCookForLunch = async (lunch: definitions['lunchs']) => {
+	lunch.cook_id = null;
+	await supabase.from<definitions['lunchs']>('lunchs').update(lunch).eq('id', lunch.id);
+};
 const subscribeLunch = async () => {
 	lunchSubscription = await supabase
 		.from<definitions['lunchs']>('lunchs')

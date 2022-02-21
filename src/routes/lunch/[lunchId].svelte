@@ -20,6 +20,7 @@
 		family,
 		getUserAsync,
 		initalFetchLunches,
+		lunches,
 		lunchsLocal,
 		mountFamily
 	} from '$lib/stores/userStore';
@@ -47,8 +48,13 @@
 		if (!lunchsLocal.some((l) => l.id === lunchId)) {
 			goto('/overview');
 		}
-		url = window.location.href;
+		url = window.location.origin
 		lunch = lunchsLocal.filter((lunch) => lunch.id == lunchId)?.[0];
+	});
+
+	//updates lunch
+	lunches.subscribe((lunches) => {
+		lunch = lunches.filter((lunch) => lunch.id == lunchId)?.[0];
 	});
 </script>
 
@@ -96,7 +102,7 @@
 								Share this link with your family to invite them to join you
 							</div>
 							<Clipboard
-								text={url + 'join/' + $family.id}
+								text={url + '/join/' + $family.id}
 								let:copy
 								on:copy={() => {
 									console.log('Has Copied');
