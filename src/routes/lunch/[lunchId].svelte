@@ -1,6 +1,5 @@
 <script context="module">
 	export async function load(params) {
-		console.log(params);
 		if (params.params.lunchId) {
 			return {
 				status: 200
@@ -46,7 +45,6 @@
 		}
 		await initalFetchLunches();
 		if (!lunchsLocal.some((l) => l.id === lunchId)) {
-			console.log('overview');
 			goto('/overview');
 		}
 		url = window.location.href;

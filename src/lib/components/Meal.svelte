@@ -9,10 +9,11 @@
 	export let downvote = 0;
 	export let name = '';
 	export let lunchProposal: definitions['lunch_proposal'];
+	export let lunchId: string
 
 	const handleVote = async (upvote: boolean) => {
 		console.log(lunchProposal.id);
-		await createVote(lunchProposal.id, upvote);
+		await createVote(lunchProposal.id, lunchId, upvote);
 	};
 </script>
 

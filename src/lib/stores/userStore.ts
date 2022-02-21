@@ -74,12 +74,13 @@ const subscribeLunch = async () => {
 		.subscribe();
 };
 
-export const createVote = async (lunchProposalId, voteType: boolean) => {
+export const createVote = async (lunchProposalId, lunchId, voteType: boolean) => {
 	const { data, error } = await supabase
 		.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')
 		.insert({
 			lunch_proposal_id: lunchProposalId,
 			upvote: voteType,
+			lunch_id: lunchId,
 			family_id: familyID,
 			user_id: getUser().id
 		});
@@ -166,13 +167,12 @@ export const initalFetchLunchProposals = async (
 };
 
 export const initalFetchLunchVotes = async (
-	lunchProposalId: string
+	lunchId: string
 ): Promise<definitions['lunch_proposal_vote'][]> => {
 	const { data, error } = await supabase
 		.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')
 		.select('*')
-		//TODO ADD LUNCH ID TO VOTE
-		.eq('lunch_proposal_id', lunchProposalId);
+		.eq('lunch_id', lunchId);
 	if (error) {
 		throw error;
 	}

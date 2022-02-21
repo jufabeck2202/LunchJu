@@ -14,7 +14,6 @@
 	let voteSubscription: RealtimeSubscription;
 	const lunchProposal = writable<definitions['lunch_proposal'][] | []>([]);
 	const votes = writable<definitions['lunch_proposal_vote'][] | []>([]);
-
 	onMount(async () => {
 		lunchProposal.set(await initalFetchLunchProposals(lunch.id));
 		await subscribeLunchProposal();
@@ -41,7 +40,7 @@
 			.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')
 			.on('INSERT', (newVote) => {
 				//TODO: add to RLS, Maybe add lunchId to vote
-				if (newVote.new.family_id == lunch.family_id) {
+				if (newVote.new.family_id == lunch.family_id && newVote.new.lunch_id == lunch.id) {
 					votes.update((l) => [newVote.new, ...l].sort((a, b) => a.created_at - b.created_at));
 				}
 			})
@@ -82,8 +81,9 @@
 	<!-- content here -->
 	{#await fetchMealName(item.meal_type) then name}
 		<!-- promise was fulfilled -->
-		<div class="card p-2">
+		<div class="card p-2 mb-2">
 			<Meal
+				lunchId={lunch.id}
 				lunchProposal={item}
 				{name}
 				upvote={getUpvotes(item.id, $votes)}

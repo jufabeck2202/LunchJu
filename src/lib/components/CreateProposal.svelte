@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { definitions } from '$lib/models';
+
 	import { createLunchProposal, fetchMeals } from '$lib/stores/userStore';
 	import AutoComplete from 'simple-svelte-autocomplete';
 
@@ -7,9 +9,14 @@
 	let isProposalMenu = false;
 	let mealName: string = '';
 	let selectedFood;
+	let lunchSuggestions: definitions['meals'][] = [];
+
 	const handleCreateLunchProposal = async () => {
 		isLoading = true;
-		const error = await createLunchProposal(lunchId, mealName, selectedFood?.id);
+		//check if exists
+		const response = lunchSuggestions.find((meal) => meal.name === mealName.toLowerCase());
+
+		const error = await createLunchProposal(lunchId, mealName, response?.id);
 		isLoading = false;
 		if (error) {
 			alert(error);
@@ -21,9 +28,11 @@
 		isLoading = true;
 		mealName = keyword;
 		const lunches = await fetchMeals();
+		lunchSuggestions = lunches;
 		isLoading = false;
 		return lunches;
 	};
+
 </script>
 
 <div class="card p-3 mb-3">
@@ -67,7 +76,7 @@
 						<div class="control">
 							<button
 								class="button is-link"
-								disabled={isLoading || mealName.length < 3}
+								disabled={!selectedFood || mealName.length < 3}
 								is-loading={isLoading}
 								on:click={handleCreateLunchProposal}>Create Proposal</button
 							>

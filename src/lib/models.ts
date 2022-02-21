@@ -424,6 +424,7 @@ export interface paths {
           family_id?: parameters["rowFilter.lunch_proposal_vote.family_id"];
           lunch_proposal_id?: parameters["rowFilter.lunch_proposal_vote.lunch_proposal_id"];
           upvote?: parameters["rowFilter.lunch_proposal_vote.upvote"];
+          lunch_id?: parameters["rowFilter.lunch_proposal_vote.lunch_id"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -480,6 +481,7 @@ export interface paths {
           family_id?: parameters["rowFilter.lunch_proposal_vote.family_id"];
           lunch_proposal_id?: parameters["rowFilter.lunch_proposal_vote.lunch_proposal_id"];
           upvote?: parameters["rowFilter.lunch_proposal_vote.upvote"];
+          lunch_id?: parameters["rowFilter.lunch_proposal_vote.lunch_id"];
         };
         header: {
           /** Preference */
@@ -500,6 +502,7 @@ export interface paths {
           family_id?: parameters["rowFilter.lunch_proposal_vote.family_id"];
           lunch_proposal_id?: parameters["rowFilter.lunch_proposal_vote.lunch_proposal_id"];
           upvote?: parameters["rowFilter.lunch_proposal_vote.upvote"];
+          lunch_id?: parameters["rowFilter.lunch_proposal_vote.lunch_id"];
         };
         body: {
           /** lunch_proposal_vote */
@@ -1060,6 +1063,12 @@ export interface definitions {
     lunch_proposal_id: string;
     /** Format: boolean */
     upvote: boolean;
+    /**
+     * Format: uuid
+     * @description Note:
+     * This is a Foreign Key to `lunchs.id`.<fk table='lunchs' column='id'/>
+     */
+    lunch_id?: string;
   };
   /** @description Daily lunch votes */
   lunchs: {
@@ -1263,6 +1272,8 @@ export interface parameters {
   "rowFilter.lunch_proposal_vote.lunch_proposal_id": string;
   /** Format: boolean */
   "rowFilter.lunch_proposal_vote.upvote": string;
+  /** Format: uuid */
+  "rowFilter.lunch_proposal_vote.lunch_id": string;
   /** @description lunchs */
   "body.lunchs": definitions["lunchs"];
   /** Format: uuid */
