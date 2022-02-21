@@ -29,10 +29,6 @@
 	let hasJoinedFamily = false;
 	let name: string = '';
 	onMount(async () => {
-		if (!getUser()) {
-			goto('/login');
-			return;
-		}
 		const data = await getFamily(familyID);
 		if (!data) {
 			goto('/404');
@@ -68,14 +64,14 @@
 		if (error) {
 			ErrorToast(error.message);
 		} else {
-			goto('/');
+			goto('/overview');
 		}
 	};
 </script>
 
 {#if tempFamily}
 	<div class="columns is-centered ">
-		<div class="column is-6 m-2">
+		<div class="column is-5 m-2">
 			{#if !hasJoinedFamily}
 				<!-- content here -->
 				<div class="card p-5" transition:fade>

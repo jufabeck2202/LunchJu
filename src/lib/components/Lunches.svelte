@@ -67,31 +67,34 @@
 				<button class="m-1 button  is-rounded is-danger" on:click={() => handleLeaveLunch(lunch)}
 					>Leave Lunch</button
 				>
-				{#if lunch.cook_id == getUser().id}
-					{#if isMouseOnLunch}
+				{#if !lunch.cook_id || lunch.cook_id === getUser().id}
+					<!-- content here -->
+					{#if lunch.cook_id == getUser().id}
+						{#if isMouseOnLunch}
+							<button
+								on:focus={() => (isMouseOnLunch = true)}
+								on:blur={() => (isMouseOnLunch = false)}
+								on:mouseover={() => (isMouseOnLunch = true)}
+								on:mouseout={() => (isMouseOnLunch = false)}
+								on:click={() => handleImNotTheCook(lunch)}
+								class="m-1 button is-rounded is-outlined is-danger">I don't want to cook</button
+							>{:else}
+							<button
+								on:focus={() => (isMouseOnLunch = true)}
+								on:blur={() => (isMouseOnLunch = false)}
+								on:mouseover={() => (isMouseOnLunch = true)}
+								on:mouseout={() => (isMouseOnLunch = false)}
+								on:click={() => handleImNotTheCook(lunch)}
+								class="m-1 button is-rounded is-outlined">👨‍🍳 &nbsp; You are the cook</button
+							>
+						{/if}
+					{:else}
 						<button
-							on:focus={() => (isMouseOnLunch = true)}
-							on:blur={() => (isMouseOnLunch = false)}
-							on:mouseover={() => (isMouseOnLunch = true)}
-							on:mouseout={() => (isMouseOnLunch = false)}
-							on:click={() => handleImNotTheCook(lunch)}
-							class="m-1 button is-rounded is-outlined is-danger">I don't want to cook</button
-						>{:else}
-						<button
-							on:focus={() => (isMouseOnLunch = true)}
-							on:blur={() => (isMouseOnLunch = false)}
-							on:mouseover={() => (isMouseOnLunch = true)}
-							on:mouseout={() => (isMouseOnLunch = false)}
-							on:click={() => handleImNotTheCook(lunch)}
-							class="m-1 button is-rounded is-outlined">👨‍🍳 &nbsp; You are the cook</button
+							class="m-1 button is-warning is-rounded"
+							on:click|once={() => handleImTheCook(lunch)}>👨‍🍳 &nbsp; I'm the cook</button
 						>
+						<!-- else content here -->
 					{/if}
-				{:else}
-					<button
-						class="m-1 button is-warning is-rounded"
-						on:click|once={() => handleImTheCook(lunch)}>👨‍🍳 &nbsp; I'm the cook</button
-					>
-					<!-- else content here -->
 				{/if}
 			{/if}
 		</div>
