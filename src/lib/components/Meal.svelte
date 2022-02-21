@@ -1,15 +1,14 @@
 <script lang="ts">
-	import MealVotes from './MealVotes.svelte';
 
 	import type { definitions } from '$lib/models';
 
-	import { supabase } from '$lib/supabaseclient';
 	import { createVote } from '$lib/stores/userStore';
 	export let upvote = 0;
 	export let downvote = 0;
 	export let name = '';
 	export let lunchProposal: definitions['lunch_proposal'];
 	export let lunchId: string
+	export let canVote: boolean;
 
 	const handleVote = async (upvote: boolean) => {
 		console.log(lunchProposal.id);
@@ -24,6 +23,7 @@
 			<div>
 				<button
 					class="button is-success is-rounded is-responsive is-light"
+					disabled={!canVote}
 					on:click={async () => {
 						await handleVote(true);
 					}}>{upvote} 👍</button
@@ -34,6 +34,7 @@
 			<div>
 				<button
 					class="button is-danger is-rounded is-responsive is-light"
+					disabled={!canVote}
 					on:click={async () => {
 						await handleVote(false);
 					}}

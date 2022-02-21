@@ -75,6 +75,12 @@
 		return votes.filter((vote) => vote.lunch_proposal_id === lunchProposalId && !vote.upvote)
 			.length;
 	};
+	const canVote = (
+		lunchProposalId: string,
+		votes: definitions['lunch_proposal_vote'][]
+	): boolean => {
+		return votes.find((vote) => vote.lunch_proposal_id === lunchProposalId) === undefined;
+	};
 </script>
 
 {#each $lunchProposal as item}
@@ -85,6 +91,7 @@
 			<Meal
 				lunchId={lunch.id}
 				lunchProposal={item}
+				canVote={canVote(item.id, $votes)}
 				{name}
 				upvote={getUpvotes(item.id, $votes)}
 				downvote={getDownvotes(item.id, $votes)}
