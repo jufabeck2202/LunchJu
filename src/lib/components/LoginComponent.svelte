@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/env';
-	import { signUp } from '$lib/stores/userStore';
+	import { ErrorToast } from '$lib/helpers/toast';
+	import { signIn, signUp } from '$lib/stores/userStore';
 
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
@@ -17,7 +18,20 @@
 				dispatch('signUp', user);
 			}
 		} catch (error) {
-			alert(error.error_description || error.message);
+			ErrorToast(error.error_description || error.message);
+		} finally {
+			loading = false;
+		}
+	};
+	const handleSignIn = async () => {
+		try {
+			loading = true;
+			const [user, error] = await signIn(username, password);
+			if (browser && user) {
+				dispatch('signIn', user);
+			}
+		} catch (error) {
+			ErrorToast(error.error_description || error.message);
 		} finally {
 			loading = false;
 		}
@@ -43,8 +57,8 @@
 			<div class="control">
 				<input
 					class="input"
-					type="text"
-					placeholder="Enter your username here"
+					type="password"
+					placeholder="Enter your password here"
 					bind:value={password}
 				/>
 			</div>
@@ -53,6 +67,6 @@
 			Create Account
 		</button>
 		<!-- TODO: Handle Login -->
-		<button class="button is-primary"> Login </button>
+		<button class="button is-primary" on:click={handleSignIn}> Login </button>
 	</form>
 </div>
