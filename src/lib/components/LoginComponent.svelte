@@ -68,5 +68,6 @@
 		</button>
 		<!-- TODO: Handle Login -->
 		<button class="button is-primary" on:click={handleSignIn}> Login </button>
+		<button class="button is-primary" on:click={handleSignIn}> Login with Github </button>
 	</form>
 </div>
