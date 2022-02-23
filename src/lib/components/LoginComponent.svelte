@@ -40,7 +40,7 @@
 	const handleSignInGithub = async () => {
 		try {
 			loading = true;
-			const { user, error } = await supabase.auth.signIn({
+			const { user, error } = await supabase.auth.signUp({
 				provider: 'github'
 			});
 			console.log(user);

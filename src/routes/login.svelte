@@ -19,6 +19,7 @@
 	const handleSignIn = async (user) => {
 		goto('/overview');
 	};
+	
 </script>
 
 <section>
