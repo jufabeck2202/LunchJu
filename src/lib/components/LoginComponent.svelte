@@ -45,6 +45,7 @@
 			});
 			console.log(user);
 			console.log(error);
+			console.log('huhuhuhuh');
 			if (browser && user) {
 				dispatch('signIn', user);
 			}
