@@ -43,6 +43,8 @@
 			const { user, error } = await supabase.auth.signIn({
 				provider: 'github'
 			});
+			console.log(user);
+			console.log(error);
 			if (browser && user) {
 				dispatch('signIn', user);
 			}
