@@ -30,39 +30,37 @@
 	});
 </script>
 
-<div class="column is-one-quarter-desktop is-half-tablet is-one-fifth-widescreen">
-	<div class="card p-5 m-3">
-		<div class="level pb-5">
+<div class="column is-one-quarter-desktop is-half-tablet is-one-quarter-widescreen is-one-fifth-fullhd">
+	<div class="card pt-4 pb-4 pl-3 pr-2">
+		<div class="columns is-mobile">
 			<!-- Left side -->
-			<div class="level-left">
-				<div class="level-item">
-					<h2 class="title is-4">{GetDay(lunch.created_at)}s Lunch</h2>
-				</div>
+			<div class="column is-half is-pulled-right">
+				<h2 class="title is-4">{GetDay(lunch.created_at)}</h2>
 			</div>
 
 			<!-- Right side -->
-			<div class="level-right">
-				<h4 class="subtitle">{GetDateMonthYear(lunch.created_at)}</h4>
+			<div class="column is-half ">
+				<h4 class="subtitle is-5 is-pulled-right pr-2">{GetDateMonthYear(lunch.created_at)}</h4>
 			</div>
 		</div>
 
-		<div>
-			<div class="columns is-multiline ">
+		<div class="p-2">
+			<div class="columns is-multiline is-mobile">
 				{#if !hasJoinedlunch}
-					<div class="column">
-						<button class=" button  is-rounded is-outlined" on:click={() => handleJoinLunch(lunch)}
+					<div class="column p-1 is-narrow">
+						<button class=" button is-rounded is-outlined" on:click={() => handleJoinLunch(lunch)}
 							>Join Lunch</button
 						>
 					</div>
 				{:else}
-					<div class="column">
+					<div class="column  p-1 is-narrow">
 						<button class=" button  is-rounded is-danger" on:click={() => handleLeaveLunch(lunch)}
 							>Leave Lunch</button
 						>
 					</div>
 				{/if}
 				{#each localLunchMembers as members}
-					<div class="column">
+					<div class="column p-1 is-narrow">
 						<button class=" button is-success is-rounded is-outlined" disabled
 							>{members.username}</button
 						>
@@ -72,7 +70,7 @@
 		</div>
 
 		<a
-			class="button is-fullwidth is-warning is-rounded mt-2"
+			class="button is-fullwidth is-warning is-rounded mt-3"
 			sveltekit:prefetch
 			href="/lunch/{lunch.id}/"
 		>

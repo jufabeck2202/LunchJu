@@ -1,17 +1,19 @@
 <script lang="ts">
-
 	import type { definitions } from '$lib/models';
 
-	import { createVote } from '$lib/stores/userStore';
+	import { createVote, deleteVote } from '$lib/stores/userStore';
 	export let upvote = 0;
 	export let downvote = 0;
 	export let name = '';
 	export let lunchProposal: definitions['lunch_proposal'];
-	export let lunchId: string
-	export let canVote: boolean;
-
+	export let lunchId: string;
+	export let hasUpvoted: boolean;
+	export let hasDownvoted: boolean;
 	const handleVote = async (upvote: boolean) => {
-		console.log(lunchProposal.id);
+		if (hasDownvoted || hasUpvoted) {
+			await deleteVote(lunchProposal.id, lunchId);
+			return;
+		}
 		await createVote(lunchProposal.id, lunchId, upvote);
 	};
 </script>
@@ -23,7 +25,7 @@
 			<div>
 				<button
 					class="button is-success is-rounded is-responsive is-light"
-					disabled={!canVote}
+					disabled={hasDownvoted}
 					on:click={async () => {
 						await handleVote(true);
 					}}>{upvote} 👍</button
@@ -34,7 +36,7 @@
 			<div>
 				<button
 					class="button is-danger is-rounded is-responsive is-light"
-					disabled={!canVote}
+					disabled={hasUpvoted}
 					on:click={async () => {
 						await handleVote(false);
 					}}

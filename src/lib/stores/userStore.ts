@@ -93,6 +93,22 @@ export const createVote = async (lunchProposalId, lunchId, voteType: boolean) =>
 	}
 };
 
+export const deleteVote = async (lunchProposalId, lunchId) => {
+	const { data, error } = await supabase
+		.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')
+		.delete()
+		.match({
+			user_id: getUser().id,
+			lunch_id: lunchId,
+			lunch_proposal_id: lunchProposalId,
+			family_id: familyID
+		});
+
+	if (error) {
+		throw error;
+	}
+};
+
 const subscribeLunchMemers = async () => {
 	lunchMemberSubscription = await supabase
 		.from<definitions['lunch_members']>('lunch_members')

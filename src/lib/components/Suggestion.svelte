@@ -3,11 +3,17 @@
 
 	import type { definitions } from '$lib/models';
 
-	import { initalFetchLunchProposals, initalFetchLunchVotes, lunches } from '$lib/stores/userStore';
+	import {
+		getUser,
+		initalFetchLunchProposals,
+		initalFetchLunchVotes,
+		lunches
+	} from '$lib/stores/userStore';
 	import { supabase } from '$lib/supabaseclient';
 	import type { RealtimeSubscription } from '@supabase/supabase-js';
 	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { user } from '$lib/userWritableStore';
 
 	export let lunch: definitions['lunchs'];
 	let lunchProposalSubscription: RealtimeSubscription;
@@ -44,14 +50,8 @@
 					votes.update((l) => [newVote.new, ...l].sort((a, b) => a.created_at - b.created_at));
 				}
 			})
-			.on('UPDATE', (newVote) => {
-				votes.update((l) => {
-					const index = l.findIndex((vote) => vote.id === newVote.new.id);
-					if (index !== -1) {
-						l[index] = newVote.new;
-					}
-					return l;
-				});
+			.on('DELETE', (deleted) => {
+				votes.update((l) => l.filter((vote) => vote.id !== deleted.old.id));
 			})
 			.subscribe();
 	};
@@ -75,11 +75,21 @@
 		return votes.filter((vote) => vote.lunch_proposal_id === lunchProposalId && !vote.upvote)
 			.length;
 	};
-	const canVote = (
-		lunchProposalId: string,
-		votes: definitions['lunch_proposal_vote'][]
-	): boolean => {
-		return votes.find((vote) => vote.lunch_proposal_id === lunchProposalId) === undefined;
+	const hasUpvoted = (lunchProposalId: string, votes: definitions['lunch_proposal_vote'][]) => {
+		return (
+			votes.find(
+				(vote) =>
+					vote.lunch_proposal_id === lunchProposalId && vote.upvote && vote.user_id == getUser().id
+			) !== undefined
+		);
+	};
+	const hasDownvoted = (lunchProposalId: string, votes: definitions['lunch_proposal_vote'][]) => {
+		return (
+			votes.find(
+				(vote) =>
+					vote.lunch_proposal_id === lunchProposalId && !vote.upvote && vote.user_id == getUser().id
+			) !== undefined
+		);
 	};
 </script>
 
@@ -91,7 +101,8 @@
 			<Meal
 				lunchId={lunch.id}
 				lunchProposal={item}
-				canVote={canVote(item.id, $votes)}
+				hasUpvoted={hasUpvoted(item.id, $votes)}
+				hasDownvoted={hasDownvoted(item.id, $votes)}
 				{name}
 				upvote={getUpvotes(item.id, $votes)}
 				downvote={getDownvotes(item.id, $votes)}
