@@ -37,27 +37,7 @@
 			loading = false;
 		}
 	};
-	const handleSignInGithub = async () => {
-		try {
-			loading = true;
-			const { user, error } = await supabase.auth.signUp({
-				provider: 'github'
-			});
-			console.log(user);
-			console.log(error);
-			console.log('huhuhuhuh');
-			if (browser && user) {
-				dispatch('signIn', user);
-			}
-			if (error) {
-				throw error;
-			}
-		} catch (error) {
-			ErrorToast(error.error_description || error.message);
-		} finally {
-			loading = false;
-		}
-	};
+
 </script>
 
 <div class="card p-5 mt-5" transition:fade>
@@ -90,6 +70,5 @@
 		</button>
 		<!-- TODO: Handle Login -->
 		<button class="button is-primary" on:click={handleSignIn}> Login </button>
-		<button class="button is-primary" on:click={handleSignInGithub}> Login with Github </button>
 	</form>
 </div>
