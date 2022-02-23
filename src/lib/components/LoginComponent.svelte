@@ -2,6 +2,7 @@
 	import { browser } from '$app/env';
 	import { ErrorToast } from '$lib/helpers/toast';
 	import { signIn, signUp } from '$lib/stores/userStore';
+	import { supabase } from '$lib/supabaseclient';
 
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
@@ -39,9 +40,14 @@
 	const handleSignInGithub = async () => {
 		try {
 			loading = true;
-			await handleSignInGithub();
-			if (browser) {
-				dispatch('signUp');
+			const { user, error } = await supabase.auth.signIn({
+				provider: 'github'
+			});
+			if (browser && user) {
+				dispatch('signIn', user);
+			}
+			if (error) {
+				throw error;
 			}
 		} catch (error) {
 			ErrorToast(error.error_description || error.message);
