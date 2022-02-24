@@ -26,23 +26,21 @@
 
 	const checkUser = async () => {
 		const user = await getUserAsync();
-		if (user) {
-			const username = await getUserName();
-			if (username) {
-				const family = await mountFamily();
-				if (family) {
-					goto('/overview');
-					return;
-				} else {
-					currentState = State.FAMILY;
-					return;
-				}
-			} else {
-				currentState = State.USERNAME;
-				return;
-			}
+		if (!user) {
+			currentState = State.LOGIN;
+			return;
 		}
-		currentState = State.LOGIN;
+		const username = await getUserName();
+		if (!username) {
+			currentState = State.USERNAME;
+			return;
+		}
+		const family = await mountFamily();
+		if (!family) {
+			currentState = State.FAMILY;
+			return;
+		}
+		goto('/overview');
 	};
 
 	const handleSignUp = async () => {
