@@ -343,6 +343,27 @@ export const mountFamily = async (): Promise<boolean> => {
 	return true;
 };
 
+export const getUserName = async (): Promise<string | undefined> => {
+	const { data, error } = await supabase
+		.from<definitions['users_to_families']>('users_to_families')
+		.select('*')
+		.eq('user_id', getUser().id);
+
+	if (error || !data[0] || !data[0].name) {
+		return undefined;
+	}
+	return data[0].name;
+};
+
+export const setUsername = async (
+	username: string
+): Promise<PostgrestError | Error | undefined> => {
+	const { data, error } = await supabase
+		.from<definitions['users_to_families']>('users_to_families')
+		.upsert([{ user_id: getUser().id, name: username }]);
+	return error;
+};
+
 export const getFamily = async (family_id): Promise<definitions['families']> => {
 	const { data, error } = await supabase
 		.from<definitions['families']>('families')
@@ -355,10 +376,9 @@ export const getFamily = async (family_id): Promise<definitions['families']> => 
 export const createFamily = async (familyName): Promise<PostgrestError | Error | null> => {
 	const { data: alreadyExists, error: userExistsError } = await supabase
 		.from<definitions['users_to_families']>('users_to_families')
-		.select('*')
+		.select('families_id')
 		.eq('user_id', getUser().id);
-
-	if (alreadyExists && alreadyExists.length > 0) {
+	if (alreadyExists[0] && alreadyExists[0].families_id) {
 		return new Error("You're already in a family");
 	}
 	if (userExistsError) {
@@ -374,7 +394,7 @@ export const createFamily = async (familyName): Promise<PostgrestError | Error |
 
 	const { error: userToFamilies } = await supabase
 		.from<definitions['users_to_families']>('users_to_families')
-		.insert({ families_id: families[0].id, user_id: getUser().id });
+		.upsert({ families_id: families[0].id, user_id: getUser().id });
 	if (userToFamilies) {
 		return userToFamilies;
 	}

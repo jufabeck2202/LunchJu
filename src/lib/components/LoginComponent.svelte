@@ -5,7 +5,7 @@
 	import { supabase } from '$lib/supabaseclient';
 
 	import { createEventDispatcher } from 'svelte';
-	import { fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 
 	let username;
 	let password;
@@ -37,10 +37,9 @@
 			loading = false;
 		}
 	};
-
 </script>
 
-<div class="card p-5 mt-5" transition:fade>
+<div class="card p-5 mt-5" transition:fly={{ x: -200, duration: 500 }}>
 	<form on:submit|preventDefault>
 		<div class="field">
 			<!-- svelte-ignore a11y-label-has-associated-control -->

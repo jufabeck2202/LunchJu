@@ -1,55 +1,76 @@
-<script>
-	import { browser } from '$app/env';
+<script context="module">
+</script>
 
+<script lang="ts">
 	import { goto } from '$app/navigation';
+	import CreateFamily from '$lib/components/createFamily.svelte';
+	import CreateName from '$lib/components/CreateName.svelte';
 	import LoginComponent from '$lib/components/LoginComponent.svelte';
-	import { ErrorToast } from '$lib/helpers/toast';
 
-	import { getUser, signIn, signOut, signUp } from '$lib/stores/userStore';
-	import { supabase } from '$lib/supabaseclient';
-	let username = 'beju@beju.de';
-	let password = 'Juliansssss1123';
-	let loading;
-
-	const user = getUser();
-	console.log(user);
-	if (browser && user) goto('/overview');
-
-	const handleSignUp = async (user) => {
-		goto('/overview');
-	};
-	const handleSignIn = async (user) => {
-		goto('/overview');
-	};
-	const handleSignInGithub = async () => {
-		try {
-			loading = true;
-			const { user, error } = await supabase.auth.signIn({
-				provider: 'github'
-			});
-			console.log(user);
-			console.log(error);
-			console.log('huhuhuhuh');
-			if (browser && user) {
-				goto('/overview');
-			}
-			if (error) {
-				throw error;
-			}
-		} catch (error) {
-			ErrorToast(error.error_description || error.message);
-		} finally {
-			loading = false;
-		}
-	};
-	supabase.auth.onAuthStateChange((event, session) => {
-		console.log(event, session);
+	import { getUserAsync, getUserName, mountFamily, setUsername } from '$lib/stores/userStore';
+	import { onMount } from 'svelte';
+	import Stats from './stats.svelte';
+	// let username = 'beju@beju.de';
+	// let password = 'Juliansssss1123';
+	// let loading;
+	enum State {
+		LOGIN = 1,
+		USERNAME = 2,
+		FAMILY = 3
+	}
+	onMount(async () => {
+		await checkUser();
 	});
+
+	let currentState = State.LOGIN;
+
+	const checkUser = async () => {
+		const user = await getUserAsync();
+		if (user) {
+			const username = await getUserName();
+			if (username) {
+				const family = await mountFamily();
+				if (family) {
+					goto('/overview');
+					return;
+				} else {
+					currentState = State.FAMILY;
+					return;
+				}
+			} else {
+				currentState = State.USERNAME;
+				return;
+			}
+		}
+		currentState = State.LOGIN;
+	};
+
+	const handleSignUp = async () => {
+		await checkUser();
+	};
+	const handleSignIn = async () => {
+		await checkUser();
+	};
+	const handleUsernameCreated = async () => {
+		await checkUser();
+	};
+	const handleFamilyCreated = async () => {
+		await checkUser();
+	};
 </script>
 
 <section>
-	<LoginComponent on:signUp={handleSignUp} on:signIn={handleSignIn} />
-	<button class="button is-primary" on:click={handleSignInGithub}> Login with Github </button>
+	<div class="columns is-centered">
+		<div class="column is-5 ">
+			{#if currentState == State.USERNAME}
+				<CreateName on:usernameCreated={handleUsernameCreated} />
+			{:else if currentState == State.LOGIN}
+				<LoginComponent on:signUp={handleSignUp} on:signIn={handleSignIn} />
+			{:else if currentState == State.FAMILY}
+				<CreateFamily on:familyCreated={handleFamilyCreated} />
+			{/if}
+		</div>
+	</div>
 </section>
 
 <!-- markup (zero or more items) goes here -->
