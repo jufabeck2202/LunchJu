@@ -59,7 +59,7 @@
 
 <section>
 	<div class="columns is-centered">
-		<div class="column is-5 ">
+		<div class="column is-5  is-3-fullhd">
 			{#if currentState == State.USERNAME}
 				<CreateName on:usernameCreated={handleUsernameCreated} />
 			{:else if currentState == State.LOGIN}
