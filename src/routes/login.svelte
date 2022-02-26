@@ -56,20 +56,20 @@
 	const handleFamilyCreated = async () => {
 		await checkUser();
 	};
-	const signInWithGithub = async () => {
-		const { error } = await supabase.auth.signIn(
-			{ provider: 'github' },
-			{ redirectTo: 'https//lunch-ju.vercel.app/about?refresh=true' }
-		);
-		if (error) {
-			alert(error.message);
-		}
-	};
+	// const signInWithGithub = async () => {
+	// 	const { error } = await supabase.auth.signIn(
+	// 		{ provider: 'github' },
+	// 		{ redirectTo: 'https//lunch-ju.vercel.app/about?refresh=true' }
+	// 	);
+	// 	if (error) {
+	// 		alert(error.message);
+	// 	}
+	// };
 </script>
 
 <section>
 	<div class="columns is-centered">
-		<button on:click={signInWithGithub} />
+		<!-- <button on:click={signInWithGithub} /> -->
 		<div class="column is-5  is-3-fullhd">
 			{#if currentState == State.USERNAME}
 				<CreateName on:usernameCreated={handleUsernameCreated} />

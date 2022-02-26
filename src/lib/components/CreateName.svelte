@@ -4,11 +4,11 @@
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
 
-	let username;
+	let username:string;
 	const dispatch = createEventDispatcher();
 
 	const handleName = async () => {
-		if (username > 3) {
+		if (username.length > 3) {
 			const error = await setUsername(username);
 			if (error) {
 				ErrorToast(error.message);
