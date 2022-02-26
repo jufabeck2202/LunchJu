@@ -8,6 +8,7 @@
 	import LoginComponent from '$lib/components/LoginComponent.svelte';
 
 	import { getUserAsync, getUserName, mountFamily, setUsername } from '$lib/stores/userStore';
+	import { supabase } from '$lib/supabaseclient';
 	import { onMount } from 'svelte';
 	import Stats from './stats.svelte';
 	// let username = 'beju@beju.de';
@@ -55,10 +56,20 @@
 	const handleFamilyCreated = async () => {
 		await checkUser();
 	};
+	const signInWithGithub = async () => {
+		const { error } = await supabase.auth.signIn(
+			{ provider: 'github' },
+			{ redirectTo: 'http://localhost:3000/Overview?refresh=true' }
+		);
+		if (error) {
+			alert(error.message);
+		}
+	};
 </script>
 
 <section>
 	<div class="columns is-centered">
+		<button on:click={signInWithGithub} />
 		<div class="column is-5  is-3-fullhd">
 			{#if currentState == State.USERNAME}
 				<CreateName on:usernameCreated={handleUsernameCreated} />
