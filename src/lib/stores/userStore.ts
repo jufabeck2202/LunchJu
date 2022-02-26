@@ -446,3 +446,7 @@ export const createLunchesForWeek = async () => {
 		});
 	}
 };
+
+export const getFamilyID = () => {
+	return familyID;
+};

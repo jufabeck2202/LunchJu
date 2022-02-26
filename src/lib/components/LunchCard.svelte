@@ -30,7 +30,7 @@
 	});
 </script>
 
-<div class="column is-one-quarter-desktop is-half-tablet is-one-quarter-widescreen is-one-fifth-fullhd">
+<div class="column is-4-desktop is-half-tablet is-4-widescreen is-3-fullhd">
 	<div class="card pt-4 pb-4 pl-3 pr-2">
 		<div class="columns is-mobile">
 			<!-- Left side -->

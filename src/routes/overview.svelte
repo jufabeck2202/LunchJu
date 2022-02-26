@@ -2,8 +2,15 @@
 	import { goto } from '$app/navigation';
 
 	import LunchCard from '$lib/components/LunchCard.svelte';
+	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
 
-	import { mountFamily, getUser, createLunchesForWeek, lunches } from '$lib/stores/userStore';
+	import {
+		mountFamily,
+		getUser,
+		createLunchesForWeek,
+		lunches,
+		family
+	} from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	onMount(async () => {
 		if (!getUser()) {
@@ -12,12 +19,26 @@
 		await mountFamily();
 		await createLunchesForWeek();
 	});
+
+	let isShareModalOpen = false;
 </script>
 
 <div class="container is-fluid">
-	<div class="columns is-multiline">
-		{#each $lunches as lunch}
-			<LunchCard {lunch} />
-		{/each}
-	</div>
+	{#if $family}
+		<div class="title p-2">
+			{$family.name}
+			<button
+				class="button is-outline is-rounded is-small mt-1"
+				on:click={() => {
+					isShareModalOpen = true;
+				}}>Invite</button
+			>
+		</div>
+		<div class="columns is-multiline">
+			<ShareFamilyModal bind:isOpen={isShareModalOpen} familyId={$family.id} />
+			{#each $lunches as lunch}
+				<LunchCard {lunch} />
+			{/each}
+		</div>
+	{/if}
 </div>
