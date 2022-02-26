@@ -29,10 +29,10 @@
 	import CreateProposal from '$lib/components/CreateProposal.svelte';
 	import Suggestion from '$lib/components/Suggestion.svelte';
 	import type { definitions } from '$lib/models';
-	import CreateLunch from '$lib/components/CreateLunch.svelte';
 	import Lunch from '$lib/components/Lunches.svelte';
 	import Users from '$lib/components/Users.svelte';
 	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
+	import Comments from '$lib/components/Comments.svelte';
 
 	let isShareModelOpen: boolean = false;
 	const lunchId = $page.params['lunchId'];
@@ -81,20 +81,19 @@
 			<div class="columns pl-2 pr-2 ">
 				<div class="column is-half">
 					<Lunch {lunch} />
-					<!-- <CreateLunch /> -->
+					<Comments />
 				</div>
-				<div class="column is-one-quarter">
-					<CreateProposal {lunchId} />
-					<Suggestion {lunch} />
+				<div class="column is-half">
+					<div class="columns is-multiline">
+						<div class="column is-full-tablet is-half-desktop">
+							<CreateProposal {lunchId} />
+							<Suggestion {lunch} />
+						</div>
+						<div class="column is-full-tablet is-half-desktop">
+							<Users />
+						</div>
+					</div>
 				</div>
-				<div class="column is-one-quarter">
-					<Users />
-				</div>
-			</div>
-		{:else}
-			<div>
-				<Users />
-				<CreateLunch />
 			</div>
 		{/if}
 		<ShareFamilyModal bind:isOpen={isShareModelOpen} familyId={$family.id} />

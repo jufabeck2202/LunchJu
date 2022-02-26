@@ -241,13 +241,14 @@ export const createLunchProposal = async (
 	lunchName: string,
 	mealId: string | null = null
 ): Promise<PostgrestError | Error | null> => {
-	mealId = mealId || (await createMeal(lunchId, lunchName)).id;
+	const newId = mealId || (await createMeal(lunchId, lunchName)).id;
+	console.log(newId);
 	const { data, error } = await supabase
 		.from<definitions['lunch_proposal']>('lunch_proposal')
 		.insert({
 			lunch_id: lunchId,
 			user_id: getUser().id,
-			meal_type: mealId,
+			meal_type: newId,
 			family_id: familyID
 		});
 	if (error) {

@@ -15,11 +15,10 @@
 		isLoading = true;
 		//check if exists
 		const response = lunchSuggestions.find((meal) => meal.name === mealName.toLowerCase());
-
-		const error = await createLunchProposal(lunchId, mealName, response?.id);
+		const error = await createLunchProposal(lunchId, mealName, selectedFood.id || response?.id);
 		isLoading = false;
 		if (error) {
-			alert(error);
+			alert(error.message);
 		}
 		isProposalMenu = false;
 	};
@@ -32,14 +31,16 @@
 		isLoading = false;
 		return lunches;
 	};
-
 </script>
 
-<div class="card p-3 mb-3">
+<div class="card p-3 mb-3 ">
 	<h2 class="title is-4 p-3">What to eat?</h2>
-	<p class="subtitle pl-3">There are no suggestions. <br /> Make one</p>
-	<button class="button is-medium is-primary is-fullwidth" on:click={() => (isProposalMenu = true)}>
-		Create new suggestion
+	<p class="subtitle is-6 pl-3">There are no suggestions. <br /> Make one</p>
+	<button
+		class="button is-primary is-fullwidth is-rounded is-link"
+		on:click={() => (isProposalMenu = true)}
+	>
+		Create Suggestion
 	</button>
 	<div class="modal" class:is-active={isProposalMenu}>
 		<div class="modal-background" />

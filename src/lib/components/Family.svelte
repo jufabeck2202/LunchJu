@@ -77,7 +77,7 @@
 									}}
 									aria-label="close"
 								>
-								Close
+									Close
 								</button>
 							</div>
 						</div>
