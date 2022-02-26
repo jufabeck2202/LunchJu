@@ -64,7 +64,7 @@
 	{/if}
 </svelte:head>
 
-<div>
+<div class="container is-fluid">
 	{#if $family}
 		<div>
 			<div class="title p-2">

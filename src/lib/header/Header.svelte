@@ -4,13 +4,12 @@
 
 	import { page } from '$app/stores';
 	import { getUser, signOut } from '$lib/stores/userStore';
-import { SvelteToast } from '@zerodevx/svelte-toast';
+	import { SvelteToast } from '@zerodevx/svelte-toast';
 
 	let mobile;
 	const toggleNav = () => {
 		mobile = !mobile;
 	};
-
 
 	async function handleSignout() {
 		await signOut();
@@ -33,10 +32,18 @@ import { SvelteToast } from '@zerodevx/svelte-toast';
 			<!--Items-->
 			<div class="navbar-menu" class:is-active={mobile} id="menu">
 				<div class="navbar-start">
+					<a
+						class="navbar-item"
+						class:is-active={$page.url.pathname === '/overview'}
+						sveltekit:prefetch
+						href="/overview"
+					>
+						Overwiew
+					</a>
 					<!--Item-->
 					<a
 						class="navbar-item"
-						class:is-active={$page.url.pathname === '/'}
+						class:is-active={$page.url.pathname === '/stats'}
 						sveltekit:prefetch
 						href="/stats"
 					>
@@ -63,8 +70,9 @@ import { SvelteToast } from '@zerodevx/svelte-toast';
 					>
 						About
 					</a>
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<a class="navbar-item" on:click|once={handleSignout}> Log out </a>
 				</div>
-				<button class="button primary" on:click|once={handleSignout}> Log out </button>
 			</div>
 		</nav>
 	</section>
