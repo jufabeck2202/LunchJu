@@ -59,7 +59,7 @@
 	const signInWithGithub = async () => {
 		const { error } = await supabase.auth.signIn(
 			{ provider: 'github' },
-			{ redirectTo: 'http://localhost:3000/Overview?refresh=true' }
+			{ redirectTo: 'https//lunch-ju.vercel.app/about?refresh=true' }
 		);
 		if (error) {
 			alert(error.message);
