@@ -54,16 +54,14 @@
 
 <PageContainer>
 	{#if $family}
-		<div>
-			<div class="title p-2">
-				{$family.name}
-				<button
-					class="button is-outline is-rounded is-small mt-1"
-					on:click={() => {
-						isShareModelOpen = true;
-					}}>invite</button
-				>
-			</div>
+		<div class="title p-2">
+			{$family.name}
+			<button
+				class="button is-outline is-rounded is-small mt-1"
+				on:click={() => {
+					isShareModelOpen = true;
+				}}>invite</button
+			>
 		</div>
 		{#if lunch}
 			<div class="columns">
