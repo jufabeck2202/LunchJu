@@ -121,7 +121,5 @@
 	.card.has-background-warning-light {
 		border: 2px solid #ffe28e;
 	}
-	.heading {
-		font-size: 15px !important;
-	}
+
 </style>
