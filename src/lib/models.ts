@@ -527,7 +527,7 @@ export interface paths {
           created_at?: parameters["rowFilter.lunchs.created_at"];
           created_by?: parameters["rowFilter.lunchs.created_by"];
           cook_id?: parameters["rowFilter.lunchs.cook_id"];
-          selected_lunch_vote_id?: parameters["rowFilter.lunchs.selected_lunch_vote_id"];
+          selected_lunch_proposal_id?: parameters["rowFilter.lunchs.selected_lunch_proposal_id"];
           family_id?: parameters["rowFilter.lunchs.family_id"];
           lunch_date?: parameters["rowFilter.lunchs.lunch_date"];
           description?: parameters["rowFilter.lunchs.description"];
@@ -586,7 +586,7 @@ export interface paths {
           created_at?: parameters["rowFilter.lunchs.created_at"];
           created_by?: parameters["rowFilter.lunchs.created_by"];
           cook_id?: parameters["rowFilter.lunchs.cook_id"];
-          selected_lunch_vote_id?: parameters["rowFilter.lunchs.selected_lunch_vote_id"];
+          selected_lunch_proposal_id?: parameters["rowFilter.lunchs.selected_lunch_proposal_id"];
           family_id?: parameters["rowFilter.lunchs.family_id"];
           lunch_date?: parameters["rowFilter.lunchs.lunch_date"];
           description?: parameters["rowFilter.lunchs.description"];
@@ -609,7 +609,7 @@ export interface paths {
           created_at?: parameters["rowFilter.lunchs.created_at"];
           created_by?: parameters["rowFilter.lunchs.created_by"];
           cook_id?: parameters["rowFilter.lunchs.cook_id"];
-          selected_lunch_vote_id?: parameters["rowFilter.lunchs.selected_lunch_vote_id"];
+          selected_lunch_proposal_id?: parameters["rowFilter.lunchs.selected_lunch_proposal_id"];
           family_id?: parameters["rowFilter.lunchs.family_id"];
           lunch_date?: parameters["rowFilter.lunchs.lunch_date"];
           description?: parameters["rowFilter.lunchs.description"];
@@ -813,6 +813,105 @@ export interface paths {
         body: {
           /** test */
           test?: definitions["test"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
+  "/todos": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.todos.id"];
+          user_id?: parameters["rowFilter.todos.user_id"];
+          task?: parameters["rowFilter.todos.task"];
+          is_complete?: parameters["rowFilter.todos.is_complete"];
+          inserted_at?: parameters["rowFilter.todos.inserted_at"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["todos"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** todos */
+          todos?: definitions["todos"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.todos.id"];
+          user_id?: parameters["rowFilter.todos.user_id"];
+          task?: parameters["rowFilter.todos.task"];
+          is_complete?: parameters["rowFilter.todos.is_complete"];
+          inserted_at?: parameters["rowFilter.todos.inserted_at"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.todos.id"];
+          user_id?: parameters["rowFilter.todos.user_id"];
+          task?: parameters["rowFilter.todos.task"];
+          is_complete?: parameters["rowFilter.todos.is_complete"];
+          inserted_at?: parameters["rowFilter.todos.inserted_at"];
+        };
+        body: {
+          /** todos */
+          todos?: definitions["todos"];
         };
         header: {
           /** Preference */
@@ -1093,7 +1192,7 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `lunch_proposal.id`.<fk table='lunch_proposal' column='id'/>
      */
-    selected_lunch_vote_id?: string;
+    selected_lunch_proposal_id?: string;
     /**
      * Format: uuid
      * @description Note:
@@ -1155,6 +1254,25 @@ export interface definitions {
     /** Format: uuid */
     userID?: string;
   };
+  todos: {
+    /**
+     * Format: bigint
+     * @description Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    /** Format: uuid */
+    user_id: string;
+    /** Format: text */
+    task?: string;
+    /** Format: boolean */
+    is_complete?: boolean;
+    /**
+     * Format: timestamp with time zone
+     * @default timezone('utc'::text, now())
+     */
+    inserted_at: string;
+  };
   users_to_families: {
     /**
      * Format: uuid
@@ -1167,7 +1285,7 @@ export interface definitions {
      * @description Note:
      * This is a Foreign Key to `families.id`.<fk table='families' column='id'/>
      */
-    families_id: string;
+    families_id?: string;
     /** Format: text */
     name?: string;
   };
@@ -1285,7 +1403,7 @@ export interface parameters {
   /** Format: uuid */
   "rowFilter.lunchs.cook_id": string;
   /** Format: uuid */
-  "rowFilter.lunchs.selected_lunch_vote_id": string;
+  "rowFilter.lunchs.selected_lunch_proposal_id": string;
   /** Format: uuid */
   "rowFilter.lunchs.family_id": string;
   /** Format: date */
@@ -1316,6 +1434,18 @@ export interface parameters {
   "rowFilter.test.created_at": string;
   /** Format: uuid */
   "rowFilter.test.userID": string;
+  /** @description todos */
+  "body.todos": definitions["todos"];
+  /** Format: bigint */
+  "rowFilter.todos.id": string;
+  /** Format: uuid */
+  "rowFilter.todos.user_id": string;
+  /** Format: text */
+  "rowFilter.todos.task": string;
+  /** Format: boolean */
+  "rowFilter.todos.is_complete": string;
+  /** Format: timestamp with time zone */
+  "rowFilter.todos.inserted_at": string;
   /** @description users_to_families */
   "body.users_to_families": definitions["users_to_families"];
   /** Format: uuid */

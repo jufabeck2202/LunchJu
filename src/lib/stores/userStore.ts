@@ -324,6 +324,13 @@ export const signOut = async (): Promise<ApiError> => {
 	console.log('After logut', await supabase.auth.user());
 	return error;
 };
+
+export const setLunchProposalForVote = async (lunchId: string, lunchProposalId) => {
+	const { data, error } = await supabase
+		.from<definitions['lunchs']>('lunchs')
+		.update({ selected_lunch_proposal_id: lunchProposalId })
+		.eq('id', lunchId);
+};
 /**
  * Check if user belongs to a family and starts subscribing to updates
  * @returns family exists or not

@@ -3,23 +3,18 @@
 
 	import type { definitions } from '$lib/models';
 
-	import {
-		getUser,
-		initalFetchLunchProposals,
-		initalFetchLunchVotes,
-		lunches
-	} from '$lib/stores/userStore';
+	import { getUser, initalFetchLunchProposals, initalFetchLunchVotes } from '$lib/stores/userStore';
 	import { supabase } from '$lib/supabaseclient';
 	import type { RealtimeSubscription } from '@supabase/supabase-js';
 	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
-	import { user } from '$lib/userWritableStore';
 
 	export let lunch: definitions['lunchs'];
 	let lunchProposalSubscription: RealtimeSubscription;
 	let voteSubscription: RealtimeSubscription;
 	const lunchProposal = writable<definitions['lunch_proposal'][] | []>([]);
 	const votes = writable<definitions['lunch_proposal_vote'][] | []>([]);
+
 	onMount(async () => {
 		lunchProposal.set(await initalFetchLunchProposals(lunch.id));
 		await subscribeLunchProposal();
@@ -93,20 +88,19 @@
 	};
 </script>
 
-{#each $lunchProposal as item}
-	<!-- content here -->
-	{#await fetchMealName(item.meal_type) then name}
+{#each $lunchProposal as meal}
+	<!-- meals here -->
+	{#await fetchMealName(meal.meal_type) then name}
 		<!-- promise was fulfilled -->
-		<div class="card p-2 mb-2">
-			<Meal
-				lunchId={lunch.id}
-				lunchProposal={item}
-				hasUpvoted={hasUpvoted(item.id, $votes)}
-				hasDownvoted={hasDownvoted(item.id, $votes)}
-				{name}
-				upvote={getUpvotes(item.id, $votes)}
-				downvote={getDownvotes(item.id, $votes)}
-			/>
-		</div>
+		<Meal
+			lunchId={lunch.id}
+			lunchProposal={meal}
+			hasUpvoted={hasUpvoted(meal.id, $votes)}
+			hasDownvoted={hasDownvoted(meal.id, $votes)}
+			{name}
+			upvote={getUpvotes(meal.id, $votes)}
+			downvote={getDownvotes(meal.id, $votes)}
+			foodIsSelected={lunch.selected_lunch_proposal_id == meal.id}
+		/>
 	{/await}
 {/each}

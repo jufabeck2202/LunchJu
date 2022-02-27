@@ -60,11 +60,11 @@
 		</div>
 		<div>
 			{#if !hasJoinedlunch}
-				<button class="m-1 button  is-rounded is-outlined" on:click={() => handleJoinLunch(lunch)}
+				<button class="m-1 button  is-rounded is-outlined is-responsive" on:click={() => handleJoinLunch(lunch)}
 					>Join Lunch</button
 				>
 			{:else}
-				<button class="m-1 button  is-rounded is-danger" on:click={() => handleLeaveLunch(lunch)}
+				<button class="m-1 button  is-rounded is-danger is-responsive" on:click={() => handleLeaveLunch(lunch)}
 					>Leave Lunch</button
 				>
 				{#if !lunch.cook_id || lunch.cook_id === getUser().id}
@@ -90,7 +90,7 @@
 						{/if}
 					{:else}
 						<button
-							class="m-1 button is-warning is-rounded"
+							class="m-1 button is-warning is-rounded is-responsive"
 							on:click|once={() => handleImTheCook(lunch)}>👨‍🍳 &nbsp; I'm the cook</button
 						>
 						<!-- else content here -->
