@@ -86,6 +86,7 @@
 			) !== undefined
 		);
 	};
+	$: isCook = lunch.cook_id == getUser().id;
 </script>
 
 {#each $lunchProposal as meal}
@@ -93,6 +94,7 @@
 	{#await fetchMealName(meal.meal_type) then name}
 		<!-- promise was fulfilled -->
 		<Meal
+			{isCook}
 			lunchId={lunch.id}
 			lunchProposal={meal}
 			hasUpvoted={hasUpvoted(meal.id, $votes)}

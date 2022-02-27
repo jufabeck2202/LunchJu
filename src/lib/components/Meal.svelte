@@ -11,7 +11,7 @@
 	export let hasUpvoted: boolean;
 	export let hasDownvoted: boolean;
 	export let foodIsSelected: boolean;
-
+	export let isCook: boolean;
 	const handleVote = async (upvote: boolean) => {
 		if (hasDownvoted || hasUpvoted) {
 			await deleteVote(lunchProposal.id, lunchId);
@@ -31,25 +31,28 @@
 	<div class="card p-2 mb-2 {foodIsSelected ? 'has-background-warning-light' : ''}">
 		<p class="card-header-title is-centered">{name}</p>
 		<div class="level is-mobile">
-			<div class="level-item has-text-centered">
-				<div>
-					{#if foodIsSelected}
-						<button
-							class="button is-warning is-rounded is-responsive"
-							disabled={hasUpvoted}
-							on:click={selectFood}
-							><Icon icon="akar-icons:circle-x" width="25" />
-						</button>
-					{:else}
-						<button
-							class="button is-warning is-rounded is-responsive"
-							disabled={hasUpvoted}
-							on:click={selectFood}
-							><Icon icon="akar-icons:circle-check" width="25" />
-						</button>
-					{/if}
+			{#if isCook}
+				<div class="level-item has-text-centered">
+					<div>
+						<!-- content here -->
+						{#if foodIsSelected}
+							<button
+								class="button is-warning is-rounded is-responsive"
+								disabled={hasUpvoted}
+								on:click={selectFood}
+								><Icon icon="akar-icons:circle-x" width="25" />
+							</button>
+						{:else}
+							<button
+								class="button is-warning is-rounded is-light is-responsive"
+								disabled={hasUpvoted}
+								on:click={selectFood}
+								><Icon icon="akar-icons:circle-check" width="25" />
+							</button>
+						{/if}
+					</div>
 				</div>
-			</div>
+			{/if}
 			<div class="level-item has-text-centered">
 				<div>
 					<button
@@ -77,3 +80,13 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.card {
+		border-radius: 10px;
+		border: 2px solid white 
+	}
+	.card.has-background-warning-light {
+		border: 2px solid #ffe28e;
+	}
+</style>
