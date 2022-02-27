@@ -16,14 +16,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import {
-		family,
-		getUserAsync,
-		initalFetchLunches,
-		lunches,
-		lunchsLocal,
-		mountFamily
-	} from '$lib/stores/userStore';
+	import { family, initalFetchLunches, lunches, lunchsLocal } from '$lib/stores/userStore';
 	import Clipboard from 'svelte-clipboard';
 	import { onMount } from 'svelte';
 	import CreateProposal from '$lib/components/CreateProposal.svelte';
@@ -33,17 +26,12 @@
 	import Users from '$lib/components/Users.svelte';
 	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
 	import Comments from '$lib/components/Comments.svelte';
+	import PageContainer from '$lib/components/PageContainer.svelte';
 
 	let isShareModelOpen: boolean = false;
 	const lunchId = $page.params['lunchId'];
 	let lunch: definitions['lunchs'] = null;
 	onMount(async () => {
-		if (!(await getUserAsync())) {
-			goto('/login');
-		}
-		if (!(await mountFamily())) {
-			goto('/login');
-		}
 		await initalFetchLunches();
 		if (!lunchsLocal.some((l) => l.id === lunchId)) {
 			goto('/overview');
@@ -64,7 +52,7 @@
 	{/if}
 </svelte:head>
 
-<div class="container is-fluid">
+<PageContainer>
 	{#if $family}
 		<div>
 			<div class="title p-2">
@@ -98,4 +86,4 @@
 		{/if}
 		<ShareFamilyModal bind:isOpen={isShareModelOpen} familyId={$family.id} />
 	{/if}
-</div>
+</PageContainer>
