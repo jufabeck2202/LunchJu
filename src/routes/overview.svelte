@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	import LunchCard from '$lib/components/LunchCard.svelte';
+	import PageContainer from '$lib/components/PageContainer.svelte';
 	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
 
 	import {
@@ -13,17 +14,13 @@
 	} from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	onMount(async () => {
-		if (!getUser()) {
-			goto('/login');
-		}
-		await mountFamily();
 		await createLunchesForWeek();
 	});
 
 	let isShareModalOpen = false;
 </script>
 
-<div class="container is-fluid">
+<PageContainer>
 	{#if $family}
 		<div class="title p-2">
 			{$family.name}
@@ -41,4 +38,4 @@
 			{/each}
 		</div>
 	{/if}
-</div>
+</PageContainer>

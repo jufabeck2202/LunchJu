@@ -66,7 +66,7 @@
 			</div>
 		</div>
 		{#if lunch}
-			<div class="columns pl-2 pr-2 ">
+			<div class="columns">
 				<div class="column is-half">
 					<Lunch {lunch} />
 					<Comments />

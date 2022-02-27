@@ -34,7 +34,7 @@
 <style>
 	@media only screen and (max-width: 600px) {
 		.container {
-			padding: 0px !important
+			padding: 0.76rem !important
 		}
 	}
 </style>
