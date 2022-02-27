@@ -33,6 +33,9 @@
 					);
 				}
 			})
+			.on('DELETE', (deleted) => {
+				lunchProposal.update((l) => l.filter((vote) => vote.id !== deleted.old.id));
+			})
 			.subscribe();
 	};
 	const subscribeToVotes = async () => {

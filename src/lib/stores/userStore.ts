@@ -325,11 +325,18 @@ export const signOut = async (): Promise<ApiError> => {
 	return error;
 };
 
-export const setLunchProposalForVote = async (lunchId: string, lunchProposalId) => {
+export const setLunchProposalForVote = async (lunchId: string, lunchProposalId: string) => {
 	const { data, error } = await supabase
 		.from<definitions['lunchs']>('lunchs')
 		.update({ selected_lunch_proposal_id: lunchProposalId })
 		.eq('id', lunchId);
+};
+
+export const deleteLunchProposal = async (lunchProposalId: string) => {
+	const { data, error } = await supabase
+		.from<definitions['lunch_proposal']>('lunch_proposal')
+		.delete()
+		.eq('id', lunchProposalId);
 };
 /**
  * Check if user belongs to a family and starts subscribing to updates

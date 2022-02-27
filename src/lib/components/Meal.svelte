@@ -2,7 +2,13 @@
 	import type { definitions } from '$lib/models';
 	import Icon from '@iconify/svelte';
 
-	import { createVote, deleteVote, setLunchProposalForVote } from '$lib/stores/userStore';
+	import {
+		createVote,
+		deleteLunchProposal,
+		deleteVote,
+		getUser,
+		setLunchProposalForVote
+	} from '$lib/stores/userStore';
 	export let upvote = 0;
 	export let downvote = 0;
 	export let name = '';
@@ -25,11 +31,37 @@
 		}
 		await setLunchProposalForVote(lunchId, lunchProposal.id);
 	};
+
+	const deleteFood = async () => {
+		if (foodIsSelected) {
+			return;
+		}
+		await deleteLunchProposal(lunchProposal.id);
+	};
 </script>
 
 <div>
 	<div class="card p-2 mb-2 {foodIsSelected ? 'has-background-warning-light' : ''}">
-		<p class="card-header-title is-centered">{name}</p>
+		<div class="pb-4 p-1">
+			<div class="level is-mobile">
+				<div class="level-item">
+					<div>
+						<p class="subtitle is-6">{name}</p>
+					</div>
+				</div>
+				{#if lunchProposal.user_id == getUser().id && !foodIsSelected}
+					<div class="level-left">
+						<div class="level-item">
+							<button
+								class="button is-danger is-rounded is-responsiv is-outlined is-small "
+								on:click|once={deleteFood}
+								><Icon icon="fluent:delete-28-filled" width="25" />
+							</button>
+						</div>
+					</div>
+				{/if}
+			</div>
+		</div>
 		<div class="level is-mobile">
 			{#if isCook}
 				<div class="level-item has-text-centered">
@@ -84,9 +116,12 @@
 <style>
 	.card {
 		border-radius: 10px;
-		border: 2px solid white 
+		border: 2px solid white;
 	}
 	.card.has-background-warning-light {
 		border: 2px solid #ffe28e;
+	}
+	.heading {
+		font-size: 15px !important;
 	}
 </style>
