@@ -186,6 +186,19 @@ export const initalFetchLunchProposals = async (
 	return data;
 };
 
+export const initalFetchLunchComments = async (
+	lunchId: string
+): Promise<definitions['lunch_proposal_comments'][]> => {
+	const { data, error } = await supabase
+		.from<definitions['lunch_proposal_comments']>('lunch_proposal_comments')
+		.select('*')
+		.eq('lunch_id', lunchId);
+	if (error) {
+		throw error;
+	}
+	return data.sort((a, b) => a.created_at - b.created_at).reverse();
+};
+
 export const initalFetchLunchVotes = async (
 	lunchId: string
 ): Promise<definitions['lunch_proposal_vote'][]> => {
@@ -337,6 +350,12 @@ export const deleteLunchProposal = async (lunchProposalId: string) => {
 		.from<definitions['lunch_proposal']>('lunch_proposal')
 		.delete()
 		.eq('id', lunchProposalId);
+};
+
+export const createCommentForLunch = async (lunchId: string, comment: string) => {
+	const { data, error } = await supabase
+		.from<definitions['lunch_proposal_comments']>('lunch_proposal_comments')
+		.insert({ family_id: familyID, lunch_id: lunchId, user_id: getUser().id, text: comment });
 };
 /**
  * Check if user belongs to a family and starts subscribing to updates

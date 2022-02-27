@@ -320,8 +320,8 @@ export interface paths {
           created_at?: parameters["rowFilter.lunch_proposal_comments.created_at"];
           family_id?: parameters["rowFilter.lunch_proposal_comments.family_id"];
           user_id?: parameters["rowFilter.lunch_proposal_comments.user_id"];
-          lunch_proposal_id?: parameters["rowFilter.lunch_proposal_comments.lunch_proposal_id"];
           text?: parameters["rowFilter.lunch_proposal_comments.text"];
+          lunch_id?: parameters["rowFilter.lunch_proposal_comments.lunch_id"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -376,8 +376,8 @@ export interface paths {
           created_at?: parameters["rowFilter.lunch_proposal_comments.created_at"];
           family_id?: parameters["rowFilter.lunch_proposal_comments.family_id"];
           user_id?: parameters["rowFilter.lunch_proposal_comments.user_id"];
-          lunch_proposal_id?: parameters["rowFilter.lunch_proposal_comments.lunch_proposal_id"];
           text?: parameters["rowFilter.lunch_proposal_comments.text"];
+          lunch_id?: parameters["rowFilter.lunch_proposal_comments.lunch_id"];
         };
         header: {
           /** Preference */
@@ -396,8 +396,8 @@ export interface paths {
           created_at?: parameters["rowFilter.lunch_proposal_comments.created_at"];
           family_id?: parameters["rowFilter.lunch_proposal_comments.family_id"];
           user_id?: parameters["rowFilter.lunch_proposal_comments.user_id"];
-          lunch_proposal_id?: parameters["rowFilter.lunch_proposal_comments.lunch_proposal_id"];
           text?: parameters["rowFilter.lunch_proposal_comments.text"];
+          lunch_id?: parameters["rowFilter.lunch_proposal_comments.lunch_id"];
         };
         body: {
           /** lunch_proposal_comments */
@@ -1106,11 +1106,12 @@ export interface definitions {
   };
   lunch_proposal_comments: {
     /**
-     * Format: bigint
+     * Format: uuid
      * @description Note:
      * This is a Primary Key.<pk/>
+     * @default extensions.uuid_generate_v4()
      */
-    id: number;
+    id: string;
     /**
      * Format: timestamp with time zone
      * @default now()
@@ -1124,14 +1125,14 @@ export interface definitions {
     family_id: string;
     /** Format: uuid */
     user_id: string;
+    /** Format: text */
+    text: string;
     /**
      * Format: uuid
      * @description Note:
-     * This is a Foreign Key to `lunch_proposal.id`.<fk table='lunch_proposal' column='id'/>
+     * This is a Foreign Key to `lunchs.id`.<fk table='lunchs' column='id'/>
      */
-    lunch_proposal_id: string;
-    /** Format: text */
-    text: string;
+    lunch_id: string;
   };
   lunch_proposal_vote: {
     /**
@@ -1364,7 +1365,7 @@ export interface parameters {
   "rowFilter.lunch_proposal.meal_type": string;
   /** @description lunch_proposal_comments */
   "body.lunch_proposal_comments": definitions["lunch_proposal_comments"];
-  /** Format: bigint */
+  /** Format: uuid */
   "rowFilter.lunch_proposal_comments.id": string;
   /** Format: timestamp with time zone */
   "rowFilter.lunch_proposal_comments.created_at": string;
@@ -1372,10 +1373,10 @@ export interface parameters {
   "rowFilter.lunch_proposal_comments.family_id": string;
   /** Format: uuid */
   "rowFilter.lunch_proposal_comments.user_id": string;
-  /** Format: uuid */
-  "rowFilter.lunch_proposal_comments.lunch_proposal_id": string;
   /** Format: text */
   "rowFilter.lunch_proposal_comments.text": string;
+  /** Format: uuid */
+  "rowFilter.lunch_proposal_comments.lunch_id": string;
   /** @description lunch_proposal_vote */
   "body.lunch_proposal_vote": definitions["lunch_proposal_vote"];
   /** Format: uuid */
