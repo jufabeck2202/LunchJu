@@ -28,13 +28,13 @@
 </script>
 
 <div class="container is-fluid">
-	<slot />
+	<section class="mt-5"><slot /></section>
 </div>
 
 <style>
 	@media only screen and (max-width: 600px) {
 		.container {
-			padding: 0.76rem !important
+			padding: 0.76rem !important;
 		}
 	}
 </style>

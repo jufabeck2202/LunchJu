@@ -67,7 +67,7 @@
 			</div>
 		</div>
 		{#if lunch}
-			<div class="columns">
+			<div class="columns pt-4">
 				<div class="column is-half">
 					<Lunch {lunch} bind:hasJoinedlunch={hasJoinedLunch} />
 					<Comments {lunch} {hasJoinedLunch} />
