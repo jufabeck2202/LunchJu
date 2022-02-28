@@ -3,7 +3,6 @@
 	import Icon from '@iconify/svelte';
 	import type { definitions } from '$lib/models';
 	import { fade } from 'svelte/transition';
-
 	import {
 		createCommentForLunch,
 		getUserByID,
@@ -19,7 +18,7 @@
 	});
 
 	export let lunch: definitions['lunchs'];
-
+	export let hasJoinedLunch: boolean;
 	const handleCreateComment = async () => {
 		if (text.length > 0) {
 			await createCommentForLunch(lunch.id, text);
@@ -72,6 +71,7 @@
 				</form>
 			{:else}
 				<button
+				disabled={!hasJoinedLunch}
 					class="button is-primary is-rounded is-pulled-right"
 					on:click={() => (isCreatingComment = true)}>Create Comment</button
 				>

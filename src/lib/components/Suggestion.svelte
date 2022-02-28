@@ -10,6 +10,8 @@
 	import { writable } from 'svelte/store';
 
 	export let lunch: definitions['lunchs'];
+	export let hasJoinedLunch: boolean;
+	
 	let lunchProposalSubscription: RealtimeSubscription;
 	let voteSubscription: RealtimeSubscription;
 	const lunchProposal = writable<definitions['lunch_proposal'][] | []>([]);
@@ -98,6 +100,7 @@
 		<!-- promise was fulfilled -->
 		<Meal
 			{isCook}
+			{hasJoinedLunch}
 			lunchId={lunch.id}
 			lunchProposal={meal}
 			hasUpvoted={hasUpvoted(meal.id, $votes)}

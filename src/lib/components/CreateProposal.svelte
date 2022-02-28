@@ -4,7 +4,8 @@
 	import { createLunchProposal, fetchMeals } from '$lib/stores/userStore';
 	import AutoComplete from 'simple-svelte-autocomplete';
 
-	export let lunchId: string;
+	export let lunch: definitions['lunchs'];
+	export let hasJoinedLunch: boolean;
 	let isLoading = false;
 	let isProposalMenu = false;
 	let mealName: string = '';
@@ -15,7 +16,7 @@
 		isLoading = true;
 		//check if exists
 		const response = lunchSuggestions.find((meal) => meal.name === mealName.toLowerCase());
-		const error = await createLunchProposal(lunchId, mealName, selectedFood?.id || response?.id);
+		const error = await createLunchProposal(lunch.id, mealName, selectedFood?.id || response?.id);
 		isLoading = false;
 		if (error) {
 			alert(error.message);
@@ -37,6 +38,7 @@
 	<h2 class="title is-4 p-3">What to eat?</h2>
 	<p class="subtitle is-6 pl-3">There are no suggestions. <br /> Make one</p>
 	<button
+	disabled={!hasJoinedLunch}
 		class="button is-primary is-fullwidth is-rounded is-link"
 		on:click={() => (isProposalMenu = true)}
 	>

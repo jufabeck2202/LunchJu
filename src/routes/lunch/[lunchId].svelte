@@ -31,6 +31,7 @@
 	let isShareModelOpen: boolean = false;
 	const lunchId = $page.params['lunchId'];
 	let lunch: definitions['lunchs'] = null;
+	let hasJoinedLunch: boolean = false;
 	onMount(async () => {
 		await initalFetchLunches();
 		if (!lunchsLocal.some((l) => l.id === lunchId)) {
@@ -68,14 +69,14 @@
 		{#if lunch}
 			<div class="columns">
 				<div class="column is-half">
-					<Lunch {lunch} />
-					<Comments {lunch} />
+					<Lunch {lunch} bind:hasJoinedlunch={hasJoinedLunch} />
+					<Comments {lunch} {hasJoinedLunch} />
 				</div>
 				<div class="column is-half">
 					<div class="columns is-multiline">
 						<div class="column is-full-tablet is-half-desktop">
-							<CreateProposal {lunchId} />
-							<Suggestion {lunch} />
+							<CreateProposal {lunch} {hasJoinedLunch} />
+							<Suggestion {lunch} {hasJoinedLunch} />
 						</div>
 						<div class="column is-full-tablet is-half-desktop">
 							<Users />

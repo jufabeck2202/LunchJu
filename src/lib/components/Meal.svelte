@@ -18,6 +18,7 @@
 	export let hasDownvoted: boolean;
 	export let foodIsSelected: boolean;
 	export let isCook: boolean;
+	export let hasJoinedLunch: boolean;
 	const handleVote = async (upvote: boolean) => {
 		if (hasDownvoted || hasUpvoted) {
 			await deleteVote(lunchProposal.id, lunchId);
@@ -89,7 +90,7 @@
 				<div>
 					<button
 						class="button is-success is-rounded is-responsive is-light"
-						disabled={hasDownvoted}
+						disabled={hasDownvoted || !hasJoinedLunch}
 						on:click={async () => {
 							await handleVote(true);
 						}}>{upvote} 👍</button
@@ -100,7 +101,7 @@
 				<div>
 					<button
 						class="button is-danger is-rounded is-responsive is-light"
-						disabled={hasUpvoted}
+						disabled={hasUpvoted || !hasJoinedLunch}
 						on:click={async () => {
 							await handleVote(false);
 						}}
@@ -121,5 +122,4 @@
 	.card.has-background-warning-light {
 		border: 2px solid #ffe28e;
 	}
-
 </style>

@@ -30,8 +30,10 @@
 	const handleLeaveLunch = async (lunch) => {
 		const error = await leaveLunch(lunch);
 	};
-	let hasJoinedlunch = false;
+	export let hasJoinedlunch = false;
+
 	let isMouseOnLunch = false;
+
 	lunchMembers.subscribe((members) => {
 		// check if user is in the members list
 		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
@@ -60,12 +62,14 @@
 		</div>
 		<div>
 			{#if !hasJoinedlunch}
-				<button class="m-1 button  is-rounded is-outlined is-responsive" on:click={() => handleJoinLunch(lunch)}
-					>Join Lunch</button
+				<button
+					class="m-1 button  is-rounded is-outlined is-responsive"
+					on:click={() => handleJoinLunch(lunch)}>Join Lunch</button
 				>
 			{:else}
-				<button class="m-1 button  is-rounded is-danger is-responsive" on:click={() => handleLeaveLunch(lunch)}
-					>Leave Lunch</button
+				<button
+					class="m-1 button  is-rounded is-danger is-responsive"
+					on:click={() => handleLeaveLunch(lunch)}>Leave Lunch</button
 				>
 				{#if !lunch.cook_id || lunch.cook_id === getUser().id}
 					<!-- content here -->
