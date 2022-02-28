@@ -28,6 +28,9 @@
 	};
 
 	const handleLeaveLunch = async (lunch) => {
+		if (lunch.cook_id === getUser().id) {
+			const error = await removeCookForLunch(lunch);
+		}
 		const error = await leaveLunch(lunch);
 	};
 	export let hasJoinedlunch = false;
