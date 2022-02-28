@@ -21,6 +21,7 @@
 	}
 	onMount(async () => {
 		await checkUser();
+		await subscribeAuth();
 	});
 
 	let currentState = State.LOGIN;
@@ -55,6 +56,12 @@
 	};
 	const handleFamilyCreated = async () => {
 		await checkUser();
+	};
+
+	const subscribeAuth = async () => {
+		supabase.auth.onAuthStateChange(async (event, session) => {
+			await checkUser();
+		});
 	};
 	// const signInWithGithub = async () => {
 	// 	const { error } = await supabase.auth.signIn(

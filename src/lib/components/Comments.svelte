@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { ToLocalTime } from '$lib/helpers/time';
-
+	import Icon from '@iconify/svelte';
 	import type { definitions } from '$lib/models';
+	import { fade } from 'svelte/transition';
+
 	import {
 		createCommentForLunch,
 		getUserByID,
@@ -11,7 +13,6 @@
 	import type { RealtimeSubscription } from '@supabase/supabase-js';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
-
 	onMount(async () => {
 		comments.set(await initalFetchLunchComments(lunch.id));
 		await subscribeComments();
@@ -27,6 +28,7 @@
 		}
 	};
 	let isCreatingComment = false;
+	let isShowingComments = true;
 	let text = '';
 	const comments = writable<definitions['lunch_proposal_comments'][] | []>([]);
 
@@ -76,21 +78,37 @@
 			{/if}
 		</div>
 	</div>
-	{#each $comments as comment}
-		<!-- content here -->
-		<div class="card mt-3">
-			<div class="card-content msg">
-				<div class="msg-header">
-					<span class="msg-from"><small>From: {getUserByID(comment.user_id)?.name}</small></span>
-					<span class="msg-timestamp"><small> {ToLocalTime(comment.created_at)}</small></span>
-					<span class="msg-attachment"><i class="fa fa-paperclip" /></span>
-				</div>
-				<div class="msg-snippet">
-					{comment.text}
+	<div class="card is-small">
+		<header class="card-header">
+			<p class="card-header-title">Comments: {$comments.length}</p>
+			<button
+				class="card-header-icon"
+				aria-label="more options"
+				on:click={() => (isShowingComments = !isShowingComments)}
+			>
+				<span class="icon">
+					<Icon icon={isShowingComments ? 'fa:angle-down' : 'fa:angle-up'} />
+				</span>
+			</button>
+		</header>
+	</div>
+	{#if isShowingComments}
+		{#each $comments as comment}
+			<!-- content here -->
+			<div class=" card comment mt-3" in:fade>
+				<div class="card-content msg">
+					<div class="msg-header">
+						<span class="msg-from"><small>From: {getUserByID(comment.user_id)?.name}</small></span>
+						<span class="msg-timestamp"><small> {ToLocalTime(comment.created_at)}</small></span>
+						<span class="msg-attachment"><i class="fa fa-paperclip" /></span>
+					</div>
+					<div class="msg-snippet">
+						{comment.text}
+					</div>
 				</div>
 			</div>
-		</div>
-	{/each}
+		{/each}
+	{/if}
 </div>
 
 <style>
@@ -105,7 +123,7 @@
 	.msg {
 		padding: 10px !important;
 	}
-	.card {
+	.comment {
 		border-radius: 12px !important;
 	}
 </style>
