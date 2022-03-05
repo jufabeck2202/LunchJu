@@ -349,6 +349,13 @@ export const setLunchProposalForVote = async (lunchId: string, lunchProposalId: 
 		.eq('id', lunchId);
 };
 
+export const removeLunchProposalForVote = async (lunchId: string) => {
+	const { data, error } = await supabase
+		.from<definitions['lunchs']>('lunchs')
+		.update({ selected_lunch_proposal_id: null })
+		.eq('id', lunchId);
+};
+
 export const deleteLunchProposal = async (lunchProposalId: string) => {
 	const deleteVotes = await supabase
 		.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')

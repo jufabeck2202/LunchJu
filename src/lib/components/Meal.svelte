@@ -7,6 +7,7 @@
 		deleteLunchProposal,
 		deleteVote,
 		getUser,
+		removeLunchProposalForVote,
 		setLunchProposalForVote
 	} from '$lib/stores/userStore';
 	export let upvote = 0;
@@ -31,6 +32,13 @@
 			return;
 		}
 		await setLunchProposalForVote(lunchId, lunchProposal.id);
+	};
+
+	const unselectFood = async () => {
+		if (!foodIsSelected) {
+			return;
+		}
+		await removeLunchProposalForVote(lunchId);
 	};
 
 	const deleteFood = async () => {
@@ -72,7 +80,7 @@
 							<button
 								class="button is-warning is-rounded is-responsive"
 								disabled={hasUpvoted}
-								on:click={selectFood}
+								on:click={unselectFood}
 								><Icon icon="akar-icons:circle-x" width="25" />
 							</button>
 						{:else}
