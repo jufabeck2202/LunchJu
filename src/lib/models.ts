@@ -118,6 +118,8 @@ export interface paths {
           lunch_id?: parameters["rowFilter.lunch_members.lunch_id"];
           user_id?: parameters["rowFilter.lunch_members.user_id"];
           username?: parameters["rowFilter.lunch_members.username"];
+          StartTime?: parameters["rowFilter.lunch_members.StartTime"];
+          EndTime?: parameters["rowFilter.lunch_members.EndTime"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -174,6 +176,8 @@ export interface paths {
           lunch_id?: parameters["rowFilter.lunch_members.lunch_id"];
           user_id?: parameters["rowFilter.lunch_members.user_id"];
           username?: parameters["rowFilter.lunch_members.username"];
+          StartTime?: parameters["rowFilter.lunch_members.StartTime"];
+          EndTime?: parameters["rowFilter.lunch_members.EndTime"];
         };
         header: {
           /** Preference */
@@ -194,6 +198,8 @@ export interface paths {
           lunch_id?: parameters["rowFilter.lunch_members.lunch_id"];
           user_id?: parameters["rowFilter.lunch_members.user_id"];
           username?: parameters["rowFilter.lunch_members.username"];
+          StartTime?: parameters["rowFilter.lunch_members.StartTime"];
+          EndTime?: parameters["rowFilter.lunch_members.EndTime"];
         };
         body: {
           /** lunch_members */
@@ -1068,6 +1074,10 @@ export interface definitions {
     user_id?: string;
     /** Format: text */
     username?: string;
+    /** Format: text */
+    StartTime?: string;
+    /** Format: text */
+    EndTime?: string;
   };
   /** @description votes for meals */
   lunch_proposal: {
@@ -1349,6 +1359,10 @@ export interface parameters {
   "rowFilter.lunch_members.user_id": string;
   /** Format: text */
   "rowFilter.lunch_members.username": string;
+  /** Format: text */
+  "rowFilter.lunch_members.StartTime": string;
+  /** Format: text */
+  "rowFilter.lunch_members.EndTime": string;
   /** @description lunch_proposal */
   "body.lunch_proposal": definitions["lunch_proposal"];
   /** Format: uuid */

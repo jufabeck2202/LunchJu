@@ -27,6 +27,7 @@
 	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
 	import Comments from '$lib/components/Comments.svelte';
 	import PageContainer from '$lib/components/PageContainer.svelte';
+	import JoinTimeModal from '$lib/components/JoinTimeModal.svelte';
 
 	let isShareModelOpen: boolean = false;
 	const lunchId = $page.params['lunchId'];

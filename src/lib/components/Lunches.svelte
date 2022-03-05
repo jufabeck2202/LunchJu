@@ -11,10 +11,13 @@
 		removeCookForLunch,
 		setCookForLunch
 	} from '$lib/stores/userStore';
+	import JoinTimeModal from './JoinTimeModal.svelte';
 
 	export let lunch: definitions['lunchs'];
+	export let hasJoinedlunch = false;
 	let localLunchMembers: definitions['lunch_members'][] = [];
-
+	let isMouseOnLunch = false;
+	let isShowingJoinModal = false;
 	const handleImTheCook = async (lunch) => {
 		const error = await setCookForLunch(lunch);
 	};
@@ -23,8 +26,9 @@
 		const error = await removeCookForLunch(lunch);
 	};
 
-	const handleJoinLunch = async (lunch) => {
-		const error = await joinLunch(lunch);
+	const handleJoinLunch = async (e: CustomEvent<{ startTime: string; endTime: string }>) => {
+		const error = await joinLunch(lunch, e.detail.startTime, e.detail.endTime);
+		isShowingJoinModal = false;
 	};
 
 	const handleLeaveLunch = async (lunch) => {
@@ -33,10 +37,6 @@
 		}
 		const error = await leaveLunch(lunch);
 	};
-	export let hasJoinedlunch = false;
-
-	let isMouseOnLunch = false;
-
 	lunchMembers.subscribe((members) => {
 		// check if user is in the members list
 		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
@@ -49,6 +49,7 @@
 </script>
 
 <div>
+	<JoinTimeModal bind:isShowingJoinModal on:joinLunch={handleJoinLunch} />
 	<div class="card p-5 mb-3">
 		<h2 class="title is-4">{GetDay(lunch.created_at)}s Lunch</h2>
 		<p class="subtitle is-6">
@@ -67,7 +68,7 @@
 			{#if !hasJoinedlunch}
 				<button
 					class="m-1 button  is-rounded is-outlined is-responsive"
-					on:click={() => handleJoinLunch(lunch)}>Join Lunch</button
+					on:click={() => (isShowingJoinModal = true)}>Join Lunch</button
 				>
 			{:else}
 				<button

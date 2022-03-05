@@ -281,7 +281,9 @@ export const fetchMeals = async (): Promise<definitions['meals'][]> => {
 };
 
 export const joinLunch = async (
-	lunch: definitions['lunchs']
+	lunch: definitions['lunchs'],
+	startTime?: string,
+	endTime?: string
 ): Promise<PostgrestError | Error | null> => {
 	// ALTER TABLE table ADD UNIQUE (book_id, author_id)
 	const { data, error } = await supabase
@@ -290,7 +292,9 @@ export const joinLunch = async (
 			family_id: familyID,
 			user_id: getUser().id,
 			lunch_id: lunch.id,
-			username: unserName
+			username: unserName,
+			StartTime: startTime,
+			EndTime: endTime
 		});
 	if (error) {
 		console.log(error);
