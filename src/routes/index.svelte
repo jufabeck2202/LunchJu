@@ -3,10 +3,15 @@
 
 	import { goto } from '$app/navigation';
 
-	import { getUser } from '$lib/stores/userStore';
+	import { getUser, getUserAsync } from '$lib/stores/userStore';
+	import { onMount } from 'svelte';
 
 	const user = getUser();
-	if (browser && !user) goto('/login');
+	onMount(async () => {
+		if (await getUserAsync()) {
+			goto('/overview');
+		}
+	});
 </script>
 
 <svelte:head>

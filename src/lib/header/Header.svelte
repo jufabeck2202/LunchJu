@@ -61,7 +61,7 @@
 				>
 					About
 				</a>
-				{#if !getUser()}
+				{#if !getUser()?.id}
 					<a
 						class="navbar-item"
 						class:is-active={$page.url.pathname === '/login'}
