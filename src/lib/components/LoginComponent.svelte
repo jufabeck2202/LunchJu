@@ -41,7 +41,10 @@
 	const handleSignInGithub = async () => {
 		try {
 			loading = true;
-			const { error } = await supabase.auth.signIn({ provider: 'github' });
+			const { error } = await supabase.auth.signIn(
+				{ provider: 'github' },
+				{ redirectTo: 'https://lunch-ju.vercel.app/overview' }
+			);
 			dispatch('signIn');
 		} catch (error) {
 			ErrorToast(error.error_description || error.message);
