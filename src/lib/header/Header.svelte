@@ -49,14 +49,16 @@
 					Statistic
 				</a>
 				<!--Item-->
-				<a
-					class="navbar-item"
-					class:is-active={$page.url.pathname === '/login'}
-					sveltekit:prefetch
-					href="/login"
-				>
-					Login
-				</a>
+				{#if !getUser()}
+					<a
+						class="navbar-item"
+						class:is-active={$page.url.pathname === '/login'}
+						sveltekit:prefetch
+						href="/login"
+					>
+						Login
+					</a>
+				{/if}
 			</div>
 		</div>
 		<div class="navbar-menu" class:is-active={mobile} id="menu">
@@ -75,5 +77,4 @@
 		</div>
 	</nav>
 	<SvelteToast />
-
 </div>
