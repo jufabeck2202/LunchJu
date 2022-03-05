@@ -1,7 +1,6 @@
 <script lang="ts">
-import { browser } from '$app/env';
+	import { browser } from '$app/env';
 
-	// import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 
 	import { getUser } from '$lib/stores/userStore';
@@ -19,7 +18,7 @@ import { browser } from '$app/env';
 		<div class="">
 			<p class="title">Welcome to Lunchju</p>
 			<p class="subtitle">A place to manage your family's lunch</p>
-			<button class="button is-primary is-light">Sign Up</button>
+			<button class="button is-primary is-light" on:click={() => goto('/login')}>Sign Up</button>
 		</div>
 	</div>
 </section>

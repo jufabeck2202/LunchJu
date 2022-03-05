@@ -98,7 +98,7 @@
 	<!-- meals here -->
 	{#await fetchMealName(meal.meal_type) then name}
 		<!-- promise was fulfilled -->
-		<Meal
+		<pMeal
 			{isCook}
 			{hasJoinedLunch}
 			lunchId={lunch.id}

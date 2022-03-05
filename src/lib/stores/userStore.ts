@@ -435,13 +435,10 @@ export const createFamily = async (familyName): Promise<PostgrestError | Error |
 	family.set(families[0]);
 };
 
-export const joinFamily = async (
-	familyId: string,
-	name: string
-): Promise<PostgrestError | Error | null> => {
+export const joinFamily = async (familyId: string): Promise<PostgrestError | Error | null> => {
 	const { error } = await supabase
 		.from<definitions['users_to_families']>('users_to_families')
-		.insert({ families_id: familyId, user_id: getUser().id, name: name });
+		.upsert([{ user_id: getUser().id, families_id: familyId }]);
 	return error;
 };
 
