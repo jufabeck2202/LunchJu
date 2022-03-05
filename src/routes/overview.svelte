@@ -1,17 +1,9 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-
 	import LunchCard from '$lib/components/LunchCard.svelte';
 	import PageContainer from '$lib/components/PageContainer.svelte';
 	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
 
-	import {
-		mountFamily,
-		getUser,
-		createLunchesForWeek,
-		lunches,
-		family
-	} from '$lib/stores/userStore';
+	import { createLunchesForWeek, lunches, family } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	onMount(async () => {
 		await createLunchesForWeek();

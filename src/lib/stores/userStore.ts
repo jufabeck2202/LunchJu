@@ -468,14 +468,18 @@ export const createLunchesForWeek = async () => {
 			toCreate.push(day);
 		}
 	});
+	const lunchsForWeek = [];
+
 	for (const date of toCreate) {
-		const { data, error } = await supabase.from<definitions['lunchs']>('lunchs').insert({
-			family_id: familyID,
-			created_by: getUser().id,
+		const lunch = {
 			created_at: date.toISOString(),
-			lunch_date: date.toISOString()
-		});
+			lunch_date: date.toISOString(),
+			created_by: getUser().id,
+			family_id: familyID
+		};
+		lunchsForWeek.push(lunch);
 	}
+	await supabase.from<definitions['lunchs']>('lunchs').insert(lunchsForWeek);
 };
 
 export const getFamilyID = () => {
