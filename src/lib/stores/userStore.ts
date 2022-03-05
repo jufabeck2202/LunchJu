@@ -77,6 +77,12 @@ const subscribeLunch = async () => {
 		})
 		.subscribe();
 };
+lunchSubscription.onClose(() => {
+	alert('lunchSubscription closed');
+});
+lunchSubscription.onError(() => {
+	alert('lunchSubscription error');
+});
 
 export const createVote = async (lunchProposalId, lunchId, voteType: boolean) => {
 	const { data, error } = await supabase
