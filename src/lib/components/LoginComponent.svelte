@@ -3,6 +3,7 @@
 	import { ErrorToast } from '$lib/helpers/toast';
 	import { signIn, signUp } from '$lib/stores/userStore';
 	import { supabase } from '$lib/supabaseclient';
+	import Icon from '@iconify/svelte';
 
 	import { createEventDispatcher } from 'svelte';
 	import { fly } from 'svelte/transition';
@@ -31,6 +32,17 @@
 			if (browser && user) {
 				dispatch('signIn', user);
 			}
+		} catch (error) {
+			ErrorToast(error.error_description || error.message);
+		} finally {
+			loading = false;
+		}
+	};
+	const handleSignInGithub = async () => {
+		try {
+			loading = true;
+			const { error } = await supabase.auth.signIn({ provider: 'github' });
+			dispatch('signIn');
 		} catch (error) {
 			ErrorToast(error.error_description || error.message);
 		} finally {
@@ -66,6 +78,9 @@
 		</div>
 		<button class="button is-primary" is-loading={loading} on:click={handleSignUp}>
 			Create Account
+		</button>
+		<button class="button is-primary" is-loading={loading} on:click={handleSignInGithub}>
+			<Icon icon="akar-icons:github-fill" />
 		</button>
 		<!-- TODO: Handle Login -->
 		<button class="button is-primary" on:click={handleSignIn}> Login </button>

@@ -54,17 +54,11 @@
 			await checkUser();
 		});
 	};
-	const signInWithGithub = async () => {
-		const { error } = await supabase.auth.signIn({ provider: 'github' });
-		if (error) {
-			alert(error.message);
-		}
-	};
 </script>
 
 <section>
 	<div class="columns is-centered">
-		<div class="column is-5  is-3-fullhd">
+		<div class="column is-5  is-4-fullhd">
 			{#if currentState == State.USERNAME}
 				<CreateName on:usernameCreated={checkUser} />
 			{:else if currentState == State.LOGIN}
@@ -72,7 +66,6 @@
 			{:else if currentState == State.FAMILY}
 				<CreateFamily on:familyCreated={checkUser} />
 			{/if}
-			<button on:click={signInWithGithub} />
 		</div>
 	</div>
 </section>
