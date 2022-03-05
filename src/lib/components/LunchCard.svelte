@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { GetDateMonthYear, GetDay, renderTime } from '$lib/helpers/time';
 	import type { definitions } from '$lib/models';
-
 	import { lunchMembers, joinLunch, leaveLunch, getUser } from '$lib/stores/userStore';
+	import JoinTimeModal from './JoinTimeModal.svelte';
 
 	export let lunch: definitions['lunchs'];
 	let localLunchMembers: definitions['lunch_members'][] = [];
-
 	let hasJoinedlunch = false;
+	let isShowingJoinModal = false;
+
 	lunchMembers.subscribe((members) => {
 		// check if user is in the members list
 		localLunchMembers = members.filter((member) => member.lunch_id === lunch.id);
@@ -31,6 +32,7 @@
 </script>
 
 <div class="column is-4-desktop is-half-tablet is-4-widescreen is-3-fullhd">
+	<JoinTimeModal bind:isShowingJoinModal on:joinLunch={handleJoinLunch} />
 	<div class="card pt-4 pb-4 pl-3 pr-2">
 		<div class="columns is-mobile">
 			<!-- Left side -->

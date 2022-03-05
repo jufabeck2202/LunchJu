@@ -11,7 +11,7 @@
 
 	export let lunch: definitions['lunchs'];
 	export let hasJoinedLunch: boolean;
-	
+
 	let lunchProposalSubscription: RealtimeSubscription;
 	let voteSubscription: RealtimeSubscription;
 	const lunchProposal = writable<definitions['lunch_proposal'][] | []>([]);
@@ -98,7 +98,7 @@
 	<!-- meals here -->
 	{#await fetchMealName(meal.meal_type) then name}
 		<!-- promise was fulfilled -->
-		<pMeal
+		<Meal
 			{isCook}
 			{hasJoinedLunch}
 			lunchId={lunch.id}

@@ -34,7 +34,7 @@
 	let lunch: definitions['lunchs'] = null;
 	let hasJoinedLunch: boolean = false;
 	onMount(async () => {
-		await initalFetchLunches();
+		 await initalFetchLunches();
 		if (!lunchsLocal.some((l) => l.id === lunchId)) {
 			goto('/overview');
 		}
