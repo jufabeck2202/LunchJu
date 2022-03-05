@@ -49,16 +49,6 @@
 					Statistic
 				</a>
 				<!--Item-->
-				{#if !getUser()}
-					<a
-						class="navbar-item"
-						class:is-active={$page.url.pathname === '/login'}
-						sveltekit:prefetch
-						href="/login"
-					>
-						Login
-					</a>
-				{/if}
 			</div>
 		</div>
 		<div class="navbar-menu" class:is-active={mobile} id="menu">
@@ -71,8 +61,18 @@
 				>
 					About
 				</a>
-				<!-- svelte-ignore a11y-missing-attribute -->
-				<a class="navbar-item" on:click|once={handleSignout}> Log out </a>
+				{#if !getUser()}
+					<a
+						class="navbar-item"
+						class:is-active={$page.url.pathname === '/login'}
+						sveltekit:prefetch
+						href="/login"
+					>
+						Login
+					</a>
+				{:else}
+					<a class="navbar-item" on:click|once={handleSignout}> Log out </a>
+				{/if}
 			</div>
 		</div>
 	</nav>
