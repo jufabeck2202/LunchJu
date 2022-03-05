@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { definitions } from '$lib/models';
 	import dayjs, { Dayjs } from 'dayjs';
-	import isToday from 'dayjs/plugin/isToday';
-	import customParseFormat from 'dayjs/plugin/customParseFormat';
+	import isToday from 'dayjs/plugin/isToday.js';
+	import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 	import { createEventDispatcher } from 'svelte';
 
 	dayjs.extend(isToday);
