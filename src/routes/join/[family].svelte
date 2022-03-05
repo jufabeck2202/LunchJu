@@ -89,16 +89,27 @@
 </script>
 
 {#if tempFamily}
-	<div class="columns is-centered">
-		<!-- <button on:click={signInWithGithub} /> -->
-		<div class="column is-5  is-3-fullhd">
-			{#if currentState == State.USERNAME}
-				<CreateName on:usernameCreated={handleUsernameCreated} />
-			{:else if currentState == State.LOGIN}
-				<LoginComponent on:signUp={handleSignUp} on:signIn={handleSignIn} />
-			{:else if currentState == State.JOIN_FAMILY}
-				<JoinFamily on:familyJoined={handleJoinFamily} family={tempFamily} />
-			{/if}
+	<section class="hero is-primary is-fullheight-with-navbar">
+		<div>
+			<div class="p-3">
+				<div class="column has-text-centered">
+					<p class="title">
+						Join {tempFamily.name}'s Family
+					</p>
+					<p class="subtitle">You have been invited to join LunchJu</p>
+				</div>
+				<div class="columns is-centered">
+					<div class="column is-4 is-5-tablet is-5-fullhd">
+						{#if currentState == State.USERNAME}
+							<CreateName on:usernameCreated={handleUsernameCreated} />
+						{:else if currentState == State.LOGIN}
+							<LoginComponent on:signUp={handleSignUp} on:signIn={handleSignIn} />
+						{:else if currentState == State.JOIN_FAMILY}
+							<JoinFamily on:familyJoined={handleJoinFamily} family={tempFamily} />
+						{/if}
+					</div>
+				</div>
+			</div>
 		</div>
-	</div>
+	</section>
 {/if}
