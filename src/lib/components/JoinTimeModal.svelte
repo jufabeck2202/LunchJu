@@ -25,9 +25,6 @@
 		}
 	}
 
-	const handleJoinLunch = (): void => {
-		dispatcher('joinLunch', { startTime: startTime, endTime: endTime });
-	};
 	const generateTime = (): void => {
 		const start = dayjs().hour(0).minute(0).second(0);
 		console.log(start);
@@ -44,7 +41,12 @@
 		const ms = 1000 * 60 * minutes;
 		return new Date(Math.round(date.getTime() / ms) * ms);
 	}
-	const items = ['One', 'Two', 'Three'];
+	const handleJoinLunch = (): void => {
+		dispatcher('joinLunch', { startTime: startTime, endTime: endTime });
+	};
+	const handleJoinLunchNoTime = (): void => {
+		dispatcher('joinLunch', { startTime: undefined, endTime: undefined });
+	};
 
 	generateTime();
 </script>
@@ -96,7 +98,7 @@
 								class="button is-warning "
 								type="reset"
 								on:click={() => {
-									isShowingJoinModal = false;
+									handleJoinLunchNoTime();
 								}}>I don't know</button
 							>
 						</div>

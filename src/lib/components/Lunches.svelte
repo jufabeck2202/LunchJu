@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { GetDay, ToLocalTime } from '$lib/helpers/time';
+	import { GetDay, renderTime, ToLocalTime } from '$lib/helpers/time';
 	import type { definitions } from '$lib/models';
-
 	import {
 		getUser,
 		getUserByID,
@@ -15,9 +14,11 @@
 
 	export let lunch: definitions['lunchs'];
 	export let hasJoinedlunch = false;
+
 	let localLunchMembers: definitions['lunch_members'][] = [];
 	let isMouseOnLunch = false;
 	let isShowingJoinModal = false;
+
 	const handleImTheCook = async (lunch) => {
 		const error = await setCookForLunch(lunch);
 	};
@@ -37,6 +38,7 @@
 		}
 		const error = await leaveLunch(lunch);
 	};
+
 	lunchMembers.subscribe((members) => {
 		// check if user is in the members list
 		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
@@ -55,14 +57,22 @@
 		<p class="subtitle is-6">
 			{ToLocalTime(lunch.created_at)} created by {getUserByID(lunch.created_by)?.name}
 		</p>
-
 		<div>
-			{#each localLunchMembers as members}
-				<button class="m-1 button is-success is-rounded is-outlined" disabled
-					>{members.username}
-					{#if lunch.cook_id === members.user_id} 👨‍🍳 {/if}</button
-				>
-			{/each}
+			<div class="columns is-multiline is-mobile p-2">
+				{#each localLunchMembers as members}
+					<div class="column is-narrow p-0 m-1">
+						<button class="button is-success is-rounded is-outlined" disabled>
+							{members.username}
+							{#if lunch.cook_id === members.user_id} 👨‍🍳 {/if}
+							{#if members.StartTime}
+								<div class="tag flex is-warning ml-2">
+									{renderTime(members.StartTime, members.EndTime)}
+								</div>
+							{/if}
+						</button>
+					</div>
+				{/each}
+			</div>
 		</div>
 		<div>
 			{#if !hasJoinedlunch}

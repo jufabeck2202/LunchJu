@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GetDateMonthYear, GetDay } from '$lib/helpers/time';
+	import { GetDateMonthYear, GetDay, renderTime } from '$lib/helpers/time';
 	import type { definitions } from '$lib/models';
 
 	import { lunchMembers, joinLunch, leaveLunch, getUser } from '$lib/stores/userStore';
@@ -48,22 +48,27 @@
 			<div class="columns is-multiline is-mobile">
 				{#if !hasJoinedlunch}
 					<div class="column p-1 is-narrow">
-						<button class=" button is-rounded is-outlined" on:click={() => handleJoinLunch(lunch)}
-							>Join Lunch</button
+						<button class="button is-rounded is-outlined" on:click={() => handleJoinLunch(lunch)}>
+							Join Lunch</button
 						>
 					</div>
 				{:else}
-					<div class="column  p-1 is-narrow">
-						<button class=" button  is-rounded is-danger" on:click={() => handleLeaveLunch(lunch)}
-							>Leave Lunch</button
+					<div class="column p-1 is-narrow">
+						<button class="button is-rounded is-danger" on:click={() => handleLeaveLunch(lunch)}>
+							Leave Lunch</button
 						>
 					</div>
 				{/if}
 				{#each localLunchMembers as members}
 					<div class="column p-1 is-narrow">
-						<button class=" button is-success is-rounded is-outlined" disabled
-							>{members.username}</button
-						>
+						<button class=" button is-success is-rounded is-outlined" disabled>
+							{members.username}
+							{#if members.StartTime}
+								<div class="tag flex is-warning ml-2">
+									{renderTime(members.StartTime, members.EndTime)}
+								</div>
+							{/if}
+						</button>
 					</div>
 				{/each}
 			</div>

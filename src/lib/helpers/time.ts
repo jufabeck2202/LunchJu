@@ -11,8 +11,6 @@ dayjs.extend(weekday);
 dayjs.extend(utc);
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-
-
 export const ToLocalTime = (date: string) => {
 	return dayjs.utc(date).local().fromNow();
 };
@@ -26,4 +24,8 @@ export const IsDateToday = (date: string) => {
 
 export const GetDateMonthYear = (date: string) => {
 	return dayjs.utc(date).local().format('DD MMM YYYY');
+};
+
+export const renderTime = (startTime: string, endTime: string) => {
+	return startTime || endTime ? `${startTime} - ${endTime}` : '';
 };
