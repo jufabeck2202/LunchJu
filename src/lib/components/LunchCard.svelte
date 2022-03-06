@@ -7,7 +7,8 @@
 		leaveLunch,
 		getUser,
 		resubscibe,
-		initalFetchLunches
+		initalFetchLunches,
+initalFetchLunchMembers
 	} from '$lib/stores/userStore';
 	import JoinTimeModal from './JoinTimeModal.svelte';
 
@@ -27,15 +28,15 @@
 			hasJoinedlunch = false;
 		}
 	});
-	
+
 	const handleJoinLunch = async (lunch) => {
 		const error = await joinLunch(lunch);
-		await initalFetchLunches();
+		await initalFetchLunchMembers();
 	};
 
 	const handleLeaveLunch = async (lunch) => {
 		const error = await leaveLunch(lunch);
-		await initalFetchLunches();
+		await initalFetchLunchMembers();
 	};
 </script>
 
