@@ -58,7 +58,7 @@
 
 	generateTime();
 	onMount(() => {
-		if (!hasJoinedlunch) {
+		if (!hasJoinedlunch || !startTime || !endTime) {
 			startTime = 'Start Time';
 			endTime = 'Stop Time';
 		}
@@ -74,7 +74,7 @@
 					<p class="card-header-title">Join Lunch</p>
 				</header>
 				<div class="card-content">
-					<p class="subtitle is-6">Select the time you want to eat:</p>
+					<p class="subtitle is-6">In what time frame do you have time to eat?</p>
 					<div class="field is-grouped">
 						<div class="control">
 							<div class="select is-rounded">
@@ -86,6 +86,7 @@
 								</select>
 							</div>
 						</div>
+
 						<div class="control">
 							<div class="select is-rounded">
 								<select bind:value={endTime}>
