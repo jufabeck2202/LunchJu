@@ -2,6 +2,7 @@
 	import { GetDay, renderTime, ToLocalTime } from '$lib/helpers/time';
 	import type { definitions } from '$lib/models';
 	import {
+		editLunchTime,
 		getUser,
 		getUserByID,
 		initalFetchLunchMembers,
@@ -20,6 +21,8 @@
 	let isMouseOnLunch = false;
 	let isShowingJoinModal = false;
 
+	let localLunchMember: definitions['lunch_members'];
+
 	const handleImTheCook = async (lunch) => {
 		const error = await setCookForLunch(lunch);
 	};
@@ -30,6 +33,12 @@
 
 	const handleJoinLunch = async (e: CustomEvent<{ startTime: string; endTime: string }>) => {
 		const error = await joinLunch(lunch, e.detail.startTime, e.detail.endTime);
+		isShowingJoinModal = false;
+		await initalFetchLunchMembers();
+	};
+
+	const handleEditLunchTime = async (e: CustomEvent<{ startTime: string; endTime: string }>) => {
+		const error = await editLunchTime(lunch, e.detail.startTime, e.detail.endTime);
 		isShowingJoinModal = false;
 		await initalFetchLunchMembers();
 	};
@@ -46,6 +55,9 @@
 		// check if user is in the members list
 		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
 			hasJoinedlunch = true;
+			localLunchMember = members.find(
+				(member) => member.user_id === getUser().id && member.lunch_id === lunch.id
+			);
 		} else {
 			hasJoinedlunch = false;
 		}
@@ -57,7 +69,11 @@
 	<JoinTimeModal
 		bind:isShowingJoinModal
 		on:joinLunch={handleJoinLunch}
-		currentDate={lunch.created_at} />
+		currentDate={lunch.created_at}
+		{hasJoinedlunch}
+		on:editLunchTime={handleEditLunchTime}
+		startTime={localLunchMember?.StartTime}
+		endTime={localLunchMember?.EndTime} />
 	<div class="card p-5 mb-3">
 		<h2 class="title is-4">{GetDay(lunch.created_at)}s Lunch</h2>
 		<p class="subtitle is-6">
@@ -89,6 +105,9 @@
 				<button
 					class="m-1 button  is-rounded is-danger is-responsive"
 					on:click={() => handleLeaveLunch(lunch)}>Leave Lunch</button>
+				<button
+					class="m-1 button  is-rounded is-link  is-outlined is-responsive"
+					on:click={() => (isShowingJoinModal = true)}>Change Lunchtime</button>
 				{#if !lunch.cook_id || lunch.cook_id === getUser().id}
 					<!-- content here -->
 					{#if lunch.cook_id == getUser().id}

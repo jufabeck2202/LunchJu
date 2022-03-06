@@ -6,7 +6,7 @@
 	import Icon from '@iconify/svelte';
 
 	import { createEventDispatcher } from 'svelte';
-	import { fly } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 
 	let username;
 	let password;
@@ -63,7 +63,7 @@
 	};
 </script>
 
-<div class="card p-5 mt-5" transition:fly={{ x: -200, duration: 500 }}>
+<div class="card p-5 mt-5" transition:fade>
 	<form on:submit|preventDefault>
 		<div class="field">
 			<!-- svelte-ignore a11y-label-has-associated-control -->
@@ -79,9 +79,11 @@
 		<div class="field">
 			<label class="label">Password</label>
 			<div class="control">
+				<!-- svelte-ignore a11y-autofocus -->
 				<input
 					class="input"
 					type="password"
+					autofocus
 					placeholder="Enter your password here"
 					bind:value={password} />
 			</div>

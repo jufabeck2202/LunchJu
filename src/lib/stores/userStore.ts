@@ -314,6 +314,25 @@ export const joinLunch = async (
 	}
 };
 
+export const editLunchTime = async (
+	lunch: definitions['lunchs'],
+	startTime?: string,
+	endTime?: string
+): Promise<PostgrestError | Error | null> => {
+	const { data, error } = await supabase
+		.from<definitions['lunch_members']>('lunch_members')
+		.update({
+			StartTime: startTime,
+			EndTime: endTime
+		})
+		.eq('lunch_id', lunch.id)
+		.eq('user_id', getUser().id);
+	if (error) {
+		console.log(error);
+		return error;
+	}
+};
+
 export const leaveLunch = async (
 	lunch: definitions['lunchs']
 ): Promise<PostgrestError | Error | null> => {

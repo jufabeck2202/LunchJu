@@ -30,6 +30,5 @@
 		</div>
 
 		<button class="button is-primary" type="submit">Confirm</button>
-		<!-- TODO: Handle Login -->
 	</form>
 </div>

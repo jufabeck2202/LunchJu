@@ -28,7 +28,8 @@
 		</div>
 		<div class="field">
 			<div class="control">
-				<input class="input " type="text" bind:value={familyName} placeholder="Family Name" />
+				<!-- svelte-ignore a11y-autofocus -->
+				<input class="input " type="text" bind:value={familyName} placeholder="Family Name"  autofocus/>
 			</div>
 		</div>
 		<div class="control">
