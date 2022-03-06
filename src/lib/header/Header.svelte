@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 	import { getUser, signOut } from '$lib/stores/userStore';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
-
+	import { _ } from '$lib/helpers/i18n';
 	let mobile;
 	const toggleNav = () => {
 		mobile = !mobile;
@@ -35,8 +35,7 @@
 					class="navbar-item"
 					class:is-active={$page.url.pathname === '/overview'}
 					sveltekit:prefetch
-					href="/overview"
-				>
+					href="/overview">
 					Overwiew
 				</a>
 				<!--Item-->
@@ -44,8 +43,7 @@
 					class="navbar-item"
 					class:is-active={$page.url.pathname === '/stats'}
 					sveltekit:prefetch
-					href="/stats"
-				>
+					href="/stats">
 					Statistic
 				</a>
 				<!--Item-->
@@ -57,8 +55,7 @@
 					class="navbar-item"
 					class:is-active={$page.url.pathname === '/about'}
 					sveltekit:prefetch
-					href="/about"
-				>
+					href="/about">
 					About
 				</a>
 				{#if !getUser()?.id}
@@ -66,8 +63,7 @@
 						class="navbar-item"
 						class:is-active={$page.url.pathname === '/login'}
 						sveltekit:prefetch
-						href="/login"
-					>
+						href="/login">
 						Login
 					</a>
 				{:else}
