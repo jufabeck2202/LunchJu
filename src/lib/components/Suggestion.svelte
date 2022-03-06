@@ -31,7 +31,9 @@
 				//TODO: add to RLS
 				if (newLunchProp.new.lunch_id == lunch.id) {
 					lunchProposal.update((l) =>
-						[newLunchProp.new, ...l].sort((a, b) => a.created_at - b.created_at)
+						l.some((ll) => ll.id === newLunchProp.new.id)
+							? l
+							: [newLunchProp.new, ...l].sort((a, b) => a.created_at - b.created_at)
 					);
 				}
 			})
@@ -47,7 +49,11 @@
 			.on('INSERT', (newVote) => {
 				//TODO: add to RLS, Maybe add lunchId to vote
 				if (newVote.new.family_id == lunch.family_id && newVote.new.lunch_id == lunch.id) {
-					votes.update((l) => [newVote.new, ...l].sort((a, b) => a.created_at - b.created_at));
+					votes.update((l) =>
+						l.some((ll) => ll.id === newVote.new.id)
+							? l
+							: [newVote.new, ...l].sort((a, b) => a.created_at - b.created_at)
+					);
 				}
 			})
 			.on('DELETE', (deleted) => {

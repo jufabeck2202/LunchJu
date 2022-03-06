@@ -37,10 +37,13 @@
 		commentsSubscription = await supabase
 			.from<definitions['lunch_proposal_comments']>('lunch_proposal_comments')
 			.on('INSERT', (comment) => {
-				console.table(comment);
 				//TODO: add to RLS
 				if (comment.new.lunch_id == lunch.id) {
-					comments.update((c) => [comment.new, ...c].sort((a, b) => a.created_at - b.created_at));
+					comments.update((c) =>
+						c.some((cc) => cc.id === comment.new.id)
+							? c
+							: [comment.new, ...c].sort((a, b) => a.created_at - b.created_at)
+					);
 				}
 			})
 			.on('DELETE', (comment) => {
@@ -71,7 +74,7 @@
 				</form>
 			{:else}
 				<button
-				disabled={!hasJoinedLunch}
+					disabled={!hasJoinedLunch}
 					class="button is-primary is-rounded is-pulled-right"
 					on:click={() => (isCreatingComment = true)}>Create Comment</button
 				>

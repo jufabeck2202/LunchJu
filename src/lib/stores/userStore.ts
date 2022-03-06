@@ -57,26 +57,6 @@ export const removeCookForLunch = async (lunch: definitions['lunchs']) => {
 	lunch.cook_id = null;
 	await supabase.from<definitions['lunchs']>('lunchs').update(lunch).eq('id', lunch.id);
 };
-const subscribeLunch = async () => {
-	lunchSubscription = await supabase
-		.from<definitions['lunchs']>('lunchs')
-		.on('INSERT', (lunch) => {
-			//TODO: add to RLS
-			if (lunch.new.family_id == familyID) {
-				lunches.update((l) => [lunch.new, ...l].sort((a, b) => a.created_at - b.created_at));
-			}
-		})
-		.on('UPDATE', (newLunch) => {
-			lunches.update((l) => {
-				const index = l.findIndex((lunch) => lunch.id === newLunch.new.id);
-				if (index !== -1) {
-					l[index] = newLunch.new;
-				}
-				return l;
-			});
-		})
-		.subscribe();
-};
 
 export const createVote = async (lunchProposalId, lunchId, voteType: boolean) => {
 	const { data, error } = await supabase
@@ -147,12 +127,37 @@ const subscribeUsers = async () => {
 		.on('INSERT', (user) => {
 			//TODO: add to RLS
 			if (user.new.families_id == familyID) {
-				familyUsers.update((usr) => [user.new, ...usr]);
+				familyUsers.update((usr) =>
+					usr.some((us) => us.user_id === user.new.user_id) ? usr : [user.new, ...usr]
+				);
 			}
 		})
 		.subscribe();
 };
-
+const subscribeLunch = async () => {
+	lunchSubscription = await supabase
+		.from<definitions['lunchs']>('lunchs')
+		.on('INSERT', (lunch) => {
+			//TODO: add to RLS
+			if (lunch.new.family_id == familyID) {
+				lunches.update((l) =>
+					l.some((ll) => ll.id === lunch.new.id)
+						? l.sort((a, b) => a.created_at - b.created_at)
+						: [lunch.new, ...l].sort((a, b) => a.created_at - b.created_at)
+				);
+			}
+		})
+		.on('UPDATE', (newLunch) => {
+			lunches.update((l) => {
+				const index = l.findIndex((lunch) => lunch.id === newLunch.new.id);
+				if (index !== -1) {
+					l[index] = newLunch.new;
+				}
+				return l;
+			});
+		})
+		.subscribe();
+};
 const destory = () => {
 	lunchSubscription.unsubscribe();
 	userSubscription.unsubscribe();
