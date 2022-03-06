@@ -50,10 +50,10 @@
 	};
 	const handleJoinLunchNoTime = (): void => {
 		if (hasJoinedlunch) {
-			dispatcher('editLunchTime', { startTime: undefined, endTime: undefined });
+			dispatcher('editLunchTime', { startTime: null, endTime: null });
 			return;
 		}
-		dispatcher('joinLunch', { startTime: undefined, endTime: undefined });
+		dispatcher('joinLunch', { startTime: null, endTime: null });
 	};
 
 	generateTime();
