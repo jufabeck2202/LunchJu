@@ -51,7 +51,10 @@
 </script>
 
 <div>
-	<JoinTimeModal bind:isShowingJoinModal on:joinLunch={handleJoinLunch} />
+	<JoinTimeModal
+		bind:isShowingJoinModal
+		on:joinLunch={handleJoinLunch}
+		currentDate={lunch.created_at} />
 	<div class="card p-5 mb-3">
 		<h2 class="title is-4">{GetDay(lunch.created_at)}s Lunch</h2>
 		<p class="subtitle is-6">
@@ -78,13 +81,11 @@
 			{#if !hasJoinedlunch}
 				<button
 					class="m-1 button  is-rounded is-outlined is-responsive"
-					on:click={() => (isShowingJoinModal = true)}>Join Lunch</button
-				>
+					on:click={() => (isShowingJoinModal = true)}>Join Lunch</button>
 			{:else}
 				<button
 					class="m-1 button  is-rounded is-danger is-responsive"
-					on:click={() => handleLeaveLunch(lunch)}>Leave Lunch</button
-				>
+					on:click={() => handleLeaveLunch(lunch)}>Leave Lunch</button>
 				{#if !lunch.cook_id || lunch.cook_id === getUser().id}
 					<!-- content here -->
 					{#if lunch.cook_id == getUser().id}
@@ -103,14 +104,12 @@
 								on:mouseover={() => (isMouseOnLunch = true)}
 								on:mouseout={() => (isMouseOnLunch = false)}
 								on:click={() => handleImNotTheCook(lunch)}
-								class="m-1 button is-rounded is-outlined">👨‍🍳 &nbsp; You are the cook</button
-							>
+								class="m-1 button is-rounded is-outlined">👨‍🍳 &nbsp; You are the cook</button>
 						{/if}
 					{:else}
 						<button
 							class="m-1 button is-warning is-rounded is-responsive"
-							on:click|once={() => handleImTheCook(lunch)}>👨‍🍳 &nbsp; I'm the cook</button
-						>
+							on:click|once={() => handleImTheCook(lunch)}>👨‍🍳 &nbsp; I'm the cook</button>
 						<!-- else content here -->
 					{/if}
 				{/if}

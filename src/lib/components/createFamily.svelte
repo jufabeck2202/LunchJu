@@ -19,7 +19,7 @@
 	};
 </script>
 
-<div class="card p-5">
+<div class="card p-5 mt-5">
 	<h1 class="title">Family</h1>
 	<div class="subtitle is-6 pt-3 ">
 		Your User does not belong to a Family. <br />

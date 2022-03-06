@@ -9,6 +9,7 @@
 	dayjs.extend(customParseFormat);
 
 	export let isShowingJoinModal;
+	export let currentDate: string;
 	const dispatcher = createEventDispatcher<{
 		joinLunch: { startTime: string; endTime: string };
 	}>();
@@ -20,6 +21,9 @@
 	let startTime: string;
 	let endTime: string;
 	$: {
+		startTimes = dayjs(currentDate).isToday()
+			? times.filter((time) => dayjs(time).isAfter(dayjs()))
+			: times;
 		if (startTime) {
 			endTimes = startTimes.filter((time) => time.isAfter(dayjs(startTime, 'HH:mm')));
 		}
@@ -34,7 +38,6 @@
 			time = dayjs(time).add(5, 'minute');
 			times.push(time);
 		}
-		startTimes = times.filter((time) => dayjs(time).isAfter(dayjs()));
 	};
 	function roundToNearest15(date = new Date()) {
 		const minutes = 15;
@@ -88,10 +91,8 @@
 							<button
 								type="submit"
 								class="button is-link"
-								disabled={startTime == 'Start Time' || endTime == 'Stop Time'}
-							>
-								Join Lunch</button
-							>
+								disabled={startTime == 'Start Time' || endTime == 'Stop Time'}>
+								Join Lunch</button>
 						</div>
 						<div class="control">
 							<button
@@ -99,8 +100,7 @@
 								type="reset"
 								on:click={() => {
 									handleJoinLunchNoTime();
-								}}>I don't know</button
-							>
+								}}>I don't know</button>
 						</div>
 						<div class="control">
 							<button
@@ -108,8 +108,7 @@
 								type="reset"
 								on:click={() => {
 									isShowingJoinModal = false;
-								}}>Cancel</button
-							>
+								}}>Cancel</button>
 						</div>
 					</div>
 				</div>
@@ -121,6 +120,5 @@
 		on:click={() => {
 			isShowingJoinModal = false;
 		}}
-		aria-label="close"
-	/>
+		aria-label="close" />
 </div>

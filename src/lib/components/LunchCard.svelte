@@ -6,8 +6,6 @@
 		joinLunch,
 		leaveLunch,
 		getUser,
-		resubscibe,
-		initalFetchLunches,
 		initalFetchLunchMembers
 	} from '$lib/stores/userStore';
 	import JoinTimeModal from './JoinTimeModal.svelte';
@@ -29,11 +27,11 @@
 		}
 	});
 
-	const handleJoinLunch = async (lunch) => {
-		const error = await joinLunch(lunch);
+	const handleJoinLunch = async (e: CustomEvent<{ startTime: string; endTime: string }>) => {
+		const error = await joinLunch(lunch, e.detail.startTime, e.detail.endTime);
+		isShowingJoinModal = false;
 		await initalFetchLunchMembers();
 	};
-
 	const handleLeaveLunch = async (lunch) => {
 		const error = await leaveLunch(lunch);
 		await initalFetchLunchMembers();
@@ -41,7 +39,7 @@
 </script>
 
 <div class="column is-4-desktop is-half-tablet is-4-widescreen is-3-fullhd">
-	<JoinTimeModal bind:isShowingJoinModal on:joinLunch={handleJoinLunch} />
+	<JoinTimeModal bind:isShowingJoinModal on:joinLunch={handleJoinLunch} currentDate={lunch.created_at}/>
 	<div class="card pt-4 pb-4 pl-3 pr-2">
 		<div class="columns is-mobile">
 			<!-- Left side -->
@@ -59,15 +57,15 @@
 			<div class="columns is-multiline is-mobile">
 				{#if !hasJoinedlunch}
 					<div class="column p-1 is-narrow">
-						<button class="button is-rounded is-outlined" on:click={() => handleJoinLunch(lunch)}>
-							Join Lunch</button
-						>
+						<button
+							class="button is-rounded is-outlined"
+							on:click={() => (isShowingJoinModal = true)}>
+							Join Lunch</button>
 					</div>
 				{:else}
 					<div class="column p-1 is-narrow">
 						<button class="button is-rounded is-danger" on:click={() => handleLeaveLunch(lunch)}>
-							Leave Lunch</button
-						>
+							Leave Lunch</button>
 					</div>
 				{/if}
 				{#each localLunchMembers as members}
@@ -84,13 +82,10 @@
 				{/each}
 			</div>
 		</div>
-
 		<a
 			class="button is-fullwidth is-warning is-rounded mt-3"
 			sveltekit:prefetch
-			href="/lunch/{lunch.id}/"
-		>
-			Open Lunch</a
-		>
+			href="/lunch/{lunch.id}/">
+			Open Lunch</a>
 	</div>
 </div>
