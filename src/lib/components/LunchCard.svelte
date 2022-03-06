@@ -8,7 +8,7 @@
 		getUser,
 		resubscibe,
 		initalFetchLunches,
-initalFetchLunchMembers
+		initalFetchLunchMembers
 	} from '$lib/stores/userStore';
 	import JoinTimeModal from './JoinTimeModal.svelte';
 

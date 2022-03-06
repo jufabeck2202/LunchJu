@@ -119,7 +119,9 @@ const subscribeLunchMemers = async () => {
 		.from<definitions['lunch_members']>('lunch_members')
 		.on('INSERT', (lunchMember) => {
 			if (lunchMember.new.family_id == familyID) {
-				lunchMembers.update((l) => [lunchMember.new, ...l]);
+				lunchMembers.update((l) =>
+					l.some((member) => member.id === lunchMember.new.id) ? l : [lunchMember.new, ...l]
+				);
 			}
 		})
 		.on('UPDATE', (newLunch) => {
