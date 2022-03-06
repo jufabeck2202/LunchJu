@@ -4,6 +4,7 @@
 	import {
 		getUser,
 		getUserByID,
+		initalFetchLunchMembers,
 		joinLunch,
 		leaveLunch,
 		lunchMembers,
@@ -30,6 +31,7 @@
 	const handleJoinLunch = async (e: CustomEvent<{ startTime: string; endTime: string }>) => {
 		const error = await joinLunch(lunch, e.detail.startTime, e.detail.endTime);
 		isShowingJoinModal = false;
+		await initalFetchLunchMembers();
 	};
 
 	const handleLeaveLunch = async (lunch) => {
@@ -37,6 +39,7 @@
 			const error = await removeCookForLunch(lunch);
 		}
 		const error = await leaveLunch(lunch);
+		await initalFetchLunchMembers();
 	};
 
 	lunchMembers.subscribe((members) => {
