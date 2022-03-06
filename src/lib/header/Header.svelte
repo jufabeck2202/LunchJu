@@ -36,7 +36,7 @@
 					class:is-active={$page.url.pathname === '/overview'}
 					sveltekit:prefetch
 					href="/overview">
-					Overwiew
+					Overview
 				</a>
 				<!--Item-->
 				<a
