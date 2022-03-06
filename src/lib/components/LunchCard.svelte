@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { GetDateMonthYear, GetDay, renderTime } from '$lib/helpers/time';
 	import type { definitions } from '$lib/models';
-	import { lunchMembers, joinLunch, leaveLunch, getUser } from '$lib/stores/userStore';
+	import {
+		lunchMembers,
+		joinLunch,
+		leaveLunch,
+		getUser,
+		resubscibe,
+		initalFetchLunches
+	} from '$lib/stores/userStore';
 	import JoinTimeModal from './JoinTimeModal.svelte';
 
 	export let lunch: definitions['lunchs'];
@@ -9,26 +16,27 @@
 	let hasJoinedlunch = false;
 	let isShowingJoinModal = false;
 
-	lunchMembers.subscribe((members) => {
-		// check if user is in the members list
+	$: lunchMembers.subscribe((members) => {
 		localLunchMembers = members.filter((member) => member.lunch_id === lunch.id);
 	});
-	const handleJoinLunch = async (lunch) => {
-		const error = await joinLunch(lunch);
-	};
 
-	const handleLeaveLunch = async (lunch) => {
-		const error = await leaveLunch(lunch);
-	};
-
-	lunchMembers.subscribe((members) => {
-		// check if user is in the members list
+	$: lunchMembers.subscribe((members) => {
 		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
 			hasJoinedlunch = true;
 		} else {
 			hasJoinedlunch = false;
 		}
 	});
+	
+	const handleJoinLunch = async (lunch) => {
+		const error = await joinLunch(lunch);
+		await initalFetchLunches();
+	};
+
+	const handleLeaveLunch = async (lunch) => {
+		const error = await leaveLunch(lunch);
+		await initalFetchLunches();
+	};
 </script>
 
 <div class="column is-4-desktop is-half-tablet is-4-widescreen is-3-fullhd">
