@@ -16,6 +16,9 @@
 		try {
 			loading = true;
 			const [user, error] = await signUp(username, password);
+			if (error) {
+				throw error;
+			}
 			if (browser && user) {
 				dispatch('signUp', user);
 			}
@@ -29,6 +32,9 @@
 		try {
 			loading = true;
 			const [user, error] = await signIn(username, password);
+			if (error) {
+				throw error;
+			}
 			if (browser && user) {
 				dispatch('signIn', user);
 			}
@@ -45,6 +51,9 @@
 				{ provider: 'github' },
 				{ redirectTo: 'https://lunch-ju.vercel.app/overview' }
 			);
+			if (error) {
+				throw error;
+			}
 			dispatch('signIn');
 		} catch (error) {
 			ErrorToast(error.error_description || error.message);
@@ -64,8 +73,7 @@
 					class="input"
 					type="text"
 					placeholder="Enter your email here"
-					bind:value={username}
-				/>
+					bind:value={username} />
 			</div>
 		</div>
 		<div class="field">
@@ -75,8 +83,7 @@
 					class="input"
 					type="password"
 					placeholder="Enter your password here"
-					bind:value={password}
-				/>
+					bind:value={password} />
 			</div>
 		</div>
 		<button class="button is-primary" is-loading={loading} on:click={handleSignUp}>
