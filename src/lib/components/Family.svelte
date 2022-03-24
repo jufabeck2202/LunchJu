@@ -7,7 +7,7 @@
 	import Suggestion from './Suggestion.svelte';
 	import Clipboard from 'svelte-clipboard';
 	import { onMount } from 'svelte';
-
+	import { t } from '$lib/helpers/i18n';
 	let isShareModelOpen = false;
 	let url = '';
 
@@ -16,7 +16,7 @@
 
 <svelte:head>
 	{#if $family}
-		<title>{$family.name} Lunch</title>
+		<title>{$family.name} {$t('lunch')}</title>
 	{/if}
 </svelte:head>
 
@@ -28,8 +28,7 @@
 				class="button is-outline is-rounded is-small mt-1"
 				on:click={() => {
 					isShareModelOpen = true;
-				}}>Share</button
-			>
+				}}>{$t('Share')}</button>
 		</div>
 
 		{#if $lunches}
@@ -54,20 +53,14 @@
 				<div class="modal-content">
 					<div class="card">
 						<header class="card-header">
-							<p class="card-header-title">Share Family</p>
+							<p class="card-header-title">{$t('share-family')}</p>
 						</header>
 						<div class="card-content">
 							<div class="subtitle">
-								Share this link with your family to invite them to join you
+								{$t('share-this-link-with-your-family-to-invite-them-to-join-you')}
 							</div>
-							<Clipboard
-								text={url + 'join/' + $family.id}
-								let:copy
-								on:copy={() => {
-									console.log('Has Copied');
-								}}
-							>
-								<button class="button" on:click={copy}>Copy Link</button>
+							<Clipboard text={url + 'join/' + $family.id} let:copy>
+								<button class="button" on:click={copy}>{$t('copy-link')}</button>
 							</Clipboard>
 							<div>
 								<button
@@ -75,9 +68,8 @@
 									on:click={() => {
 										isShareModelOpen = false;
 									}}
-									aria-label="close"
-								>
-									Close
+									aria-label="close">
+									{$t('close')}
 								</button>
 							</div>
 						</div>
@@ -88,8 +80,7 @@
 					on:click={() => {
 						isShareModelOpen = false;
 					}}
-					aria-label="close"
-				/>
+					aria-label="close" />
 			</div>
 		{:else}
 			<Users />

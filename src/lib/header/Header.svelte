@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { browser } from '$app/env';
 	import { goto } from '$app/navigation';
 
 	import { page } from '$app/stores';
 	import { getUser, signOut } from '$lib/stores/userStore';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
-	import { _ } from '$lib/helpers/i18n';
+	import { t } from '$lib/helpers/i18n';
 	let mobile;
 	const toggleNav = () => {
 		mobile = !mobile;
@@ -36,7 +35,7 @@
 					class:is-active={$page.url.pathname === '/overview'}
 					sveltekit:prefetch
 					href="/overview">
-					Overview
+					{$t('overview')}
 				</a>
 				<!--Item-->
 				<a
@@ -44,7 +43,7 @@
 					class:is-active={$page.url.pathname === '/stats'}
 					sveltekit:prefetch
 					href="/stats">
-					Statistic
+					{$t('statistic')}
 				</a>
 				<!--Item-->
 			</div>
@@ -56,7 +55,7 @@
 					class:is-active={$page.url.pathname === '/about'}
 					sveltekit:prefetch
 					href="/about">
-					About
+					{$t('about')}
 				</a>
 				{#if !getUser()?.id}
 					<a
@@ -64,10 +63,10 @@
 						class:is-active={$page.url.pathname === '/login'}
 						sveltekit:prefetch
 						href="/login">
-						Login
+						{$t('login')}
 					</a>
 				{:else}
-					<a class="navbar-item" on:click|once={handleSignout}> Log out </a>
+					<a class="navbar-item" on:click|once={handleSignout}> {$t('log-out')} </a>
 				{/if}
 			</div>
 		</div>

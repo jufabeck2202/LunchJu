@@ -12,6 +12,7 @@
 	import type { RealtimeSubscription } from '@supabase/supabase-js';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { t } from '$lib/helpers/i18n';
 	onMount(async () => {
 		comments.set(await initalFetchLunchComments(lunch.id));
 		await subscribeComments();
@@ -58,37 +59,36 @@
 		<div class="">
 			{#if isCreatingComment}
 				<form on:submit|preventDefault={handleCreateComment}>
-					<textarea bind:value={text} class="textarea is-link" placeholder="Enter Comment Text" />
+					<textarea
+						bind:value={text}
+						class="textarea is-link"
+						placeholder={$t('enter-comment-text')} />
 					<div class="mt-3">
 						<button
 							class="button is-link is-light is-pulled-right is-outlined is-rounded ml-3"
 							type="reset"
 							on:click={() => {
 								isCreatingComment = false;
-							}}>Cancel</button
-						>
+							}}>Cancel</button>
 						<button class="button is-link is-rounded is-pulled-right" type="submit"
-							>Send Comment</button
-						>
+							>{$t('send-comment')}</button>
 					</div>
 				</form>
 			{:else}
 				<button
 					disabled={!hasJoinedLunch}
 					class="button is-primary is-rounded is-pulled-right"
-					on:click={() => (isCreatingComment = true)}>Create Comment</button
-				>
+					on:click={() => (isCreatingComment = true)}>{$t('create-comment')}</button>
 			{/if}
 		</div>
 	</div>
 	<div class="card is-small">
 		<header class="card-header">
-			<p class="card-header-title">Comments: {$comments.length}</p>
+			<p class="card-header-title">{$t('comments')}: {$comments.length}</p>
 			<button
 				class="card-header-icon"
 				aria-label="more options"
-				on:click={() => (isShowingComments = !isShowingComments)}
-			>
+				on:click={() => (isShowingComments = !isShowingComments)}>
 				<span class="icon">
 					<Icon icon={isShowingComments ? 'fa:angle-down' : 'fa:angle-up'} />
 				</span>
@@ -101,7 +101,8 @@
 			<div class=" card comment mt-3" in:fade>
 				<div class="card-content msg">
 					<div class="msg-header">
-						<span class="msg-from"><small>From: {getUserByID(comment.user_id)?.name}</small></span>
+						<span class="msg-from"
+							><small>{$t('from')}: {getUserByID(comment.user_id)?.name}</small></span>
 						<span class="msg-timestamp"><small> {ToLocalTime(comment.created_at)}</small></span>
 						<span class="msg-attachment"><i class="fa fa-paperclip" /></span>
 					</div>

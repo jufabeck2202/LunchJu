@@ -4,6 +4,7 @@
 	import isToday from 'dayjs/plugin/isToday.js';
 	import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 	import { createEventDispatcher, onMount } from 'svelte';
+	import { t } from '$lib/helpers/i18n';
 
 	dayjs.extend(isToday);
 	dayjs.extend(customParseFormat);
@@ -12,8 +13,8 @@
 	export let currentDate: string;
 	export let hasJoinedlunch: boolean = false;
 
-	export let startTime: string = 'Start Time';
-	export let endTime: string = 'Stop Time';
+	export let startTime: string = $t('start-time');
+	export let endTime: string = $t('stop-time');
 
 	const dispatcher = createEventDispatcher<{
 		joinLunch: { startTime: string; endTime: string };
@@ -59,8 +60,8 @@
 	generateTime();
 	onMount(() => {
 		if (!hasJoinedlunch || !startTime || !endTime) {
-			startTime = 'Start Time';
-			endTime = 'Stop Time';
+			startTime = $t('start-time');
+			endTime = $t('stop-time');
 		}
 	});
 </script>
@@ -71,15 +72,15 @@
 		<form on:submit|preventDefault={handleJoinLunch}>
 			<div class="card">
 				<header class="card-header">
-					<p class="card-header-title">Join Lunch</p>
+					<p class="card-header-title">{$t('join-lunch')}</p>
 				</header>
 				<div class="card-content">
-					<p class="subtitle is-6">In what time frame do you have time to eat?</p>
+					<p class="subtitle is-6">{$t('in-what-time-frame-do-you-have-time-to-eat')}</p>
 					<div class="field is-grouped">
 						<div class="control">
 							<div class="select is-rounded">
 								<select bind:value={startTime}>
-									<option>Start Time</option>
+									<option>{$t('start-time')}</option>
 									{#each startTimes as start}
 										<option>{start.format('HH:mm')}</option>
 									{/each}
@@ -90,7 +91,7 @@
 						<div class="control">
 							<div class="select is-rounded">
 								<select bind:value={endTime}>
-									<option>Stop Time</option>
+									<option>{$t('stop-time')}</option>
 									{#each endTimes as start}
 										<option>{start.format('HH:mm')}</option>
 									{/each}
@@ -105,13 +106,13 @@
 									type="submit"
 									class="button is-link"
 									disabled={startTime == 'Start Time' || endTime == 'Stop Time'}>
-									Edit Lunchtime</button>
+									{$t('edit-lunchtime')}</button>
 							{:else}
 								<button
 									type="submit"
 									class="button is-link"
 									disabled={startTime == 'Start Time' || endTime == 'Stop Time'}>
-									Join Lunch</button>
+									{$t('join-lunch')}</button>
 							{/if}
 						</div>
 						<div class="control">
@@ -120,7 +121,7 @@
 								type="reset"
 								on:click={() => {
 									handleJoinLunchNoTime();
-								}}>I don't know</button>
+								}}>{$t('i-dont-know')}</button>
 						</div>
 						<div class="control">
 							<button
@@ -128,7 +129,7 @@
 								type="reset"
 								on:click={() => {
 									isShowingJoinModal = false;
-								}}>Cancel</button>
+								}}>{$t('cancel')}</button>
 						</div>
 					</div>
 				</div>

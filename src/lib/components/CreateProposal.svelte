@@ -3,7 +3,7 @@
 
 	import { createLunchProposal, fetchMeals } from '$lib/stores/userStore';
 	import AutoComplete from 'simple-svelte-autocomplete';
-
+	import { t } from '$lib/helpers/i18n';
 	export let lunch: definitions['lunchs'];
 	export let hasJoinedLunch: boolean;
 	let isLoading = false;
@@ -35,14 +35,13 @@
 </script>
 
 <div class="card p-3 mb-3 ">
-	<h2 class="title is-4 p-3">What to eat?</h2>
-	<p class="subtitle is-6 pl-3">There are no suggestions. <br /> Make one</p>
+	<h2 class="title is-4 p-3">{$t('what-to-eat')}</h2>
+	<p class="subtitle is-6 pl-3">{$t('there-are-no-suggestions')} <br /> {$t('make-one')}</p>
 	<button
-	disabled={!hasJoinedLunch}
+		disabled={!hasJoinedLunch}
 		class="button is-primary is-fullwidth is-rounded is-link"
-		on:click={() => (isProposalMenu = true)}
-	>
-		Create Suggestion
+		on:click={() => (isProposalMenu = true)}>
+		{$t('create-proposal')}
 	</button>
 	<div class="modal" class:is-active={isProposalMenu}>
 		<div class="modal-background" />
@@ -50,12 +49,12 @@
 			<form on:submit|preventDefault={handleCreateLunchProposal}>
 				<div class="card">
 					<header class="card-header">
-						<p class="card-header-title">Create Proposal</p>
+						<p class="card-header-title">{$t('create-proposal')}</p>
 					</header>
 					<div class="card-content">
-						<div class="subtitle">What food do you want to eat?</div>
+						<div class="subtitle">{$t('what-food-do-you-want-to-eat')}</div>
 						<div class="field">
-							<label class="label">Name</label>
+							<label class="label">{$t('name')}</label>
 							<div class="control pb-6">
 								<AutoComplete
 									class="input"
@@ -64,13 +63,12 @@
 									bind:selectedItem={selectedFood}
 									localFiltering="false"
 									maxItemsToShowInList="3"
-									placeholder="Enter food name"
+									placeholder={$t('enter-food-name')}
 									labelFieldName="name"
 									valueFieldName="id"
-									hideArrow="true"
-								>
+									hideArrow="true">
 									<div slot="no-results">
-										<span>Create new Food {mealName}</span>
+										<span>{$t('create-new-food')} {mealName}</span>
 									</div>
 								</AutoComplete>
 							</div>
@@ -82,8 +80,7 @@
 									type="submit"
 									class="button is-link"
 									disabled={!selectedFood && mealName.length < 3}
-									is-loading={isLoading}>Create Proposal</button
-								>
+									is-loading={isLoading}>{$t('create-proposal')}</button>
 							</div>
 							<div class="control">
 								<button
@@ -91,8 +88,7 @@
 									type="reset"
 									on:click={() => {
 										isProposalMenu = false;
-									}}>Cancel</button
-								>
+									}}>{$t('cancel')}</button>
 							</div>
 						</div>
 					</div>
@@ -104,7 +100,6 @@
 			on:click={() => {
 				isProposalMenu = false;
 			}}
-			aria-label="close"
-		/>
+			aria-label="close" />
 	</div>
 </div>

@@ -3,8 +3,8 @@
 	import { setUsername } from '$lib/stores/userStore';
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
-
 	let username: string;
+	import { t } from '$lib/helpers/i18n';
 	const dispatch = createEventDispatcher();
 
 	const handleName = async () => {
@@ -23,12 +23,12 @@
 	<form on:submit|preventDefault={handleName}>
 		<div class="field">
 			<!-- svelte-ignore a11y-label-has-associated-control -->
-			<label class="label">Username</label>
+			<label class="label">{$t('username')}</label>
 			<div class="control">
-				<input class="input" type="text" placeholder="Username" bind:value={username} />
+				<input class="input" type="text" placeholder={$t('username')} bind:value={username} />
 			</div>
 		</div>
 
-		<button class="button is-primary" type="submit">Confirm</button>
+		<button class="button is-primary" type="submit">{$t('confirm')}</button>
 	</form>
 </div>

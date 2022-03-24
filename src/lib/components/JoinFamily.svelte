@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { t } from '$lib/helpers/i18n';
+
 	import { ErrorToast } from '$lib/helpers/toast';
 	import type { definitions } from '$lib/models';
 	import { joinFamily } from '$lib/stores/userStore';
@@ -16,7 +18,7 @@
 			loading = true;
 			const error = await joinFamily(family.id);
 			if (error) {
-				ErrorToast("Couldn't join family");
+				ErrorToast($t('couldnt-join-family'));
 			} else {
 				dispatch('familyJoined');
 			}
@@ -32,9 +34,12 @@
 	<form on:submit|preventDefault={handleJoinFamily}>
 		<div class="field">
 			<div class="subtitle is-6 pt-3 ">
-				You have been invited to join the family: {family.name} <br />
+				{$t('invited-to-family')}
+				{family.name} <br />
 			</div>
 		</div>
-		<button type="submit" class="button is-primary" is-loading={loading}> Join Family </button>
+		<button type="submit" class="button is-primary" is-loading={loading}>
+			{$t('join-family')}
+		</button>
 	</form>
 </div>
