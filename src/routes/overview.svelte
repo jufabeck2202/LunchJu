@@ -3,9 +3,11 @@
 	import PageContainer from '$lib/components/PageContainer.svelte';
 	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
 
-	import { createLunchesForWeek, lunches, family } from '$lib/stores/userStore';
+	import { createLunchesForWeek, lunches, family, mountFamily } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	onMount(async () => {
+		//TODO on Account creation, an empty lunches array is sent to the backend
+		//TODO check if family id exists
 		await createLunchesForWeek();
 	});
 
@@ -20,8 +22,7 @@
 				class="button is-outline is-rounded is-small mt-1"
 				on:click={() => {
 					isShareModalOpen = true;
-				}}>Invite</button
-			>
+				}}>Invite</button>
 		</div>
 		<div class="columns is-multiline">
 			<ShareFamilyModal bind:isOpen={isShareModalOpen} familyId={$family.id} />

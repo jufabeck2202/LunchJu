@@ -11,6 +11,8 @@ export const lunchMembers = writable<definitions['lunch_members'][] | []>([]);
 
 let unserName: string | null = null;
 let familyID: string | null = null;
+
+
 let lunchSubscription: RealtimeSubscription;
 let lunchMemberSubscription: RealtimeSubscription;
 let userSubscription: RealtimeSubscription;
@@ -18,7 +20,10 @@ let userSubscription: RealtimeSubscription;
 let familyUsersLocal: definitions['users_to_families'][] = [];
 export let lunchsLocal: definitions['lunchs'][] = [];
 
-const familySubscription = family.subscribe(async (family) => {
+
+
+export const familySubscription = family.subscribe(async (family) => {
+	console.log("Subscribing to family", family);
 	/**
 	 * Family exists, start subscribing to all updates
 	 */
@@ -408,6 +413,7 @@ export const createCommentForLunch = async (lunchId: string, comment: string) =>
  * @returns family exists or not
  */
 export const mountFamily = async (): Promise<boolean> => {
+	console.log('mountFamily');
 	const { data, error } = await supabase
 		.from<definitions['users_to_families']>('users_to_families')
 		.select('*')
@@ -495,10 +501,12 @@ export async function getUserAsync() {
 	return await supabase.auth.user();
 }
 
+
 export const createLunchesForWeek = async () => {
 	// get the next 7 days
 	const today = dayjs.utc();
 	const next7days = [today];
+	// adds the next 7 days to the array
 	for (let i = 1; i < 7; i++) {
 		next7days.push(dayjs.utc().add(i, 'day'));
 	}
@@ -514,8 +522,10 @@ export const createLunchesForWeek = async () => {
 			toCreate.push(day);
 		}
 	});
+	console.log("toCreate", toCreate);
 	const lunchsForWeek = [];
 
+	//TODO Error: FamilyId is zero
 	for (const date of toCreate) {
 		const lunch = {
 			created_at: date.toISOString(),
@@ -525,6 +535,7 @@ export const createLunchesForWeek = async () => {
 		};
 		lunchsForWeek.push(lunch);
 	}
+	console.log("lunchsForWeek", lunchsForWeek);
 	await supabase.from<definitions['lunchs']>('lunchs').insert(lunchsForWeek);
 };
 
