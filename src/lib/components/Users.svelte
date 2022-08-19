@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { user } from '$lib/userWritableStore';
 
-	import { user } from '$lib/userWritableStore';
-
 	import { familyUsers } from '$lib/stores/userStore';
 </script>
 

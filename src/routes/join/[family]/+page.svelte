@@ -1,18 +1,3 @@
-<script context="module">
-	export async function load(params) {
-		if (params.params.family) {
-			return {
-				status: 200
-			};
-		}
-		//TODO check if exists
-		return {
-			status: 302,
-			redirect: '/login'
-		};
-	}
-</script>
-
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { definitions } from '$lib/models';

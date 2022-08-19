@@ -1,6 +1,3 @@
-<script context="module">
-</script>
-
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import CreateFamily from '$lib/components/createFamily.svelte';
@@ -10,7 +7,7 @@
 	import { getUserAsync, getUserName, mountFamily, setUsername } from '$lib/stores/userStore';
 	import { supabase } from '$lib/supabaseclient';
 	import { onMount } from 'svelte';
-	import Stats from './stats.svelte';
+	import Stats from '../stats/+page.svelte';
 	// let username = 'beju@beju.de';
 	// let password = 'Juliansssss1123';
 	// let loading;
