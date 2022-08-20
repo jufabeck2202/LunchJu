@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	import { page } from '$app/stores';
-	import { getUser, signOut } from '$lib/stores/userStore';
+	import { getUserAsync, signOut } from '$lib/stores/userStore';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { t } from '$lib/helpers/i18n';
 	let mobile;
@@ -13,6 +13,11 @@
 	async function handleSignout() {
 		await signOut();
 		goto('/login');
+	}
+
+	async function userLoggedIn() {
+		const user = await getUserAsync();
+		return user.data.user?.id !== undefined;
 	}
 </script>
 
@@ -57,17 +62,23 @@
 					href="/about">
 					{$t('about')}
 				</a>
-				{#if !getUser()?.id}
-					<a
-						class="navbar-item"
-						class:is-active={$page.url.pathname === '/login'}
-						sveltekit:prefetch
-						href="/login">
-						{$t('login')}
-					</a>
-				{:else}
-					<a class="navbar-item" on:click|once={handleSignout}> {$t('log-out')} </a>
-				{/if}
+				{#await userLoggedIn()}
+					Loading...
+				{:then user}
+					{#if !user}
+						<a
+							class="navbar-item"
+							class:is-active={$page.url.pathname === '/login'}
+							sveltekit:prefetch
+							href="/login">
+							{$t('login')}
+						</a>
+					{:else}
+						<a class="navbar-item" on:click|once={handleSignout}> {$t('log-out')} </a>
+					{/if}
+				{:catch someError}
+					System error: {someError.message}.
+				{/await}
 			</div>
 		</div>
 	</nav>

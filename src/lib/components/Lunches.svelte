@@ -1,9 +1,9 @@
 <script lang="ts">
+	import type { Database } from '$lib/DatabaseDefinitions';
 	import { GetDay, renderTime, ToLocalTime } from '$lib/helpers/time';
-	import type { definitions } from '$lib/models';
 	import {
 		editLunchTime,
-		getUser,
+		getUserAsync,
 		getUserByID,
 		initalFetchLunchMembers,
 		joinLunch,
@@ -12,17 +12,21 @@
 		removeCookForLunch,
 		setCookForLunch
 	} from '$lib/stores/userStore';
+	import { onMount } from 'svelte';
 	import JoinTimeModal from './JoinTimeModal.svelte';
 
-	export let lunch: definitions['lunchs'];
+	export let lunch: Database['public']['Tables']['lunchs']['Row'];
 	export let hasJoinedlunch = false;
 
-	let localLunchMembers: definitions['lunch_members'][] = [];
+	let localLunchMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
 	let isMouseOnLunch = false;
 	let isShowingJoinModal = false;
+	let userId: string | undefined;
+	let localLunchMember: Database['public']['Tables']['lunch_members']['Row'];
 
-	let localLunchMember: definitions['lunch_members'];
-
+	onMount(async () => {
+		userId = (await getUserAsync()).data.user?.id;
+	});
 	const handleImTheCook = async (lunch) => {
 		const error = await setCookForLunch(lunch);
 	};
@@ -44,20 +48,31 @@
 	};
 
 	const handleLeaveLunch = async (lunch) => {
-		if (lunch.cook_id === getUser().id) {
+		const userId = (await getUserAsync()).data.user?.id;
+		if (!userId) {
+			throw new Error('No user ID');
+		}
+		if (lunch.cook_id === userId) {
 			const error = await removeCookForLunch(lunch);
 		}
 		const error = await leaveLunch(lunch);
 		await initalFetchLunchMembers();
 	};
 
-	lunchMembers.subscribe((members) => {
+	lunchMembers.subscribe(async (members) => {
 		// check if user is in the members list
-		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
+		const userId = (await getUserAsync()).data.user?.id;
+		if (!userId) {
+			throw new Error('No user ID');
+		}
+		if (members.some((member) => member.user_id === userId && member.lunch_id === lunch.id)) {
 			hasJoinedlunch = true;
-			localLunchMember = members.find(
-				(member) => member.user_id === getUser().id && member.lunch_id === lunch.id
+			const localMembers = members.find(
+				(member) => member.user_id === userId && member.lunch_id === lunch.id
 			);
+			if (localMembers) {
+				localLunchMember = localMembers;
+			}
 		} else {
 			hasJoinedlunch = false;
 		}
@@ -108,9 +123,9 @@
 				<button
 					class="m-1 button  is-rounded is-link  is-outlined is-responsive"
 					on:click={() => (isShowingJoinModal = true)}>Change Lunchtime</button>
-				{#if !lunch.cook_id || lunch.cook_id === getUser().id}
+				{#if !lunch.cook_id || lunch.cook_id === userId}
 					<!-- content here -->
-					{#if lunch.cook_id == getUser().id}
+					{#if lunch.cook_id == userId}
 						{#if isMouseOnLunch}
 							<button
 								on:focus={() => (isMouseOnLunch = true)}

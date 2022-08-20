@@ -3,7 +3,7 @@
 	import PageContainer from '$lib/components/PageContainer.svelte';
 	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
 
-	import { createLunchesForWeek, lunches, family, mountFamily } from '$lib/stores/userStore';
+	import { createLunchesForWeek, lunches, family } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	onMount(async () => {
 		//TODO on Account creation, an empty lunches array is sent to the backend

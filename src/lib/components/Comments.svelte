@@ -9,16 +9,17 @@
 		initalFetchLunchComments
 	} from '$lib/stores/userStore';
 	import { supabase } from '$lib/supabaseclient';
-	import type { RealtimeSubscription } from '@supabase/supabase-js';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { t } from '$lib/helpers/i18n';
+	import type { RealtimeChannel } from '@supabase/supabase-js';
+	import type { Database } from '$lib/DatabaseDefinitions';
 	onMount(async () => {
 		comments.set(await initalFetchLunchComments(lunch.id));
 		await subscribeComments();
 	});
 
-	export let lunch: definitions['lunchs'];
+	export let lunch: Database['public']['Tables']['lunchs']['Row'];
 	export let hasJoinedLunch: boolean;
 	const handleCreateComment = async () => {
 		if (text.length > 0) {
@@ -30,27 +31,27 @@
 	let isCreatingComment = false;
 	let isShowingComments = true;
 	let text = '';
-	const comments = writable<definitions['lunch_proposal_comments'][] | []>([]);
+	const comments = writable<Database['public']['Tables']['lunch_proposal_comments']['Row'][]>([]);
 
-	let commentsSubscription: RealtimeSubscription;
+	let commentsSubscription: RealtimeChannel;
 
 	const subscribeComments = async () => {
-		commentsSubscription = await supabase
-			.from<definitions['lunch_proposal_comments']>('lunch_proposal_comments')
-			.on('INSERT', (comment) => {
-				//TODO: add to RLS
-				if (comment.new.lunch_id == lunch.id) {
-					comments.update((c) =>
-						c.some((cc) => cc.id === comment.new.id)
-							? c
-							: [comment.new, ...c].sort((a, b) => a.created_at - b.created_at)
-					);
-				}
-			})
-			.on('DELETE', (comment) => {
-				comments.update((l) => l.filter((c) => c.id !== comment.old.id));
-			})
-			.subscribe();
+		// commentsSubscription = await supabase
+		// 	.from<definitions['lunch_proposal_comments']>('lunch_proposal_comments')
+		// 	.on('INSERT', (comment) => {
+		// 		//TODO: add to RLS
+		// 		if (comment.new.lunch_id == lunch.id) {
+		// 			comments.update((c) =>
+		// 				c.some((cc) => cc.id === comment.new.id)
+		// 					? c
+		// 					: [comment.new, ...c].sort((a, b) => a.created_at - b.created_at)
+		// 			);
+		// 		}
+		// 	})
+		// 	.on('DELETE', (comment) => {
+		// 		comments.update((l) => l.filter((c) => c.id !== comment.old.id));
+		// 	})
+		// 	.subscribe();
 	};
 </script>
 

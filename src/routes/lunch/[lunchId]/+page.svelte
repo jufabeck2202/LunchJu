@@ -6,20 +6,20 @@
 	import { onMount } from 'svelte';
 	import CreateProposal from '$lib/components/CreateProposal.svelte';
 	import Suggestion from '$lib/components/Suggestion.svelte';
-	import type { definitions } from '$lib/models';
 	import Lunch from '$lib/components/Lunches.svelte';
 	import Users from '$lib/components/Users.svelte';
 	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
 	import Comments from '$lib/components/Comments.svelte';
 	import PageContainer from '$lib/components/PageContainer.svelte';
 	import JoinTimeModal from '$lib/components/JoinTimeModal.svelte';
+	import type { Database } from '$lib/DatabaseDefinitions';
 
 	let isShareModelOpen: boolean = false;
 	const lunchId = $page.params['lunchId'];
-	let lunch: definitions['lunchs'] = null;
+	let lunch: Database['public']['Tables']['lunchs']['Row'];
 	let hasJoinedLunch: boolean = false;
 	onMount(async () => {
-		 await initalFetchLunches();
+		await initalFetchLunches();
 		if (!lunchsLocal.some((l) => l.id === lunchId)) {
 			goto('/overview');
 		}
@@ -48,8 +48,7 @@
 					class="button is-outline is-rounded is-small mt-1"
 					on:click={() => {
 						isShareModelOpen = true;
-					}}>invite</button
-				>
+					}}>invite</button>
 			</div>
 		</div>
 		{#if lunch}

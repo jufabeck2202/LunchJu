@@ -4,12 +4,13 @@
 	import { signIn, signUp } from '$lib/stores/userStore';
 	import { supabase } from '$lib/supabaseclient';
 	import Icon from '@iconify/svelte';
+	import { AuthError } from '@supabase/supabase-js';
 
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
 
-	let username;
-	let password;
+	let username: string;
+	let password: string;
 	let loading = false;
 	const dispatch = createEventDispatcher();
 	const handleSignUp = async () => {
@@ -23,7 +24,11 @@
 				dispatch('signUp', user);
 			}
 		} catch (error) {
-			ErrorToast(error.error_description || error.message);
+			if (error instanceof AuthError) {
+				ErrorToast(error.message);
+			} else {
+				ErrorToast('Something went wrong');
+			}
 		} finally {
 			loading = false;
 		}
@@ -39,7 +44,11 @@
 				dispatch('signIn', user);
 			}
 		} catch (error) {
-			ErrorToast(error.error_description || error.message);
+			if (error instanceof AuthError) {
+				ErrorToast(error.message);
+			} else {
+				ErrorToast('Something went wrong');
+			}
 		} finally {
 			loading = false;
 		}
@@ -47,16 +56,20 @@
 	const handleSignInGithub = async () => {
 		try {
 			loading = true;
-			const { error } = await supabase.auth.signIn(
-				{ provider: 'github' },
-				{ redirectTo: 'https://lunch-ju.vercel.app/overview' }
-			);
+			const { error } = await supabase.auth.signInWithOAuth({
+				provider: 'github',
+				options: { redirectTo: 'https://lunch-ju.vercel.app/overview' }
+			});
 			if (error) {
 				throw error;
 			}
 			dispatch('signIn');
 		} catch (error) {
-			ErrorToast(error.error_description || error.message);
+			if (error instanceof AuthError) {
+				ErrorToast(error.message);
+			} else {
+				ErrorToast('Something went wrong');
+			}
 		} finally {
 			loading = false;
 		}

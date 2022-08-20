@@ -4,13 +4,14 @@
 	import { createLunchProposal, fetchMeals } from '$lib/stores/userStore';
 	import AutoComplete from 'simple-svelte-autocomplete';
 	import { t } from '$lib/helpers/i18n';
-	export let lunch: definitions['lunchs'];
+	import type { Database } from '$lib/DatabaseDefinitions';
+	export let lunch: Database['public']['Tables']['lunchs']['Row'];
 	export let hasJoinedLunch: boolean;
 	let isLoading = false;
 	let isProposalMenu = false;
 	let mealName: string = '';
 	let selectedFood;
-	let lunchSuggestions: definitions['meals'][] = [];
+	let lunchSuggestions: Database['public']['Tables']['meals']['Row'][] = [];
 
 	const handleCreateLunchProposal = async () => {
 		isLoading = true;
@@ -24,7 +25,7 @@
 		isProposalMenu = false;
 	};
 
-	const getItems = async (keyword) => {
+	const getItems = async (keyword: string) => {
 		isLoading = true;
 		mealName = keyword;
 		const lunches = await fetchMeals();

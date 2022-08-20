@@ -1,17 +1,18 @@
 <script lang="ts">
+	import type { Database } from '$lib/DatabaseDefinitions';
+
 	import { GetDateMonthYear, GetDay, renderTime } from '$lib/helpers/time';
-	import type { definitions } from '$lib/models';
 	import {
 		lunchMembers,
 		joinLunch,
 		leaveLunch,
-		getUser,
+		getUserAsync,
 		initalFetchLunchMembers
 	} from '$lib/stores/userStore';
 	import JoinTimeModal from './JoinTimeModal.svelte';
 
-	export let lunch: definitions['lunchs'];
-	let localLunchMembers: definitions['lunch_members'][] = [];
+	export let lunch: Database['public']['Tables']['lunchs']['Row'];
+	let localLunchMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
 	let hasJoinedlunch = false;
 	let isShowingJoinModal = false;
 
@@ -19,8 +20,13 @@
 		localLunchMembers = members.filter((member) => member.lunch_id === lunch.id);
 	});
 
-	$: lunchMembers.subscribe((members) => {
-		if (members.some((member) => member.user_id === getUser().id && member.lunch_id === lunch.id)) {
+	$: lunchMembers.subscribe(async (members) => {
+		if (
+			members.some(
+				async (member) =>
+					member.user_id === (await getUserAsync()).data.user?.id && member.lunch_id === lunch.id
+			)
+		) {
 			hasJoinedlunch = true;
 		} else {
 			hasJoinedlunch = false;
@@ -39,7 +45,10 @@
 </script>
 
 <div class="column is-4-desktop is-half-tablet is-4-widescreen is-3-fullhd">
-	<JoinTimeModal bind:isShowingJoinModal on:joinLunch={handleJoinLunch} currentDate={lunch.created_at}/>
+	<JoinTimeModal
+		bind:isShowingJoinModal
+		on:joinLunch={handleJoinLunch}
+		currentDate={lunch.created_at} />
 	<div class="card pt-4 pb-4 pl-3 pr-2">
 		<div class="columns is-mobile">
 			<!-- Left side -->

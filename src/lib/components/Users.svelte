@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { user } from '$lib/userWritableStore';
-
 	import { familyUsers } from '$lib/stores/userStore';
 </script>
 
@@ -17,8 +15,7 @@
 							<img
 								class="is-rounded"
 								src={`https://avatars.dicebear.com/api/pixel-art/${user.name}.svg`}
-								alt="avatar"
-							/>
+								alt="avatar" />
 						</figure>
 					</div>
 					<div class="level-item">

@@ -1,25 +1,30 @@
 <script lang="ts">
-	import type { definitions } from '$lib/models';
 	import Icon from '@iconify/svelte';
 
 	import {
 		createVote,
 		deleteLunchProposal,
 		deleteVote,
-		getUser,
+		getUserAsync,
 		removeLunchProposalForVote,
 		setLunchProposalForVote
 	} from '$lib/stores/userStore';
+	import { onMount } from 'svelte';
+	import type { Database } from '$lib/DatabaseDefinitions';
 	export let upvote = 0;
 	export let downvote = 0;
 	export let name = '';
-	export let lunchProposal: definitions['lunch_proposal'];
+	export let lunchProposal: Database['public']['Tables']['lunch_proposal']['Row'];
 	export let lunchId: string;
 	export let hasUpvoted: boolean;
 	export let hasDownvoted: boolean;
 	export let foodIsSelected: boolean;
 	export let isCook: boolean;
 	export let hasJoinedLunch: boolean;
+	let userId: string | undefined = undefined;
+	onMount(async () => {
+		userId = (await getUserAsync()).data.user?.id;
+	});
 	const handleVote = async (upvote: boolean) => {
 		if (hasDownvoted || hasUpvoted) {
 			await deleteVote(lunchProposal.id, lunchId);
@@ -58,7 +63,7 @@
 						<p class="subtitle is-6">{name}</p>
 					</div>
 				</div>
-				{#if lunchProposal.user_id == getUser().id && !foodIsSelected}
+				{#if lunchProposal.user_id == userId && !foodIsSelected}
 					<div class="level-left">
 						<div class="level-item">
 							<button
@@ -101,8 +106,7 @@
 						disabled={hasDownvoted || !hasJoinedLunch}
 						on:click={async () => {
 							await handleVote(true);
-						}}>{upvote} 👍</button
-					>
+						}}>{upvote} 👍</button>
 				</div>
 			</div>
 			<div class="level-item has-text-centered">
@@ -112,10 +116,8 @@
 						disabled={hasUpvoted || !hasJoinedLunch}
 						on:click={async () => {
 							await handleVote(false);
-						}}
-					>
-						{downvote} 👎</button
-					>
+						}}>
+						{downvote} 👎</button>
 				</div>
 			</div>
 		</div>

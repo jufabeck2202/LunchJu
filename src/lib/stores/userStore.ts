@@ -1,29 +1,30 @@
 import { supabase } from '$lib/supabaseclient';
-import type { ApiError, PostgrestError, RealtimeSubscription, User } from '@supabase/supabase-js';
-import type { definitions } from '$lib/models';
+import type { Database } from '$lib/DatabaseDefinitions';
+import type { AuthError, PostgrestError, User, RealtimeChannel } from '@supabase/supabase-js';
 import { writable } from 'svelte/store';
 import dayjs from 'dayjs';
+export const family = writable<Database['public']['Tables']['families']['Row'] | null>(null);
+export const lunches = writable<Database['public']['Tables']['lunchs']['Row'][] | []>([]);
 
-export const family = writable<definitions['families'] | null>(null);
-export const lunches = writable<definitions['lunchs'][] | []>([]);
-export const familyUsers = writable<definitions['users_to_families'][] | []>([]);
-export const lunchMembers = writable<definitions['lunch_members'][] | []>([]);
+export const familyUsers = writable<
+	Database['public']['Tables']['users_to_families']['Row'][] | []
+>([]);
+export const lunchMembers = writable<Database['public']['Tables']['lunch_members']['Row'][] | []>(
+	[]
+);
 
-let unserName: string | null = null;
-let familyID: string | null = null;
+let unserName: string | undefined = undefined;
+let familyID: string | undefined = undefined;
 
+let lunchSubscription: RealtimeChannel;
+let lunchMemberSubscription: RealtimeChannel;
+let userSubscription: RealtimeChannel;
 
-let lunchSubscription: RealtimeSubscription;
-let lunchMemberSubscription: RealtimeSubscription;
-let userSubscription: RealtimeSubscription;
-
-let familyUsersLocal: definitions['users_to_families'][] = [];
-export let lunchsLocal: definitions['lunchs'][] = [];
-
-
+let familyUsersLocal: Database['public']['Tables']['users_to_families']['Row'][] = [];
+export let lunchsLocal: Database['public']['Tables']['lunchs']['Row'][] = [];
 
 export const familySubscription = family.subscribe(async (family) => {
-	console.log("Subscribing to family", family);
+	console.log('Subscribing to family', family);
 	/**
 	 * Family exists, start subscribing to all updates
 	 */
@@ -53,41 +54,45 @@ export const getUserByID = (id: string) => {
 	return user;
 };
 
-export const setCookForLunch = async (lunch: definitions['lunchs']) => {
-	lunch.cook_id = getUser().id;
-	await supabase.from<definitions['lunchs']>('lunchs').update(lunch).eq('id', lunch.id);
+export const setCookForLunch = async (lunch: Database['public']['Tables']['lunchs']['Row']) => {
+	const userId = await (await getUserAsync()).data.user?.id;
+	if (!userId) {
+		return;
+	}
+	lunch.cook_id = userId;
+	await supabase.from('lunchs').update(lunch).eq('id', lunch.id);
 };
 
-export const removeCookForLunch = async (lunch: definitions['lunchs']) => {
+export const removeCookForLunch = async (lunch: Database['public']['Tables']['lunchs']['Row']) => {
 	lunch.cook_id = null;
-	await supabase.from<definitions['lunchs']>('lunchs').update(lunch).eq('id', lunch.id);
+	await supabase.from('lunchs').update(lunch).eq('id', lunch.id);
 };
 
-export const createVote = async (lunchProposalId, lunchId, voteType: boolean) => {
-	const { data, error } = await supabase
-		.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')
-		.insert({
-			lunch_proposal_id: lunchProposalId,
-			upvote: voteType,
-			lunch_id: lunchId,
-			family_id: familyID,
-			user_id: getUser().id
-		});
+export const createVote = async (lunchProposalId: string, lunchId: string, voteType: boolean) => {
+	const userId = await (await getUserAsync()).data.user?.id;
+	if (!userId || !familyID) {
+		throw new Error('User not logged in');
+	}
+	const { data, error } = await supabase.from('lunch_proposal_vote').insert({
+		lunch_proposal_id: lunchProposalId,
+		upvote: voteType,
+		lunch_id: lunchId,
+		family_id: familyID,
+		user_id: userId
+	});
 	if (error) {
 		throw error;
 	}
 };
 
-export const deleteVote = async (lunchProposalId, lunchId) => {
-	const { data, error } = await supabase
-		.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')
-		.delete()
-		.match({
-			user_id: getUser().id,
-			lunch_id: lunchId,
-			lunch_proposal_id: lunchProposalId,
-			family_id: familyID
-		});
+export const deleteVote = async (lunchProposalId: string, lunchId: string) => {
+	const userId = await (await getUserAsync()).data.user?.id;
+	const { data, error } = await supabase.from('lunch_proposal_vote').delete().match({
+		user_id: userId,
+		lunch_id: lunchId,
+		lunch_proposal_id: lunchProposalId,
+		family_id: familyID
+	});
 
 	if (error) {
 		throw error;
@@ -100,68 +105,95 @@ export const resubscibe = async () => {
 };
 
 const subscribeLunchMemers = async () => {
-	lunchMemberSubscription = await supabase
-		.from<definitions['lunch_members']>('lunch_members')
-		.on('INSERT', (lunchMember) => {
-			if (lunchMember.new.family_id == familyID) {
-				lunchMembers.update((l) =>
-					l.some((member) => member.id === lunchMember.new.id) ? l : [lunchMember.new, ...l]
-				);
+	lunchMemberSubscription = supabase
+		.channel('public:lunch_members')
+		.on(
+			'postgres_changes',
+			{ event: 'INSERT', schema: 'public', table: 'countries' },
+			(payload) => {
+				console.log('Change received!', payload);
 			}
-		})
-		.on('UPDATE', (newLunch) => {
-			if (newLunch.new.family_id == familyID) {
-				lunchMembers.update((l) => {
-					const index = l.findIndex((lunchMember) => lunchMember.id === newLunch.new.id);
-					if (index !== -1) {
-						l[index] = newLunch.new;
-					}
-					return l;
-				});
+		)
+		.on(
+			'postgres_changes',
+			{ event: 'DELETE', schema: 'public', table: 'countries' },
+			(payload) => {
+				console.log('Change received!', payload);
 			}
-		})
-		.on('DELETE', (deleted) => {
-			lunchMembers.update((l) => l.filter((lunchMember) => lunchMember.id !== deleted.old.id));
-		})
+		)
 		.subscribe();
+	// lunchMemberSubscription = await supabase
+	// 	.from('lunch_members')
+	// 	.on('INSERT', (lunchMember) => {
+	// 		if (lunchMember.new.family_id == familyID) {
+	// 			lunchMembers.update((l) =>
+	// 				l.some((member) => member.id === lunchMember.new.id) ? l : [lunchMember.new, ...l]
+	// 			);
+	// 		}
+	// 	})
+	// 	.on('UPDATE', (newLunch) => {
+	// 		if (newLunch.new.family_id == familyID) {
+	// 			lunchMembers.update((l) => {
+	// 				const index = l.findIndex((lunchMember) => lunchMember.id === newLunch.new.id);
+	// 				if (index !== -1) {
+	// 					l[index] = newLunch.new;
+	// 				}
+	// 				return l;
+	// 			});
+	// 		}
+	// 	})
+	// 	.on('DELETE', (deleted) => {
+	// 		lunchMembers.update((l) => l.filter((lunchMember) => lunchMember.id !== deleted.old.id));
+	// 	})
+	// 	.subscribe();
 };
 
 const subscribeUsers = async () => {
-	userSubscription = await supabase
-		.from<definitions['users_to_families']>('users_to_families')
-		.on('INSERT', (user) => {
-			//TODO: add to RLS
-			if (user.new.families_id == familyID) {
-				familyUsers.update((usr) =>
-					usr.some((us) => us.user_id === user.new.user_id) ? usr : [user.new, ...usr]
-				);
+	supabase
+		.channel('postgresChangesChannel')
+		.on(
+			'postgres_changes',
+			{ event: 'INSERT', schema: 'public', table: 'users_to_families' },
+			(payload) => {
+				console.log('Change received!', payload);
 			}
-		})
+		)
 		.subscribe();
+	// userSubscription = await supabase
+	// 	.channel('postgresChangesChannel') // .from('users_to_families')
+	// 	.on('INSERT', (user) => {
+	// 		//TODO: add to RLS
+	// 		if (user.new.families_id == familyID) {
+	// 			familyUsers.update((usr) =>
+	// 				usr.some((us) => us.user_id === user.new.user_id) ? usr : [user.new, ...usr]
+	// 			);
+	// 		}
+	// 	})
+	// 	.subscribe();
 };
 const subscribeLunch = async () => {
-	lunchSubscription = await supabase
-		.from<definitions['lunchs']>('lunchs')
-		.on('INSERT', (lunch) => {
-			//TODO: add to RLS
-			if (lunch.new.family_id == familyID) {
-				lunches.update((l) =>
-					l.some((ll) => ll.id === lunch.new.id)
-						? l.sort((a, b) => a.created_at - b.created_at)
-						: [lunch.new, ...l].sort((a, b) => a.created_at - b.created_at)
-				);
-			}
-		})
-		.on('UPDATE', (newLunch) => {
-			lunches.update((l) => {
-				const index = l.findIndex((lunch) => lunch.id === newLunch.new.id);
-				if (index !== -1) {
-					l[index] = newLunch.new;
-				}
-				return l;
-			});
-		})
-		.subscribe();
+	// lunchSubscription = await supabase
+	// 	.from('lunchs')
+	// 	.on('INSERT', (lunch) => {
+	// 		//TODO: add to RLS
+	// 		if (lunch.new.family_id == familyID) {
+	// 			lunches.update((l) =>
+	// 				l.some((ll) => ll.id === lunch.new.id)
+	// 					? l.sort((a, b) => a.created_at - b.created_at)
+	// 					: [lunch.new, ...l].sort((a, b) => a.created_at - b.created_at)
+	// 			);
+	// 		}
+	// 	})
+	// 	.on('UPDATE', (newLunch) => {
+	// 		lunches.update((l) => {
+	// 			const index = l.findIndex((lunch) => lunch.id === newLunch.new.id);
+	// 			if (index !== -1) {
+	// 				l[index] = newLunch.new;
+	// 			}
+	// 			return l;
+	// 		});
+	// 	})
+	// 	.subscribe();
 };
 const destory = () => {
 	lunchSubscription.unsubscribe();
@@ -171,32 +203,43 @@ const destory = () => {
 
 export const initalFetchLunches = async () => {
 	const { data, error } = await supabase
-		.from<definitions['lunchs']>('lunchs')
+		.from('lunchs')
 		.select('*')
 		.order('created_at', { ascending: false })
 		.eq('family_id', familyID)
 		.limit(7);
 	// const lunchesCreatedToday = data.filter((lunch) => IsDateToday(lunch.created_at));
+	if (!data) {
+		throw error;
+	}
 	lunches.set(data.reverse());
 };
 
 export const initalFetchUsers = async () => {
 	const { data, error } = await supabase
-		.from<definitions['users_to_families']>('users_to_families')
+		.from('users_to_families')
 		.select('*')
 		.eq('families_id', familyID);
+	if (!data) {
+		throw error;
+	}
 	familyUsers.set(data);
-	const userNames = data.filter((user) => user.user_id === getUser().id)?.map((user) => user.name);
-	unserName = userNames?.[0];
+	const userId = (await getUserAsync()).data.user?.id;
+	if (!userId) {
+		throw new Error('No user ID');
+	}
+	const userNames = data.filter((user) => user.user_id === userId)?.map((user) => user.name);
+	if (!userNames || !userNames[0]) {
+		throw new Error('No user names');
+	}
+	unserName = userNames[0];
+	return error;
 };
 
 export const initalFetchLunchProposals = async (
 	lunchId: string
-): Promise<definitions['lunch_proposal'][]> => {
-	const { data, error } = await supabase
-		.from<definitions['lunch_proposal']>('lunch_proposal')
-		.select('*')
-		.eq('lunch_id', lunchId);
+): Promise<Database['public']['Tables']['lunch_proposal']['Row'][]> => {
+	const { data, error } = await supabase.from('lunch_proposal').select('*').eq('lunch_id', lunchId);
 	if (error) {
 		throw error;
 	}
@@ -205,22 +248,22 @@ export const initalFetchLunchProposals = async (
 
 export const initalFetchLunchComments = async (
 	lunchId: string
-): Promise<definitions['lunch_proposal_comments'][]> => {
+): Promise<Database['public']['Tables']['lunch_proposal_comments']['Row'][]> => {
 	const { data, error } = await supabase
-		.from<definitions['lunch_proposal_comments']>('lunch_proposal_comments')
+		.from('lunch_proposal_comments')
 		.select('*')
 		.eq('lunch_id', lunchId);
 	if (error) {
 		throw error;
 	}
-	return data.sort((a, b) => a.created_at - b.created_at).reverse();
+	return data.sort((a, b) => Number(a.created_at) - Number(b.created_at)).reverse();
 };
 
 export const initalFetchLunchVotes = async (
 	lunchId: string
-): Promise<definitions['lunch_proposal_vote'][]> => {
+): Promise<Database['public']['Tables']['lunch_proposal_vote']['Row'][]> => {
 	const { data, error } = await supabase
-		.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')
+		.from('lunch_proposal_vote')
 		.select('*')
 		.eq('lunch_id', lunchId);
 	if (error) {
@@ -231,34 +274,52 @@ export const initalFetchLunchVotes = async (
 
 export const initalFetchLunchMembers = async () => {
 	const { data, error } = await supabase
-		.from<definitions['lunch_members']>('lunch_members')
+		.from('lunch_members')
 		.select('*')
-		.eq('family_id', familyID);
+		.eq('family_id', familyID)
+		.select();
+	if (error) {
+		throw error;
+	}
 	lunchMembers.set(data);
 };
 export const createLunch = async (): Promise<PostgrestError | Error | null> => {
 	await initalFetchLunches();
 	//curently only one lunch can be created per family per day
 	if (lunchsLocal.length > 0) {
-		return;
+		return new Error('Only one lunch can be created per family per day');
 	}
-	const { data, error } = await supabase
-		.from<definitions['lunchs']>('lunchs')
-		.insert({ family_id: familyID, created_by: getUser().id });
+	const userId = (await getUserAsync()).data.user?.id;
+	if (!userId || !familyID) {
+		throw new Error('No user ID');
+	}
+	const { error } = await supabase.from('lunchs').insert({
+		family_id: familyID,
+		created_by: userId
+	} as Database['public']['Tables']['lunchs']['Row']);
 	if (error) {
 		return error;
 	}
+	return null;
 };
 
-export const createMeal = async (lunchId: string, name: string): Promise<definitions['meals']> => {
+export const createMeal = async (
+	lunchId: string,
+	name: string
+): Promise<Database['public']['Tables']['meals']['Row']> => {
+	const userId = (await getUserAsync()).data.user?.id;
+	if (!userId || !familyID) {
+		throw new Error('No user ID');
+	}
 	const { data, error } = await supabase
-		.from<definitions['meals']>('meals')
+		.from('meals')
 		.insert({
 			lunch_id: lunchId,
 			name: name,
 			family_id: familyID,
-			created_by: getUser().id
+			created_by: userId
 		})
+		.select()
 		.single();
 	if (error) {
 		throw error;
@@ -272,25 +333,24 @@ export const createLunchProposal = async (
 	mealId: string | null = null
 ): Promise<PostgrestError | Error | null> => {
 	const newId = mealId || (await createMeal(lunchId, lunchName)).id;
-	console.log(newId);
-	const { data, error } = await supabase
-		.from<definitions['lunch_proposal']>('lunch_proposal')
-		.insert({
-			lunch_id: lunchId,
-			user_id: getUser().id,
-			meal_type: newId,
-			family_id: familyID
-		});
+	const userId = (await getUserAsync()).data.user?.id;
+	if (!userId || !familyID) {
+		throw new Error('No user ID');
+	}
+	const { error } = await supabase.from('lunch_proposal').insert({
+		lunch_id: lunchId,
+		user_id: userId,
+		meal_type: newId,
+		family_id: familyID
+	});
 	if (error) {
 		return error;
 	}
+	return null;
 };
 
-export const fetchMeals = async (): Promise<definitions['meals'][]> => {
-	const { data, error } = await supabase
-		.from<definitions['meals']>('meals')
-		.select('*')
-		.eq('family_id', familyID);
+export const fetchMeals = async (): Promise<Database['public']['Tables']['meals']['Row'][]> => {
+	const { data, error } = await supabase.from('meals').select('*').eq('family_id', familyID);
 	if (error) {
 		return [];
 	}
@@ -298,56 +358,56 @@ export const fetchMeals = async (): Promise<definitions['meals'][]> => {
 };
 
 export const joinLunch = async (
-	lunch: definitions['lunchs'],
+	lunch: Database['public']['Tables']['lunchs']['Row'],
 	startTime?: string,
 	endTime?: string
 ): Promise<PostgrestError | Error | null> => {
 	// ALTER TABLE table ADD UNIQUE (book_id, author_id)
-	const { data, error } = await supabase
-		.from<definitions['lunch_members']>('lunch_members')
-		.insert({
-			family_id: familyID,
-			user_id: getUser().id,
-			lunch_id: lunch.id,
-			username: unserName,
-			StartTime: startTime,
-			EndTime: endTime
-		});
+
+	const { error } = await supabase.from('lunch_members').insert({
+		family_id: familyID,
+		user_id: (await getUserAsync()).data.user?.id,
+		lunch_id: lunch.id,
+		username: unserName,
+		StartTime: startTime,
+		EndTime: endTime
+	});
 	if (error) {
 		console.log(error);
 		return error;
 	}
+	return null;
 };
 
 export const editLunchTime = async (
-	lunch: definitions['lunchs'],
+	lunch: Database['public']['Tables']['lunchs']['Row'],
 	startTime?: string,
 	endTime?: string
 ): Promise<PostgrestError | Error | null> => {
-	const { data, error } = await supabase
-		.from<definitions['lunch_members']>('lunch_members')
+	const { error } = await supabase
+		.from('lunch_members')
 		.update({
 			StartTime: startTime,
 			EndTime: endTime
 		})
 		.eq('lunch_id', lunch.id)
-		.eq('user_id', getUser().id);
+		.eq('user_id', (await getUserAsync()).data.user?.id);
 	if (error) {
-		console.log(error);
 		return error;
 	}
+	return null;
 };
 
 export const leaveLunch = async (
-	lunch: definitions['lunchs']
+	lunch: Database['public']['Tables']['lunchs']['Row']
 ): Promise<PostgrestError | Error | null> => {
 	// ALTER TABLE table ADD UNIQUE (book_id, author_id)
 	const { data, error } = await supabase
-		.from<definitions['lunch_members']>('lunch_members')
+		.from('lunch_members')
 		.delete()
 		.match({
 			family_id: familyID,
-			user_id: getUser().id,
+			user_id: (await getUserAsync()).data.user?.id,
 			lunch_id: lunch.id
 		});
 
@@ -355,59 +415,82 @@ export const leaveLunch = async (
 		console.log(error);
 		return error;
 	}
+	return null;
 };
-export const signIn = async (email, password) => {
-	const { user: userDetails, error } = await supabase.auth.signIn({
+export const signIn = async (email: string, password: string) => {
+	const { data, error } = await supabase.auth.signInWithPassword({
 		email: email,
 		password: password
 	});
-	return [userDetails, error];
+	return [data.user, error];
 };
 
-export const signUp = async (email, password): Promise<[User, ApiError]> => {
-	const { user: userDetails, error } = await supabase.auth.signUp({
+export const signUp = async (
+	email: string,
+	password: string
+): Promise<[User | null, AuthError | null]> => {
+	const { data, error } = await supabase.auth.signUp({
 		email: email,
 		password: password
 	});
-	return [userDetails, error];
+
+	return [data.user, error];
 };
 
-export const signOut = async (): Promise<ApiError> => {
+export const signOut = async (): Promise<AuthError | null> => {
 	const { error } = await supabase.auth.signOut();
-	console.log('After logut', await supabase.auth.user());
+	console.log('After logut', await supabase.auth.getUser());
 	return error;
 };
 
 export const setLunchProposalForVote = async (lunchId: string, lunchProposalId: string) => {
-	const { data, error } = await supabase
-		.from<definitions['lunchs']>('lunchs')
+	const { error } = await supabase
+		.from('lunchs')
 		.update({ selected_lunch_proposal_id: lunchProposalId })
 		.eq('id', lunchId);
+	return error;
 };
 
 export const removeLunchProposalForVote = async (lunchId: string) => {
-	const { data, error } = await supabase
-		.from<definitions['lunchs']>('lunchs')
+	const { error } = await supabase
+		.from('lunchs')
 		.update({ selected_lunch_proposal_id: null })
 		.eq('id', lunchId);
+	return error;
 };
 
 export const deleteLunchProposal = async (lunchProposalId: string) => {
-	const deleteVotes = await supabase
-		.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')
+	const { error } = await supabase
+		.from('lunch_proposal_vote')
 		.delete()
 		.eq('lunch_proposal_id', lunchProposalId);
-	const { data, error } = await supabase
-		.from<definitions['lunch_proposal']>('lunch_proposal')
+	if (error) {
+		return error;
+	}
+	const { error: proposalError } = await supabase
+		.from('lunch_proposal')
 		.delete()
 		.eq('id', lunchProposalId);
+	return proposalError;
 };
 
 export const createCommentForLunch = async (lunchId: string, comment: string) => {
-	const { data, error } = await supabase
-		.from<definitions['lunch_proposal_comments']>('lunch_proposal_comments')
-		.insert({ family_id: familyID, lunch_id: lunchId, user_id: getUser().id, text: comment });
+	if (!familyID) {
+		throw new Error('No family ID');
+	}
+	const userId = (await getUserAsync()).data.user?.id;
+	if (!userId) {
+		throw new Error('No user ID');
+	}
+	const { error } = await supabase.from('lunch_proposal_comments').insert({
+		family_id: familyID,
+		lunch_id: lunchId,
+		user_id: userId,
+		text: comment
+	});
+	return error;
 };
+
 /**
  * Check if user belongs to a family and starts subscribing to updates
  * @returns family exists or not
@@ -415,15 +498,15 @@ export const createCommentForLunch = async (lunchId: string, comment: string) =>
 export const mountFamily = async (): Promise<boolean> => {
 	console.log('mountFamily');
 	const { data, error } = await supabase
-		.from<definitions['users_to_families']>('users_to_families')
+		.from('users_to_families')
 		.select('*')
-		.eq('user_id', getUser().id);
+		.eq('user_id', (await getUserAsync()).data.user?.id);
 
 	if (error || !data[0] || !data[0].families_id) {
 		return false;
 	}
 	const familyObject = await getFamily(data[0].families_id);
-	if (familyObject || familyObject.id) {
+	if (familyObject || familyObject) {
 		family.set(familyObject);
 	}
 	return true;
@@ -431,9 +514,9 @@ export const mountFamily = async (): Promise<boolean> => {
 
 export const getUserName = async (): Promise<string | undefined> => {
 	const { data, error } = await supabase
-		.from<definitions['users_to_families']>('users_to_families')
+		.from('users_to_families')
 		.select('*')
-		.eq('user_id', getUser().id);
+		.eq('user_id', (await getUserAsync()).data.user?.id);
 
 	if (error || !data[0] || !data[0].name) {
 		return undefined;
@@ -444,63 +527,73 @@ export const getUserName = async (): Promise<string | undefined> => {
 export const setUsername = async (
 	username: string
 ): Promise<PostgrestError | Error | undefined> => {
+	const userId = (await getUserAsync()).data.user?.id;
+	if (!userId) {
+		throw new Error('No user ID');
+	}
 	const { data, error } = await supabase
-		.from<definitions['users_to_families']>('users_to_families')
-		.upsert([{ user_id: getUser().id, name: username }]);
+		.from('users_to_families')
+		.upsert([{ user_id: userId, name: username }]);
 	return error;
 };
 
-export const getFamily = async (family_id): Promise<definitions['families']> => {
-	const { data, error } = await supabase
-		.from<definitions['families']>('families')
-		.select('*')
-		.eq('id', family_id)
-		.single();
+export const getFamily = async (
+	family_id: string
+): Promise<Database['public']['Tables']['families']['Row']> => {
+	const { data, error } = await supabase.from('families').select('*').eq('id', family_id).single();
+	if (error) {
+		throw error;
+	}
 	return data;
 };
 
-export const createFamily = async (familyName): Promise<PostgrestError | Error | null> => {
+export const createFamily = async (familyName: string): Promise<PostgrestError | Error | null> => {
+	const userId = (await getUserAsync()).data.user?.id;
+	if (!userId) {
+		throw new Error('No user ID');
+	}
 	const { data: alreadyExists, error: userExistsError } = await supabase
-		.from<definitions['users_to_families']>('users_to_families')
+		.from('users_to_families')
 		.select('families_id')
-		.eq('user_id', getUser().id);
-	if (alreadyExists[0] && alreadyExists[0].families_id) {
+		.eq('user_id', userId);
+	if (alreadyExists && alreadyExists[0] && alreadyExists[0].families_id) {
 		return new Error("You're already in a family");
 	}
 	if (userExistsError) {
 		return userExistsError;
 	}
 	const { data: families, error } = await supabase
-		.from<definitions['families']>('families')
-		.insert({ name: familyName, creator_id: getUser().id });
+		.from('families')
+		.insert({ name: familyName, creator_id: userId })
+		.select();
 
 	if (error) {
 		return error;
 	}
-
 	const { error: userToFamilies } = await supabase
-		.from<definitions['users_to_families']>('users_to_families')
-		.upsert({ families_id: families[0].id, user_id: getUser().id });
+		.from('users_to_families')
+		.upsert({ families_id: families[0].id, user_id: userId });
 	if (userToFamilies) {
 		return userToFamilies;
 	}
 	family.set(families[0]);
+	return null;
 };
 
-export const joinFamily = async (familyId: string): Promise<PostgrestError | Error | null> => {
+export const joinFamily = async (familyId: string): Promise<PostgrestError | Error | undefined> => {
+	const userId = (await getUserAsync()).data.user?.id;
+	if (!userId) {
+		throw new Error('No user ID');
+	}
 	const { error } = await supabase
-		.from<definitions['users_to_families']>('users_to_families')
-		.upsert([{ user_id: getUser().id, families_id: familyId }]);
+		.from('users_to_families')
+		.upsert([{ user_id: userId, families_id: familyId }]);
 	return error;
 };
 
-export function getUser() {
-	return supabase.auth.user();
-}
 export async function getUserAsync() {
-	return await supabase.auth.user();
+	return await supabase.auth.getUser();
 }
-
 
 export const createLunchesForWeek = async () => {
 	// get the next 7 days
@@ -510,7 +603,7 @@ export const createLunchesForWeek = async () => {
 	for (let i = 1; i < 7; i++) {
 		next7days.push(dayjs.utc().add(i, 'day'));
 	}
-	const toCreate = [];
+	const toCreate: dayjs.Dayjs[] = [];
 	next7days.forEach((day) => {
 		let containtsDay = false;
 		for (const lunch of lunchsLocal) {
@@ -522,21 +615,21 @@ export const createLunchesForWeek = async () => {
 			toCreate.push(day);
 		}
 	});
-	console.log("toCreate", toCreate);
-	const lunchsForWeek = [];
+	console.log('toCreate', toCreate);
+	const lunchsForWeek: Database['public']['Tables']['lunchs']['Insert'][] = [];
 
-	//TODO Error: FamilyId is zero
+	//TODO Error: FamilyId is when checking
 	for (const date of toCreate) {
 		const lunch = {
 			created_at: date.toISOString(),
 			lunch_date: date.toISOString(),
-			created_by: getUser().id,
+			created_by: (await getUserAsync()).data.user?.id,
 			family_id: familyID
-		};
+		} as Database['public']['Tables']['lunchs']['Insert'];
 		lunchsForWeek.push(lunch);
 	}
-	console.log("lunchsForWeek", lunchsForWeek);
-	await supabase.from<definitions['lunchs']>('lunchs').insert(lunchsForWeek);
+	console.log('lunchsForWeek', lunchsForWeek);
+	await supabase.from('lunchs').insert(lunchsForWeek);
 };
 
 export const getFamilyID = () => {
