@@ -2,6 +2,7 @@
 	import type { definitions } from '$lib/models';
 
 	import { createLunchProposal, fetchMeals } from '$lib/stores/userStore';
+	// @ts-ignore
 	import AutoComplete from 'simple-svelte-autocomplete';
 	import { t } from '$lib/helpers/i18n';
 	import type { Database } from '$lib/DatabaseDefinitions';
@@ -10,7 +11,7 @@
 	let isLoading = false;
 	let isProposalMenu = false;
 	let mealName: string = '';
-	let selectedFood;
+	let selectedFood: Database['public']['Tables']['meals']['Row'];
 	let lunchSuggestions: Database['public']['Tables']['meals']['Row'][] = [];
 
 	const handleCreateLunchProposal = async () => {

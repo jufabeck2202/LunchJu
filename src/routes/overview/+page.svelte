@@ -1,5 +1,5 @@
 <script lang="ts">
-	import LunchCard from '$lib/components/LunchCard.svelte';
+	import LunchCard from '$lib/components/LunchOverviewCard.svelte';
 	import PageContainer from '$lib/components/PageContainer.svelte';
 	import ShareFamilyModal from '$lib/components/ShareFamilyModal.svelte';
 

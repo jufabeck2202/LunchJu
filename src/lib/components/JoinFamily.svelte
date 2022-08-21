@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { Database } from '$lib/DatabaseDefinitions';
+
 	import { t } from '$lib/helpers/i18n';
 
 	import { ErrorToast } from '$lib/helpers/toast';
@@ -9,7 +11,7 @@
 	import { fly } from 'svelte/transition';
 
 	let loading = false;
-	export let family: definitions['families'];
+	export let family: Database['public']['Tables']['families']['Row'];
 
 	const dispatch = createEventDispatcher();
 

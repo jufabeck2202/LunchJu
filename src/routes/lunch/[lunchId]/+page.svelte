@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { family, initalFetchLunches, lunches, lunchsLocal } from '$lib/stores/userStore';
-	import Clipboard from 'svelte-clipboard';
 	import { onMount } from 'svelte';
 	import CreateProposal from '$lib/components/CreateProposal.svelte';
 	import Suggestion from '$lib/components/Suggestion.svelte';
@@ -19,11 +18,11 @@
 	let lunch: Database['public']['Tables']['lunchs']['Row'];
 	let hasJoinedLunch: boolean = false;
 	onMount(async () => {
+		console.log(1)
 		await initalFetchLunches();
 		if (!lunchsLocal.some((l) => l.id === lunchId)) {
 			goto('/overview');
 		}
-
 		lunch = lunchsLocal.filter((lunch) => lunch.id == lunchId)?.[0];
 	});
 

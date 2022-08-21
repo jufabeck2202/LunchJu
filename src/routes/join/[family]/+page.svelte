@@ -5,18 +5,14 @@
 	import {
 		mountFamily,
 		getFamily,
-		getUser,
-		joinFamily,
-		signOut,
 		getUserAsync,
 		getUserName
 	} from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	import LoginComponent from '$lib/components/LoginComponent.svelte';
-	import { fade } from 'svelte/transition';
-	import { ErrorToast, SuccessToast } from '$lib/helpers/toast';
 	import CreateName from '$lib/components/CreateName.svelte';
 	import JoinFamily from '$lib/components/JoinFamily.svelte';
+	import type { Database } from '$lib/DatabaseDefinitions';
 
 	enum State {
 		LOGIN = 1,
@@ -26,9 +22,9 @@
 	}
 
 	const familyID = $page.params['family'];
-	let tempFamily: definitions['families'] = null;
+	let tempFamily: Database['public']['Tables']['families']['Row'] | null = null;
 	let currentState = State.LOGIN;
-	let userName: string;
+	let userName: string | undefined;
 
 	onMount(async () => {
 		await checkUser();

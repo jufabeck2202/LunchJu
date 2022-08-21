@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { browser } from '$app/env';
-
 	import { goto } from '$app/navigation';
 
-	import { getUser, getUserAsync } from '$lib/stores/userStore';
+	import { getUserAsync } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 
-	const user = getUser();
 	onMount(async () => {
 		if (await getUserAsync()) {
 			goto('/overview');

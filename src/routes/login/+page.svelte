@@ -24,7 +24,7 @@
 	let currentState = State.LOGIN;
 
 	const checkUser = async () => {
-		const user = (await getUserAsync()).data.user;
+		const user = await getUserAsync();
 		if (!user) {
 			currentState = State.LOGIN;
 			return;

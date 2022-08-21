@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { ToLocalTime } from '$lib/helpers/time';
 	import Icon from '@iconify/svelte';
-	import type { definitions } from '$lib/models';
 	import { fade } from 'svelte/transition';
 	import {
 		createCommentForLunch,
@@ -36,22 +35,30 @@
 	let commentsSubscription: RealtimeChannel;
 
 	const subscribeComments = async () => {
-		// commentsSubscription = await supabase
-		// 	.from<definitions['lunch_proposal_comments']>('lunch_proposal_comments')
-		// 	.on('INSERT', (comment) => {
-		// 		//TODO: add to RLS
-		// 		if (comment.new.lunch_id == lunch.id) {
-		// 			comments.update((c) =>
-		// 				c.some((cc) => cc.id === comment.new.id)
-		// 					? c
-		// 					: [comment.new, ...c].sort((a, b) => a.created_at - b.created_at)
-		// 			);
-		// 		}
-		// 	})
-		// 	.on('DELETE', (comment) => {
-		// 		comments.update((l) => l.filter((c) => c.id !== comment.old.id));
-		// 	})
-		// 	.subscribe();
+		commentsSubscription = await supabase
+			.channel('public:lunch_proposal_comments')
+			.on(
+				'postgres_changes',
+				{ event: 'INSERT', schema: 'public', table: 'lunch_proposal_comments' },
+				(comment: any) => {
+					//TODO: add to RLS
+					if (comment.new.lunch_id == lunch.id) {
+						comments.update((c) =>
+							c.some((cc) => cc.id === comment.new.id)
+								? c
+								: [comment.new, ...c].sort((a, b) => a.created_at - b.created_at)
+						);
+					}
+				}
+			)
+			.on(
+				'postgres_changes',
+				{ event: 'DELETE', schema: 'public', table: 'lunch_proposal_comments' },
+				(comment: any) => {
+					comments.update((l) => l.filter((c) => c.id !== comment.old.id));
+				}
+			)
+			.subscribe();
 	};
 </script>
 

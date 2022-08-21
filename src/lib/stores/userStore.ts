@@ -13,15 +13,37 @@ export const lunchMembers = writable<Database['public']['Tables']['lunch_members
 	[]
 );
 
-let unserName: string | undefined = undefined;
-let familyID: string | undefined = undefined;
-
+let userName: string | undefined = undefined;
+let localFamilyId: string | null = null;
+let localUserId: string | undefined = undefined;
 let lunchSubscription: RealtimeChannel;
 let lunchMemberSubscription: RealtimeChannel;
 let userSubscription: RealtimeChannel;
 
-let familyUsersLocal: Database['public']['Tables']['users_to_families']['Row'][] = [];
-export let lunchsLocal: Database['public']['Tables']['lunchs']['Row'][] = [];
+const familyUsersLocal: Database['public']['Tables']['users_to_families']['Row'][] = [];
+export const lunchsLocal: Database['public']['Tables']['lunchs']['Row'][] = [];
+
+export const getUserAsync = async () => {
+	if (localUserId) {
+		return localUserId;
+	}
+	const user = await supabase.auth.getUser();
+	if (user.data.user) {
+		localUserId = user.data.user.id;
+		return localUserId;
+	}
+};
+//returns familyId and fetches family if not already fetched
+export const getFamilyId = async () => {
+	if (localFamilyId) {
+		return localFamilyId;
+	}
+	localFamilyId = await fetchFamilyIdForUser();
+	if (!localFamilyId) {
+		throw new Error('No family found');
+	}
+	return localFamilyId;
+};
 
 export const familySubscription = family.subscribe(async (family) => {
 	console.log('Subscribing to family', family);
@@ -29,7 +51,6 @@ export const familySubscription = family.subscribe(async (family) => {
 	 * Family exists, start subscribing to all updates
 	 */
 	if (family) {
-		familyID = family.id;
 		await initalFetchLunchMembers();
 		await subscribeLunchMemers();
 		await initalFetchUsers();
@@ -39,23 +60,13 @@ export const familySubscription = family.subscribe(async (family) => {
 	}
 });
 
-const userLocalSubscription = familyUsers.subscribe(async (users) => {
-	//update needed to update lunches
-	lunches.update((l) => l);
-	familyUsersLocal = users;
-});
-
-const localLunchSubscription = lunches.subscribe(async (lunches) => {
-	lunchsLocal = lunches;
-});
-
 export const getUserByID = (id: string) => {
 	const user = familyUsersLocal.find((user) => user.user_id === id);
 	return user;
 };
 
 export const setCookForLunch = async (lunch: Database['public']['Tables']['lunchs']['Row']) => {
-	const userId = await (await getUserAsync()).data.user?.id;
+	const userId = await getUserAsync();
 	if (!userId) {
 		return;
 	}
@@ -69,15 +80,15 @@ export const removeCookForLunch = async (lunch: Database['public']['Tables']['lu
 };
 
 export const createVote = async (lunchProposalId: string, lunchId: string, voteType: boolean) => {
-	const userId = await (await getUserAsync()).data.user?.id;
-	if (!userId || !familyID) {
+	const userId = await getUserAsync();
+	if (!userId) {
 		throw new Error('User not logged in');
 	}
-	const { data, error } = await supabase.from('lunch_proposal_vote').insert({
+	const { error } = await supabase.from('lunch_proposal_vote').insert({
 		lunch_proposal_id: lunchProposalId,
 		upvote: voteType,
 		lunch_id: lunchId,
-		family_id: familyID,
+		family_id: await getFamilyId(),
 		user_id: userId
 	});
 	if (error) {
@@ -86,13 +97,16 @@ export const createVote = async (lunchProposalId: string, lunchId: string, voteT
 };
 
 export const deleteVote = async (lunchProposalId: string, lunchId: string) => {
-	const userId = await (await getUserAsync()).data.user?.id;
-	const { data, error } = await supabase.from('lunch_proposal_vote').delete().match({
-		user_id: userId,
-		lunch_id: lunchId,
-		lunch_proposal_id: lunchProposalId,
-		family_id: familyID
-	});
+	const userId = await getUserAsync();
+	const { error } = await supabase
+		.from('lunch_proposal_vote')
+		.delete()
+		.match({
+			user_id: userId,
+			lunch_id: lunchId,
+			lunch_proposal_id: lunchProposalId,
+			family_id: await getFamilyId()
+		});
 
 	if (error) {
 		throw error;
@@ -109,91 +123,93 @@ const subscribeLunchMemers = async () => {
 		.channel('public:lunch_members')
 		.on(
 			'postgres_changes',
-			{ event: 'INSERT', schema: 'public', table: 'countries' },
-			(payload) => {
-				console.log('Change received!', payload);
+			{ event: 'INSERT', schema: 'public', table: 'lunch_members' },
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			async (lunchMember: any) => {
+				if (lunchMember.new.family_id == (await getFamilyId())) {
+					lunchMembers.update((l) =>
+						l.some((member) => member.id === lunchMember.new.id) ? l : [lunchMember.new, ...l]
+					);
+				}
 			}
 		)
 		.on(
 			'postgres_changes',
-			{ event: 'DELETE', schema: 'public', table: 'countries' },
-			(payload) => {
-				console.log('Change received!', payload);
+			{ event: 'UPDATE', schema: 'public', table: 'lunch_members' },
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			async (newLunch: any) => {
+				if (newLunch.new.family_id == (await getFamilyId())) {
+					lunchMembers.update((l) => {
+						const index = l.findIndex((lunchMember) => lunchMember.id === newLunch.new.id);
+						if (index !== -1) {
+							l[index] = newLunch.new;
+						}
+						return l;
+					});
+				}
+			}
+		)
+		.on(
+			'postgres_changes',
+			{ event: 'DELETE', schema: 'public', table: 'lunch_members' },
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(deleted: any) => {
+				lunchMembers.update((l) => l.filter((lunchMember) => lunchMember.id !== deleted.old.id));
 			}
 		)
 		.subscribe();
-	// lunchMemberSubscription = await supabase
-	// 	.from('lunch_members')
-	// 	.on('INSERT', (lunchMember) => {
-	// 		if (lunchMember.new.family_id == familyID) {
-	// 			lunchMembers.update((l) =>
-	// 				l.some((member) => member.id === lunchMember.new.id) ? l : [lunchMember.new, ...l]
-	// 			);
-	// 		}
-	// 	})
-	// 	.on('UPDATE', (newLunch) => {
-	// 		if (newLunch.new.family_id == familyID) {
-	// 			lunchMembers.update((l) => {
-	// 				const index = l.findIndex((lunchMember) => lunchMember.id === newLunch.new.id);
-	// 				if (index !== -1) {
-	// 					l[index] = newLunch.new;
-	// 				}
-	// 				return l;
-	// 			});
-	// 		}
-	// 	})
-	// 	.on('DELETE', (deleted) => {
-	// 		lunchMembers.update((l) => l.filter((lunchMember) => lunchMember.id !== deleted.old.id));
-	// 	})
-	// 	.subscribe();
 };
 
 const subscribeUsers = async () => {
-	supabase
+	userSubscription = await supabase
 		.channel('postgresChangesChannel')
 		.on(
 			'postgres_changes',
 			{ event: 'INSERT', schema: 'public', table: 'users_to_families' },
-			(payload) => {
-				console.log('Change received!', payload);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			async (user: any) => {
+				//TODO: add to RLS
+				if (user.new.families_id == (await getFamilyId())) {
+					familyUsers.update((usr) =>
+						usr.some((us) => us.user_id === user.new.user_id) ? usr : [user.new, ...usr]
+					);
+				}
 			}
 		)
 		.subscribe();
-	// userSubscription = await supabase
-	// 	.channel('postgresChangesChannel') // .from('users_to_families')
-	// 	.on('INSERT', (user) => {
-	// 		//TODO: add to RLS
-	// 		if (user.new.families_id == familyID) {
-	// 			familyUsers.update((usr) =>
-	// 				usr.some((us) => us.user_id === user.new.user_id) ? usr : [user.new, ...usr]
-	// 			);
-	// 		}
-	// 	})
-	// 	.subscribe();
 };
 const subscribeLunch = async () => {
-	// lunchSubscription = await supabase
-	// 	.from('lunchs')
-	// 	.on('INSERT', (lunch) => {
-	// 		//TODO: add to RLS
-	// 		if (lunch.new.family_id == familyID) {
-	// 			lunches.update((l) =>
-	// 				l.some((ll) => ll.id === lunch.new.id)
-	// 					? l.sort((a, b) => a.created_at - b.created_at)
-	// 					: [lunch.new, ...l].sort((a, b) => a.created_at - b.created_at)
-	// 			);
-	// 		}
-	// 	})
-	// 	.on('UPDATE', (newLunch) => {
-	// 		lunches.update((l) => {
-	// 			const index = l.findIndex((lunch) => lunch.id === newLunch.new.id);
-	// 			if (index !== -1) {
-	// 				l[index] = newLunch.new;
-	// 			}
-	// 			return l;
-	// 		});
-	// 	})
-	// 	.subscribe();
+	lunchSubscription = supabase
+		.channel('public:lunchs')
+		.on(
+			'postgres_changes',
+			{ event: 'INSERT', schema: 'public', table: 'lunchs' },
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			async (lunch: any) => {
+				if (lunch.new.family_id == (await getFamilyId())) {
+					lunches.update((l) =>
+						l.some((ll) => ll.id === lunch.new.id)
+							? l.sort((a, b) => Number(a.created_at) - Number(b.created_at))
+							: [lunch.new, ...l].sort((a, b) => a.created_at - b.created_at)
+					);
+				}
+			}
+		)
+		.on(
+			'postgres_changes',
+			{ event: 'UPDATE', schema: 'public', table: 'lunchs' },
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(newLunch: any) => {
+				lunches.update((l) => {
+					const index = l.findIndex((lunch) => lunch.id === newLunch.new.id);
+					if (index !== -1) {
+						l[index] = newLunch.new;
+					}
+					return l;
+				});
+			}
+		)
+		.subscribe();
 };
 const destory = () => {
 	lunchSubscription.unsubscribe();
@@ -206,7 +222,7 @@ export const initalFetchLunches = async () => {
 		.from('lunchs')
 		.select('*')
 		.order('created_at', { ascending: false })
-		.eq('family_id', familyID)
+		.eq('family_id', await getFamilyId())
 		.limit(7);
 	// const lunchesCreatedToday = data.filter((lunch) => IsDateToday(lunch.created_at));
 	if (!data) {
@@ -219,12 +235,12 @@ export const initalFetchUsers = async () => {
 	const { data, error } = await supabase
 		.from('users_to_families')
 		.select('*')
-		.eq('families_id', familyID);
+		.eq('families_id', await getFamilyId());
 	if (!data) {
 		throw error;
 	}
 	familyUsers.set(data);
-	const userId = (await getUserAsync()).data.user?.id;
+	const userId = await getUserAsync();
 	if (!userId) {
 		throw new Error('No user ID');
 	}
@@ -232,7 +248,7 @@ export const initalFetchUsers = async () => {
 	if (!userNames || !userNames[0]) {
 		throw new Error('No user names');
 	}
-	unserName = userNames[0];
+	userName = userNames[0];
 	return error;
 };
 
@@ -276,7 +292,7 @@ export const initalFetchLunchMembers = async () => {
 	const { data, error } = await supabase
 		.from('lunch_members')
 		.select('*')
-		.eq('family_id', familyID)
+		.eq('family_id', await getFamilyId())
 		.select();
 	if (error) {
 		throw error;
@@ -289,12 +305,12 @@ export const createLunch = async (): Promise<PostgrestError | Error | null> => {
 	if (lunchsLocal.length > 0) {
 		return new Error('Only one lunch can be created per family per day');
 	}
-	const userId = (await getUserAsync()).data.user?.id;
-	if (!userId || !familyID) {
+	const userId = await getUserAsync();
+	if (!userId) {
 		throw new Error('No user ID');
 	}
 	const { error } = await supabase.from('lunchs').insert({
-		family_id: familyID,
+		family_id: await getFamilyId(),
 		created_by: userId
 	} as Database['public']['Tables']['lunchs']['Row']);
 	if (error) {
@@ -307,8 +323,8 @@ export const createMeal = async (
 	lunchId: string,
 	name: string
 ): Promise<Database['public']['Tables']['meals']['Row']> => {
-	const userId = (await getUserAsync()).data.user?.id;
-	if (!userId || !familyID) {
+	const userId = await getUserAsync();
+	if (!userId) {
 		throw new Error('No user ID');
 	}
 	const { data, error } = await supabase
@@ -316,7 +332,7 @@ export const createMeal = async (
 		.insert({
 			lunch_id: lunchId,
 			name: name,
-			family_id: familyID,
+			family_id: await getFamilyId(),
 			created_by: userId
 		})
 		.select()
@@ -333,15 +349,15 @@ export const createLunchProposal = async (
 	mealId: string | null = null
 ): Promise<PostgrestError | Error | null> => {
 	const newId = mealId || (await createMeal(lunchId, lunchName)).id;
-	const userId = (await getUserAsync()).data.user?.id;
-	if (!userId || !familyID) {
+	const userId = await getUserAsync();
+	if (!userId) {
 		throw new Error('No user ID');
 	}
 	const { error } = await supabase.from('lunch_proposal').insert({
 		lunch_id: lunchId,
 		user_id: userId,
 		meal_type: newId,
-		family_id: familyID
+		family_id: await getFamilyId()
 	});
 	if (error) {
 		return error;
@@ -350,7 +366,10 @@ export const createLunchProposal = async (
 };
 
 export const fetchMeals = async (): Promise<Database['public']['Tables']['meals']['Row'][]> => {
-	const { data, error } = await supabase.from('meals').select('*').eq('family_id', familyID);
+	const { data, error } = await supabase
+		.from('meals')
+		.select('*')
+		.eq('family_id', await getFamilyId());
 	if (error) {
 		return [];
 	}
@@ -363,17 +382,15 @@ export const joinLunch = async (
 	endTime?: string
 ): Promise<PostgrestError | Error | null> => {
 	// ALTER TABLE table ADD UNIQUE (book_id, author_id)
-
 	const { error } = await supabase.from('lunch_members').insert({
-		family_id: familyID,
-		user_id: (await getUserAsync()).data.user?.id,
+		family_id: await getFamilyId(),
+		user_id: await getUserAsync(),
 		lunch_id: lunch.id,
-		username: unserName,
+		username: userName,
 		StartTime: startTime,
 		EndTime: endTime
 	});
 	if (error) {
-		console.log(error);
 		return error;
 	}
 	return null;
@@ -391,7 +408,7 @@ export const editLunchTime = async (
 			EndTime: endTime
 		})
 		.eq('lunch_id', lunch.id)
-		.eq('user_id', (await getUserAsync()).data.user?.id);
+		.eq('user_id', await getUserAsync());
 	if (error) {
 		return error;
 	}
@@ -401,13 +418,12 @@ export const editLunchTime = async (
 export const leaveLunch = async (
 	lunch: Database['public']['Tables']['lunchs']['Row']
 ): Promise<PostgrestError | Error | null> => {
-	// ALTER TABLE table ADD UNIQUE (book_id, author_id)
-	const { data, error } = await supabase
+	const { error } = await supabase
 		.from('lunch_members')
 		.delete()
 		.match({
-			family_id: familyID,
-			user_id: (await getUserAsync()).data.user?.id,
+			family_id: await getFamilyId(),
+			user_id: await getUserAsync(),
 			lunch_id: lunch.id
 		});
 
@@ -475,15 +491,12 @@ export const deleteLunchProposal = async (lunchProposalId: string) => {
 };
 
 export const createCommentForLunch = async (lunchId: string, comment: string) => {
-	if (!familyID) {
-		throw new Error('No family ID');
-	}
-	const userId = (await getUserAsync()).data.user?.id;
+	const userId = await getUserAsync();
 	if (!userId) {
 		throw new Error('No user ID');
 	}
 	const { error } = await supabase.from('lunch_proposal_comments').insert({
-		family_id: familyID,
+		family_id: await getFamilyId(),
 		lunch_id: lunchId,
 		user_id: userId,
 		text: comment
@@ -496,27 +509,37 @@ export const createCommentForLunch = async (lunchId: string, comment: string) =>
  * @returns family exists or not
  */
 export const mountFamily = async (): Promise<boolean> => {
-	console.log('mountFamily');
-	const { data, error } = await supabase
-		.from('users_to_families')
-		.select('*')
-		.eq('user_id', (await getUserAsync()).data.user?.id);
-
-	if (error || !data[0] || !data[0].families_id) {
+	let familyId = localFamilyId;
+	if (!familyId) {
+		familyId = await fetchFamilyIdForUser();
+	}
+	if (!familyId) {
 		return false;
 	}
-	const familyObject = await getFamily(data[0].families_id);
+	const familyObject = await getFamily(familyId);
 	if (familyObject || familyObject) {
 		family.set(familyObject);
 	}
 	return true;
 };
 
+const fetchFamilyIdForUser = async (): Promise<string | null> => {
+	const { data, error } = await supabase
+		.from('users_to_families')
+		.select('*')
+		.eq('user_id', await getUserAsync())
+		.single();
+	if (error) {
+		return null;
+	}
+	return data.families_id;
+};
+
 export const getUserName = async (): Promise<string | undefined> => {
 	const { data, error } = await supabase
 		.from('users_to_families')
 		.select('*')
-		.eq('user_id', (await getUserAsync()).data.user?.id);
+		.eq('user_id', await getUserAsync());
 
 	if (error || !data[0] || !data[0].name) {
 		return undefined;
@@ -527,11 +550,11 @@ export const getUserName = async (): Promise<string | undefined> => {
 export const setUsername = async (
 	username: string
 ): Promise<PostgrestError | Error | undefined> => {
-	const userId = (await getUserAsync()).data.user?.id;
+	const userId = await getUserAsync();
 	if (!userId) {
 		throw new Error('No user ID');
 	}
-	const { data, error } = await supabase
+	const { error } = await supabase
 		.from('users_to_families')
 		.upsert([{ user_id: userId, name: username }]);
 	return error;
@@ -548,7 +571,7 @@ export const getFamily = async (
 };
 
 export const createFamily = async (familyName: string): Promise<PostgrestError | Error | null> => {
-	const userId = (await getUserAsync()).data.user?.id;
+	const userId = await getUserAsync();
 	if (!userId) {
 		throw new Error('No user ID');
 	}
@@ -581,7 +604,7 @@ export const createFamily = async (familyName: string): Promise<PostgrestError |
 };
 
 export const joinFamily = async (familyId: string): Promise<PostgrestError | Error | undefined> => {
-	const userId = (await getUserAsync()).data.user?.id;
+	const userId = await getUserAsync();
 	if (!userId) {
 		throw new Error('No user ID');
 	}
@@ -590,10 +613,6 @@ export const joinFamily = async (familyId: string): Promise<PostgrestError | Err
 		.upsert([{ user_id: userId, families_id: familyId }]);
 	return error;
 };
-
-export async function getUserAsync() {
-	return await supabase.auth.getUser();
-}
 
 export const createLunchesForWeek = async () => {
 	// get the next 7 days
@@ -618,20 +637,15 @@ export const createLunchesForWeek = async () => {
 	console.log('toCreate', toCreate);
 	const lunchsForWeek: Database['public']['Tables']['lunchs']['Insert'][] = [];
 
-	//TODO Error: FamilyId is when checking
 	for (const date of toCreate) {
 		const lunch = {
 			created_at: date.toISOString(),
 			lunch_date: date.toISOString(),
-			created_by: (await getUserAsync()).data.user?.id,
-			family_id: familyID
+			created_by: await getUserAsync(),
+			family_id: await getFamilyId()
 		} as Database['public']['Tables']['lunchs']['Insert'];
 		lunchsForWeek.push(lunch);
 	}
 	console.log('lunchsForWeek', lunchsForWeek);
 	await supabase.from('lunchs').insert(lunchsForWeek);
-};
-
-export const getFamilyID = () => {
-	return familyID;
 };

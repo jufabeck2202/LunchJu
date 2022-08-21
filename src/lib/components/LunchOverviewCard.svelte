@@ -15,17 +15,20 @@
 	let localLunchMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
 	let hasJoinedlunch = false;
 	let isShowingJoinModal = false;
-
 	$: lunchMembers.subscribe((members) => {
 		localLunchMembers = members.filter((member) => member.lunch_id === lunch.id);
 	});
 
 	$: lunchMembers.subscribe(async (members) => {
+		const userId = await getUserAsync();
 		if (
-			members.some(
-				async (member) =>
-					member.user_id === (await getUserAsync()).data.user?.id && member.lunch_id === lunch.id
-			)
+			members.some((member) => {
+				if (member.user_id === userId && member.lunch_id === lunch.id) {
+					return true;
+				} else {
+					return false;
+				}
+			})
 		) {
 			hasJoinedlunch = true;
 		} else {
@@ -38,7 +41,7 @@
 		isShowingJoinModal = false;
 		await initalFetchLunchMembers();
 	};
-	const handleLeaveLunch = async (lunch) => {
+	const handleLeaveLunch = async (lunch: any) => {
 		const error = await leaveLunch(lunch);
 		await initalFetchLunchMembers();
 	};

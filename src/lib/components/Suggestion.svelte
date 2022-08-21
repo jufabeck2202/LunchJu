@@ -22,49 +22,63 @@
 	const votes = writable<Database['public']['Tables']['lunch_proposal_vote']['Row'][] | []>([]);
 
 	onMount(async () => {
+		userId = await getUserAsync();
 		lunchProposal.set(await initalFetchLunchProposals(lunch.id));
 		await subscribeLunchProposal();
 		await subscribeToVotes();
 		votes.set(await initalFetchLunchVotes(lunch.id));
-		userId = (await getUserAsync()).data.user?.id;
 	});
 
 	const subscribeLunchProposal = async () => {
-		// lunchProposalSubscription = await supabase
-		// 	.from('lunch_proposal')
-		// 	.on('INSERT', (newLunchProp) => {
-		// 		//TODO: add to RLS
-		// 		if (newLunchProp.new.lunch_id == lunch.id) {
-		// 			lunchProposal.update((l) =>
-		// 				l.some((ll) => ll.id === newLunchProp.new.id)
-		// 					? l
-		// 					: [newLunchProp.new, ...l].sort((a, b) => a.created_at - b.created_at)
-		// 			);
-		// 		}
-		// 	})
-		// 	.on('DELETE', (deleted) => {
-		// 		lunchProposal.update((l) => l.filter((vote) => vote.id !== deleted.old.id));
-		// 	})
-		// 	.subscribe();
+		lunchProposalSubscription = await supabase
+			.channel('public:lunch_proposal')
+			.on(
+				'postgres_changes',
+				{ event: 'INSERT', schema: 'public', table: 'lunch_proposal' },
+				(newLunchProp: any) => {
+					if (newLunchProp.new.lunch_id == lunch.id) {
+						lunchProposal.update((l) =>
+							l.some((ll) => ll.id === newLunchProp.new.id)
+								? l
+								: [newLunchProp.new, ...l].sort((a, b) => a.created_at - b.created_at)
+						);
+					}
+				}
+			)
+			.on(
+				'postgres_changes',
+				{ event: 'DELETE', schema: 'public', table: 'lunch_proposal' },
+				(deleted: any) => {
+					lunchProposal.update((l) => l.filter((vote) => vote.id !== deleted.old.id));
+				}
+			)
+			.subscribe();
 	};
 	const subscribeToVotes = async () => {
-		// //TODO: add to RLS
-		// voteSubscription = await supabase
-		// 	.from<definitions['lunch_proposal_vote']>('lunch_proposal_vote')
-		// 	.on('INSERT', (newVote) => {
-		// 		//TODO: add to RLS, Maybe add lunchId to vote
-		// 		if (newVote.new.family_id == lunch.family_id && newVote.new.lunch_id == lunch.id) {
-		// 			votes.update((l) =>
-		// 				l.some((ll) => ll.id === newVote.new.id)
-		// 					? l
-		// 					: [newVote.new, ...l].sort((a, b) => a.created_at - b.created_at)
-		// 			);
-		// 		}
-		// 	})
-		// 	.on('DELETE', (deleted) => {
-		// 		votes.update((l) => l.filter((vote) => vote.id !== deleted.old.id));
-		// 	})
-		// 	.subscribe();
+		voteSubscription = await supabase
+			.channel('public:lunch_proposal_vote')
+			.on(
+				'postgres_changes',
+				{ event: 'INSERT', schema: 'public', table: 'lunch_proposal_vote' },
+				(newVote: any) => {
+					//TODO: add to RLS, Maybe add lunchId to vote
+					if (newVote.new.family_id == lunch.family_id && newVote.new.lunch_id == lunch.id) {
+						votes.update((l) =>
+							l.some((ll) => ll.id === newVote.new.id)
+								? l
+								: [newVote.new, ...l].sort((a, b) => a.created_at - b.created_at)
+						);
+					}
+				}
+			)
+			.on(
+				'postgres_changes',
+				{ event: 'DELETE', schema: 'public', table: 'lunch_proposal_vote' },
+				(deleted: any) => {
+					votes.update((l) => l.filter((vote) => vote.id !== deleted.old.id));
+				}
+			)
+			.subscribe();
 	};
 	onDestroy(() => {
 		lunchProposalSubscription.unsubscribe();

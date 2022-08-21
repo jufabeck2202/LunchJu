@@ -9,7 +9,7 @@
 	dayjs.extend(isToday);
 	dayjs.extend(customParseFormat);
 
-	export let isShowingJoinModal;
+	export let isShowingJoinModal: boolean;
 	export let currentDate: string;
 	export let hasJoinedlunch: boolean = false;
 

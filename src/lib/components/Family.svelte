@@ -5,6 +5,7 @@
 	import CreateLunch from '$lib/components/CreateLunch.svelte';
 	import CreateProposal from './CreateProposal.svelte';
 	import Suggestion from './Suggestion.svelte';
+	 // @ts-ignore 
 	import Clipboard from 'svelte-clipboard';
 	import { onMount } from 'svelte';
 	import { t } from '$lib/helpers/i18n';

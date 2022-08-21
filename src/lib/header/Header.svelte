@@ -5,7 +5,7 @@
 	import { getUserAsync, signOut } from '$lib/stores/userStore';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { t } from '$lib/helpers/i18n';
-	let mobile;
+	let mobile: any;
 	const toggleNav = () => {
 		mobile = !mobile;
 	};
@@ -17,7 +17,7 @@
 
 	async function userLoggedIn() {
 		const user = await getUserAsync();
-		return user.data.user?.id !== undefined;
+		return user !== undefined;
 	}
 </script>
 

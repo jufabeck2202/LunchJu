@@ -25,13 +25,13 @@
 	let localLunchMember: Database['public']['Tables']['lunch_members']['Row'];
 
 	onMount(async () => {
-		userId = (await getUserAsync()).data.user?.id;
+		userId = await getUserAsync();
 	});
-	const handleImTheCook = async (lunch) => {
+	const handleImTheCook = async (lunch: any) => {
 		const error = await setCookForLunch(lunch);
 	};
 
-	const handleImNotTheCook = async (lunch) => {
+	const handleImNotTheCook = async (lunch: any) => {
 		const error = await removeCookForLunch(lunch);
 	};
 
@@ -47,8 +47,8 @@
 		await initalFetchLunchMembers();
 	};
 
-	const handleLeaveLunch = async (lunch) => {
-		const userId = (await getUserAsync()).data.user?.id;
+	const handleLeaveLunch = async (lunch: any) => {
+		const userId = await getUserAsync();
 		if (!userId) {
 			throw new Error('No user ID');
 		}
@@ -61,7 +61,7 @@
 
 	lunchMembers.subscribe(async (members) => {
 		// check if user is in the members list
-		const userId = (await getUserAsync()).data.user?.id;
+		const userId = await getUserAsync();
 		if (!userId) {
 			throw new Error('No user ID');
 		}

@@ -26,6 +26,6 @@ export const GetDateMonthYear = (date: string) => {
 	return dayjs.utc(date).local().format('DD MMM YYYY');
 };
 
-export const renderTime = (startTime: string, endTime: string) => {
+export const renderTime = (startTime: string, endTime: string | null) => {
 	return startTime || endTime ? `${startTime} - ${endTime}` : '';
 };

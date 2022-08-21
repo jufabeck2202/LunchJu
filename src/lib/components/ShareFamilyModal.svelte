@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	// @ts-ignore
 	import Clipboard from 'svelte-clipboard';
 
 	export let isOpen: boolean;
@@ -24,8 +25,7 @@
 					type="text"
 					placeholder="Primary input"
 					disabled
-					value={url}
-				/>
+					value={url} />
 
 				<div class="card-footer">
 					<div class="mt-4">
@@ -34,8 +34,7 @@
 							let:copy
 							on:copy={() => {
 								console.log('Has Copied');
-							}}
-						>
+							}}>
 							<button class="button mr-4" on:click={copy}>Copy Link</button>
 						</Clipboard>
 						<button
@@ -43,8 +42,7 @@
 							on:click={() => {
 								isOpen = false;
 							}}
-							aria-label="close"
-						>
+							aria-label="close">
 							Close
 						</button>
 					</div>
@@ -57,6 +55,5 @@
 		on:click={() => {
 			isOpen = false;
 		}}
-		aria-label="close"
-	/>
+		aria-label="close" />
 </div>
