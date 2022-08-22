@@ -57,8 +57,26 @@ export const familySubscription = family.subscribe(async (family) => {
 		await subscribeUsers();
 		await initalFetchLunches();
 		await subscribeLunch();
+		await subscribePresence();
 	}
 });
+const subscribePresence = async () => {
+	const userId = await getUserAsync();
+	const presence = supabase
+		.channel('online-users')
+		.on('presence', { event: 'sync' }, () => {
+			console.log('currently online users', presence.presenceState());
+		})
+		.on('presence', { event: 'join' }, ({ newUser }) => {
+			console.log('a new user has joined', newUser);
+		})
+		.on('presence', { event: 'leave' }, ({ leftUser }) => console.log('a user has left', leftUser))
+		.subscribe(async (status) => {
+			if (status === 'SUBSCRIBED') {
+				const status = await presence.track({ user_name: userId });
+			}
+		});
+};
 
 export const getUserByID = (id: string) => {
 	const user = familyUsersLocal.find((user) => user.user_id === id);
