@@ -21,7 +21,7 @@ let lunchMemberSubscription: RealtimeChannel;
 let userSubscription: RealtimeChannel;
 
 const familyUsersLocal: Database['public']['Tables']['users_to_families']['Row'][] = [];
-export const lunchsLocal: Database['public']['Tables']['lunchs']['Row'][] = [];
+const lunchsLocal: Database['public']['Tables']['lunchs']['Row'][] = [];
 
 export const getUserAsync = async () => {
 	if (localUserId) {
@@ -200,6 +200,7 @@ const subscribeLunch = async () => {
 			{ event: 'UPDATE', schema: 'public', table: 'lunchs' },
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(newLunch: any) => {
+				console.log('lunch', newLunch);
 				lunches.update((l) => {
 					const index = l.findIndex((lunch) => lunch.id === newLunch.new.id);
 					if (index !== -1) {
@@ -224,7 +225,6 @@ export const initalFetchLunches = async () => {
 		.order('created_at', { ascending: false })
 		.eq('family_id', await getFamilyId())
 		.limit(7);
-	// const lunchesCreatedToday = data.filter((lunch) => IsDateToday(lunch.created_at));
 	if (!data) {
 		throw error;
 	}
@@ -647,5 +647,10 @@ export const createLunchesForWeek = async () => {
 		lunchsForWeek.push(lunch);
 	}
 	console.log('lunchsForWeek', lunchsForWeek);
-	await supabase.from('lunchs').insert(lunchsForWeek);
+	for (const lunch of lunchsForWeek) {
+		const { error } = await supabase.from('lunchs').insert(lunch);
+		if (error) {
+			console.log('error', error);
+		}
+	}
 };

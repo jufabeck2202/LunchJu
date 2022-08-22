@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { family, initalFetchLunches, lunches, lunchsLocal } from '$lib/stores/userStore';
+	import { family, initalFetchLunches, lunches } from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 	import CreateProposal from '$lib/components/CreateProposal.svelte';
 	import Suggestion from '$lib/components/Suggestion.svelte';
 	import Lunch from '$lib/components/Lunches.svelte';
@@ -15,15 +16,14 @@
 
 	let isShareModelOpen: boolean = false;
 	const lunchId = $page.params['lunchId'];
-	let lunch: Database['public']['Tables']['lunchs']['Row'];
+	let lunch: Database['public']['Tables']['lunchs']['Row'] | undefined;
 	let hasJoinedLunch: boolean = false;
 	onMount(async () => {
-		console.log(1)
 		await initalFetchLunches();
-		if (!lunchsLocal.some((l) => l.id === lunchId)) {
+		//TODO: Return to overview if lunch is not found
+		if (!get(lunches).find((l) => l.id === lunchId)) {
 			goto('/overview');
 		}
-		lunch = lunchsLocal.filter((lunch) => lunch.id == lunchId)?.[0];
 	});
 
 	//updates lunch
