@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Database } from '$lib/DatabaseDefinitions';
 	import { GetDay, renderTime, ToLocalTime } from '$lib/helpers/time';
+	import { t } from '$lib/helpers/i18n';
 	import {
 		editLunchTime,
 		getUserAsync,
@@ -90,7 +91,7 @@
 		startTime={localLunchMember?.StartTime}
 		endTime={localLunchMember?.EndTime} />
 	<div class="card p-5 mb-3">
-		<h2 class="title is-4">{GetDay(lunch.created_at)}s Lunch</h2>
+		<h2 class="title is-4">{GetDay(lunch.created_at)}{$t('s-lunch')}</h2>
 		<p class="subtitle is-6">
 			{ToLocalTime(lunch.created_at)} created by {getUserByID(lunch.created_by)?.name}
 		</p>
@@ -115,7 +116,8 @@
 			{#if !hasJoinedlunch}
 				<button
 					class="m-1 button  is-rounded is-outlined is-responsive"
-					on:click={() => (isShowingJoinModal = true)}>Join Lunch</button>
+					on:click={() => (isShowingJoinModal = true)}>
+					{$t('join-lunch')}</button>
 			{:else}
 				<button
 					class="m-1 button  is-rounded is-danger is-responsive"

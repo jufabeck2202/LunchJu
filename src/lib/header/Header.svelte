@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	import { page } from '$app/stores';
-	import { getUserAsync, signOut } from '$lib/stores/userStore';
+	import { getUserAsync, resetUser, signOut } from '$lib/stores/userStore';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { t } from '$lib/helpers/i18n';
 	let mobile: any;
@@ -12,6 +12,7 @@
 
 	async function handleSignout() {
 		await signOut();
+		resetUser();
 		goto('/login');
 	}
 

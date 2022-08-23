@@ -24,8 +24,8 @@
 	let currentState = State.LOGIN;
 
 	const checkUser = async () => {
-		const user = await getUserAsync();
-		if (!user) {
+		const user = await supabase.auth.getUser();
+		if (!user.data.user) {
 			currentState = State.LOGIN;
 			return;
 		}

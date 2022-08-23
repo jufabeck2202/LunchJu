@@ -33,6 +33,9 @@ export const getUserAsync = async () => {
 		return localUserId;
 	}
 };
+export const resetUser = () => {
+	localUserId = undefined;
+};
 //returns familyId and fetches family if not already fetched
 export const getFamilyId = async () => {
 	if (localFamilyId) {

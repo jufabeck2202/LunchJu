@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { ErrorToast } from '$lib/helpers/toast';
-	import { signIn, signUp } from '$lib/stores/userStore';
+	import { getUserAsync, signIn, signUp } from '$lib/stores/userStore';
 	import { supabase } from '$lib/supabaseclient';
 	import Icon from '@iconify/svelte';
 	import { AuthError } from '@supabase/supabase-js';
-
+	import { t } from '$lib/helpers/i18n';
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -27,7 +27,7 @@
 			if (error instanceof AuthError) {
 				ErrorToast(error.message);
 			} else {
-				ErrorToast('Something went wrong');
+				ErrorToast($t('something-went-wrong'));
 			}
 		} finally {
 			loading = false;
@@ -47,7 +47,7 @@
 			if (error instanceof AuthError) {
 				ErrorToast(error.message);
 			} else {
-				ErrorToast('Something went wrong');
+				ErrorToast($t('something-went-wrong'));
 			}
 		} finally {
 			loading = false;
@@ -63,12 +63,12 @@
 			if (error) {
 				throw error;
 			}
-			dispatch('signIn');
+			await getUserAsync();
 		} catch (error) {
 			if (error instanceof AuthError) {
 				ErrorToast(error.message);
 			} else {
-				ErrorToast('Something went wrong');
+				ErrorToast($t('something-went-wrong'));
 			}
 		} finally {
 			loading = false;
@@ -80,34 +80,34 @@
 	<form on:submit|preventDefault>
 		<div class="field">
 			<!-- svelte-ignore a11y-label-has-associated-control -->
-			<label class="label">Email</label>
+			<label class="label">{$t('email')}</label>
 			<div class="control">
 				<input
 					class="input"
 					type="text"
-					placeholder="Enter your email here"
+					placeholder={$t('enter-your-email-here')}
 					bind:value={username} />
 			</div>
 		</div>
 		<div class="field">
-			<label class="label">Password</label>
+			<label class="label">{$t('password')}</label>
 			<div class="control">
 				<!-- svelte-ignore a11y-autofocus -->
 				<input
 					class="input"
 					type="password"
 					autofocus
-					placeholder="Enter your password here"
+					placeholder="$t('enter-your-password-here')"
 					bind:value={password} />
 			</div>
 		</div>
 		<button class="button is-primary" is-loading={loading} on:click={handleSignUp}>
-			Create Account
+			{$t('create-account')}
 		</button>
 		<button class="button is-primary" is-loading={loading} on:click={handleSignInGithub}>
 			<Icon icon="akar-icons:github-fill" />
 		</button>
 		<!-- TODO: Handle Login -->
-		<button class="button is-primary" on:click={handleSignIn}> Login </button>
+		<button class="button is-primary" on:click={handleSignIn}> {$t('login-0')} </button>
 	</form>
 </div>

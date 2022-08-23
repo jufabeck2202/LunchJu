@@ -46,5 +46,15 @@
   "in-what-time-frame-do-you-have-time-to-eat": "In what time frame do you have time to eat?",
   "edit-lunchtime": "Edit Lunchtime",
   "i-dont-know": "I don't know",
-  "family-members": "Family Members:"
+  "family-members": "Family Members:",
+  "something-went-wrong": "Something went wrong",
+  "email": "Email",
+  "enter-your-email-here": "Enter your email here",
+  "password": "Password",
+  "enter-your-password-here": "Enter your password here",
+  "create-account": "Create Account",
+  "login-0": "Login",
+  "getday-lunch-created_at-s-lunch": "{GetDay(lunch.created_at)}s Lunch",
+  "getday-lunch-created_at-s-lunch-0": "{GetDay(lunch.created_at)}s Lunch",
+  "s-lunch": "s Lunch"
 }
