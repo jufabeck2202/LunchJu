@@ -44,5 +44,6 @@
 		"svelte-i18n": "^3.3.13",
 		"svelte-select": "^4.4.7",
 		"sveltekit-i18n": "^2.1.0"
-	}
+	},
+	"packageManager": "yarn@3.2.3"
 }
