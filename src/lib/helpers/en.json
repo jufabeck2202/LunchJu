@@ -56,5 +56,21 @@
   "login-0": "Login",
   "getday-lunch-created_at-s-lunch": "{GetDay(lunch.created_at)}s Lunch",
   "getday-lunch-created_at-s-lunch-0": "{GetDay(lunch.created_at)}s Lunch",
-  "s-lunch": "s Lunch"
+  "s-lunch": "s Lunch",
+  "leave-lunch": "Leave Lunch",
+  "change-lunchtime": "Change Lunchtime",
+  "no-cook": "I don't want to cook",
+  "im-cook": "👨‍🍳 &nbsp; You are the cook",
+  "im-cook-2": "👨‍🍳 &nbsp; I'm the cook",
+  "open-lunch": "Open Lunch",
+  "invite-family": "Invite Family",
+  "sunday": "Sunday",
+  "Sunday": "Sunday",
+  "Monday": "Monday",
+  "Tuesday": "Tuesday",
+  "Wednesday": "Wednesday",
+  "Thursday": "Thursday",
+  "Friday": "Friday",
+  "Saturday": "Saturday",
+  "created-by": "erstellt von"
 }

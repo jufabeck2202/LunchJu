@@ -91,9 +91,9 @@
 		startTime={localLunchMember?.StartTime}
 		endTime={localLunchMember?.EndTime} />
 	<div class="card p-5 mb-3">
-		<h2 class="title is-4">{GetDay(lunch.created_at)}{$t('s-lunch')}</h2>
+		<h2 class="title is-4">{$t(GetDay(lunch.created_at))}{$t('s-lunch')}</h2>
 		<p class="subtitle is-6">
-			{ToLocalTime(lunch.created_at)} created by {getUserByID(lunch.created_by)?.name}
+			{ToLocalTime(lunch.created_at)} {$t("created-by")} {getUserByID(lunch.created_by)?.name}
 		</p>
 		<div>
 			<div class="columns is-multiline is-mobile p-2">
@@ -121,10 +121,10 @@
 			{:else}
 				<button
 					class="m-1 button  is-rounded is-danger is-responsive"
-					on:click={() => handleLeaveLunch(lunch)}>Leave Lunch</button>
+					on:click={() => handleLeaveLunch(lunch)}>{$t('leave-lunch')}</button>
 				<button
 					class="m-1 button  is-rounded is-link  is-outlined is-responsive"
-					on:click={() => (isShowingJoinModal = true)}>Change Lunchtime</button>
+					on:click={() => (isShowingJoinModal = true)}>{$t('change-lunchtime')}</button>
 				{#if !lunch.cook_id || lunch.cook_id === userId}
 					<!-- content here -->
 					{#if lunch.cook_id == userId}
@@ -135,7 +135,7 @@
 								on:mouseover={() => (isMouseOnLunch = true)}
 								on:mouseout={() => (isMouseOnLunch = false)}
 								on:click={() => handleImNotTheCook(lunch)}
-								class="m-1 button is-rounded is-outlined is-danger">I don't want to cook</button
+								class="m-1 button is-rounded is-outlined is-danger">{$t('no-cook')}</button
 							>{:else}
 							<button
 								on:focus={() => (isMouseOnLunch = true)}
@@ -143,12 +143,12 @@
 								on:mouseover={() => (isMouseOnLunch = true)}
 								on:mouseout={() => (isMouseOnLunch = false)}
 								on:click={() => handleImNotTheCook(lunch)}
-								class="m-1 button is-rounded is-outlined">👨‍🍳 &nbsp; You are the cook</button>
+								class="m-1 button is-rounded is-outlined">{$t("im-cook")}</button>
 						{/if}
 					{:else}
 						<button
 							class="m-1 button is-warning is-rounded is-responsive"
-							on:click|once={() => handleImTheCook(lunch)}>👨‍🍳 &nbsp; I'm the cook</button>
+							on:click|once={() => handleImTheCook(lunch)}>{$t("im-cook-2")}</button>
 						<!-- else content here -->
 					{/if}
 				{/if}

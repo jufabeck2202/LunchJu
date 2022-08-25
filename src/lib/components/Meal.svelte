@@ -23,7 +23,7 @@
 	export let hasJoinedLunch: boolean;
 	let userId: string | undefined = undefined;
 	onMount(async () => {
-		userId = (await getUserAsync()).data.user?.id;
+		userId = await getUserAsync();
 	});
 	const handleVote = async (upvote: boolean) => {
 		if (hasDownvoted || hasUpvoted) {

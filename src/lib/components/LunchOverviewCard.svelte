@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Database } from '$lib/DatabaseDefinitions';
-
+	import { t } from '$lib/helpers/i18n';
 	import { GetDateMonthYear, GetDay, renderTime } from '$lib/helpers/time';
 	import {
 		lunchMembers,
@@ -56,7 +56,7 @@
 		<div class="columns is-mobile">
 			<!-- Left side -->
 			<div class="column is-half is-pulled-right">
-				<h2 class="title is-4">{GetDay(lunch.created_at)}</h2>
+				<h2 class="title is-4">{$t(GetDay(lunch.created_at))}</h2>
 			</div>
 
 			<!-- Right side -->
@@ -72,12 +72,12 @@
 						<button
 							class="button is-rounded is-outlined"
 							on:click={() => (isShowingJoinModal = true)}>
-							Join Lunch</button>
+							{$t('join-lunch')}</button>
 					</div>
 				{:else}
 					<div class="column p-1 is-narrow">
 						<button class="button is-rounded is-danger" on:click={() => handleLeaveLunch(lunch)}>
-							Leave Lunch</button>
+							{$t('leave-lunch')}</button>
 					</div>
 				{/if}
 				{#each localLunchMembers as members}
@@ -98,6 +98,6 @@
 			class="button is-fullwidth is-warning is-rounded mt-3"
 			sveltekit:prefetch
 			href="/lunch/{lunch.id}/">
-			Open Lunch</a>
+			{$t('open-lunch')}</a>
 	</div>
 </div>

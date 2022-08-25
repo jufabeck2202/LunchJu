@@ -1,4 +1,5 @@
 <script context="module">
+	//@ts-ignore
 	export async function load(params) {
 		if (params.params.lunchId) {
 			return {

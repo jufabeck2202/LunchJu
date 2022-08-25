@@ -97,7 +97,7 @@
 					class="input"
 					type="password"
 					autofocus
-					placeholder="$t('enter-your-password-here')"
+					placeholder="{$t('enter-your-password-here')}"
 					bind:value={password} />
 			</div>
 		</div>

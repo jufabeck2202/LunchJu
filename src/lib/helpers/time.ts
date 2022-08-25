@@ -4,6 +4,7 @@ import relativeTime from 'dayjs/plugin/relativeTime.js';
 import isToday from 'dayjs/plugin/isToday.js';
 import weekday from 'dayjs/plugin/weekday.js';
 import localeData from 'dayjs/plugin/localizedFormat.js';
+
 dayjs.extend(relativeTime);
 dayjs.extend(localeData);
 dayjs.extend(isToday);

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { t } from '$lib/helpers/i18n';
 	// @ts-ignore
 	import Clipboard from 'svelte-clipboard';
 
@@ -16,10 +17,12 @@
 	<div class="modal-content">
 		<div class="card">
 			<header class="card-header">
-				<p class="card-header-title">Invite Family</p>
+				<p class="card-header-title">{$t('invite-family')}</p>
 			</header>
 			<div class="card-content">
-				<div class="subtitle">Share this link with your family to invite them to join you</div>
+				<div class="subtitle">
+					{$t('share-this-link-with-your-family-to-invite-them-to-join-you')}
+				</div>
 				<input
 					class="input is-primary"
 					type="text"
@@ -35,7 +38,7 @@
 							on:copy={() => {
 								console.log('Has Copied');
 							}}>
-							<button class="button mr-4" on:click={copy}>Copy Link</button>
+							<button class="button mr-4" on:click={copy}>{$t('copy-link')}</button>
 						</Clipboard>
 						<button
 							class="button is-primary"
@@ -43,7 +46,7 @@
 								isOpen = false;
 							}}
 							aria-label="close">
-							Close
+							{$t('close')}
 						</button>
 					</div>
 				</div>
