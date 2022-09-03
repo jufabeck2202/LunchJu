@@ -544,6 +544,7 @@ export const mountFamily = async (): Promise<boolean> => {
 	return true;
 };
 
+
 const fetchFamilyIdForUser = async (): Promise<string | null> => {
 	const { data, error } = await supabase
 		.from('users_to_families')
