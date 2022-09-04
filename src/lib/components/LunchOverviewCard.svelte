@@ -82,14 +82,20 @@
 				{/if}
 				{#each localLunchMembers as members}
 					<div class="column p-1 is-narrow">
-						<button class=" button is-success is-rounded is-outlined" disabled>
+						<!-- <button class=" button is-success is-rounded is-outlined" disabled>
 							{members.username}
 							{#if members.StartTime}
 								<div class="tag flex is-warning ml-2">
 									{renderTime(members.StartTime, members.EndTime)}
 								</div>
 							{/if}
-						</button>
+						</button> -->
+						<figure class="image is-32x32">
+							<img
+								class="is-rounded"
+								src={`https://avatars.dicebear.com/api/initials/${members.username}.svg`}
+								alt="avatar" />
+						</figure>
 					</div>
 				{/each}
 			</div>

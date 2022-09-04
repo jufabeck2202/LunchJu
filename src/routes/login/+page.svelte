@@ -4,7 +4,7 @@
 	import CreateName from '$lib/components/CreateName.svelte';
 	import LoginComponent from '$lib/components/LoginComponent.svelte';
 
-	import { getUserAsync, getUserName, mountFamily, setUsername } from '$lib/stores/userStore';
+	import { getUserName, mountFamily } from '$lib/stores/userStore';
 	import { supabase } from '$lib/supabaseclient';
 	import { onMount } from 'svelte';
 	import Stats from '../stats/+page.svelte';
