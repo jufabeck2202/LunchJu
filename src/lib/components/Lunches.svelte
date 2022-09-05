@@ -130,8 +130,8 @@
 						</div>
 					{/each}
 				</div>
+				<div class="divider is-right m-0 p-0" />
 			{/if}
-			<div class="divider is-right m-0 p-0" />
 			{#if lunchfoodMembers.length > 0}
 				<div class="columns is-multiline is-mobile p-0 m-0">
 					<div class="column is-narrow p-0 pt-2">
@@ -154,8 +154,8 @@
 						</div>
 					{/each}
 				</div>
+				<div class="divider is-right m-0 p-0" />
 			{/if}
-			<div class="divider is-right m-0 p-0" />
 			{#if dinnerMembers.length > 0}
 				<div class="columns is-multiline is-mobile p-0 m-0">
 					<div class="column is-narrow p-0 pt-2">
@@ -178,9 +178,9 @@
 						</div>
 					{/each}
 				</div>
+				<div class="divider is-right m-0 p-0" />
 			{/if}
 		</div>
-		<div class="divider is-right m-0 p-0" />
 		<div class="pt-3">
 			{#if !hasJoinedlunch}
 				<button
