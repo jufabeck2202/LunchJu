@@ -99,36 +99,89 @@
 		bind:isShowingJoinModal
 		on:joinMeal={handleJoinMeals}
 		{hasJoinedlunch}
+		initalMealType={localLunchMember?.meal_type}
 		on:editMeal={handleEditMeals} />
 	<div class="card p-5 mb-3">
 		<h2 class="title is-4">{$t(GetDay(lunch.created_at))}{$t('s-lunch')}</h2>
 		<p class="subtitle is-6">
 			{ToLocalTime(lunch.created_at)}
-			{$t('created-by')}
-			{getUserByID(lunch.created_by)?.name}
 		</p>
-		<Icon icon="fluent:food-egg-16-regular" width="32" />
-		<Icon icon="ic:outline-no-food" width="32" />
-		<Icon icon="cil:dinner" width="32" />
 
 		<div>
-			<div class="columns is-multiline is-mobile p-2">
-				{#each localLunchMembers as members}
-					<div class="column is-narrow p-0 m-1">
-						<button class="button is-success is-rounded is-outlined" disabled>
-							{members.username}
-							{#if lunch.cook_id === members.user_id} 👨‍🍳 {/if}
-							{#if members.StartTime}
-								<div class="tag flex is-warning ml-2">
-									{renderTime(members.StartTime, members.EndTime)}
-								</div>
-							{/if}
-						</button>
+			{#if breakfastMembers.length > 0}
+				<div class="columns is-multiline is-mobile m-0 p-0">
+					<div class="column is-narrow p-0 pt-2">
+						<Icon icon="fluent:food-egg-16-regular" width="32" />
 					</div>
-				{/each}
-			</div>
+					<div class="column is-narrow p-0 pt-3">
+						<span class="subtitle">Breakfast</span>
+					</div>
+					{#each breakfastMembers as members}
+						<div class="column is-narrow p-0 m-1">
+							<button class="button is-success is-rounded is-outlined" disabled>
+								{members.username}
+								{#if lunch.cook_id === members.user_id} 👨‍🍳 {/if}
+								{#if members.StartTime}
+									<div class="tag flex is-warning ml-2">
+										{renderTime(members.StartTime, members.EndTime)}
+									</div>
+								{/if}
+							</button>
+						</div>
+					{/each}
+				</div>
+			{/if}
+			<div class="divider is-right m-0 p-0" />
+			{#if lunchfoodMembers.length > 0}
+				<div class="columns is-multiline is-mobile p-0 m-0">
+					<div class="column is-narrow p-0 pt-2">
+						<Icon icon="ic:outline-no-food" width="32" />
+					</div>
+					<div class="column is-narrow p-0 pt-3">
+						<span class="subtitle">Lunch</span>
+					</div>
+					{#each lunchfoodMembers as members}
+						<div class="column is-narrow p-0 m-1">
+							<button class="button is-success is-rounded is-outlined" disabled>
+								{members.username}
+								{#if lunch.cook_id === members.user_id} 👨‍🍳 {/if}
+								{#if members.StartTime}
+									<div class="tag flex is-warning ml-2">
+										{renderTime(members.StartTime, members.EndTime)}
+									</div>
+								{/if}
+							</button>
+						</div>
+					{/each}
+				</div>
+			{/if}
+			<div class="divider is-right m-0 p-0" />
+			{#if dinnerMembers.length > 0}
+				<div class="columns is-multiline is-mobile p-0 m-0">
+					<div class="column is-narrow p-0 pt-2">
+						<Icon icon="cil:dinner" width="32" />
+					</div>
+					<div class="column is-narrow p-0 pt-3">
+						<span class="subtitle">Dinner</span>
+					</div>
+					{#each dinnerMembers as members}
+						<div class="column is-narrow p-0 m-1">
+							<button class="button is-success is-rounded is-outlined" disabled>
+								{members.username}
+								{#if lunch.cook_id === members.user_id} 👨‍🍳 {/if}
+								{#if members.StartTime}
+									<div class="tag flex is-warning ml-2">
+										{renderTime(members.StartTime, members.EndTime)}
+									</div>
+								{/if}
+							</button>
+						</div>
+					{/each}
+				</div>
+			{/if}
 		</div>
-		<div>
+		<div class="divider is-right m-0 p-0" />
+		<div class="pt-3">
 			{#if !hasJoinedlunch}
 				<button
 					class="m-1 button  is-rounded is-outlined is-responsive"

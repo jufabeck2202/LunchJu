@@ -4,6 +4,7 @@
 
 	export let isShowingJoinModal: boolean;
 	export let hasJoinedlunch: boolean = false;
+	export let initalMealType: string | null = null;
 
 	const dispatcher = createEventDispatcher<{
 		joinMeal: { meal_type: string };
@@ -12,6 +13,18 @@
 	let breakfastIsSelected = false;
 	let lunchIsSelected = false;
 	let dinnerIsSelected = false;
+
+	$: {
+		if (initalMealType?.toLocaleLowerCase().includes('breakfast')) {
+			breakfastIsSelected = true;
+		}
+		if (initalMealType?.toLocaleLowerCase().includes('lunch')) {
+			lunchIsSelected = true;
+		}
+		if (initalMealType?.toLocaleLowerCase().includes('dinner')) {
+			dinnerIsSelected = true;
+		}
+	}
 
 	const buildMealType = () => {
 		let mealType = '';
@@ -67,7 +80,11 @@
 						<div class="field is-grouped">
 							<div class="control">
 								{#if hasJoinedlunch}
-									<button type="submit" class="button is-link"> {$t('edit-lunchtime')}</button>
+									<button
+										type="submit"
+										disabled={!lunchIsSelected && !breakfastIsSelected && !dinnerIsSelected}
+										class="button is-link">
+										{$t('edit-lunchtime')}</button>
 								{:else}
 									<button
 										type="submit"

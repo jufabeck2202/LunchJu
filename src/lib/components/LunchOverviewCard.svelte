@@ -84,7 +84,7 @@
 		<div class="p-2">
 			{#if breakfastMembers.length > 0}
 				<div class="columns is-multiline is-mobile">
-					<h1 class="subtitle pt-2 pl-1">Breakfast:</h1>
+					<h1 class="subtitle pt-2 pl-1 p-0 m-0">Breakfast</h1>
 					{#each breakfastMembers as members}
 						<div class="column p-1 is-narrow">
 							<figure class="image is-32x32">
@@ -99,7 +99,7 @@
 			{/if}
 			{#if lunchfoodMembers.length > 0}
 				<div class="columns is-multiline is-mobile">
-					<h1 class="subtitle pt-2 pl-1">Lunch:</h1>
+					<h1 class="subtitle pt-2 pl-1 p-0 m-0">Lunch</h1>
 					{#each lunchfoodMembers as members}
 						<div class="column p-1 is-narrow">
 							<figure class="image is-32x32">
@@ -114,7 +114,7 @@
 			{/if}
 			{#if dinnerMembers.length > 0}
 				<div class="columns is-multiline is-mobile">
-					<h1 class="subtitle pt-2 pl-1">Dinner:</h1>
+					<h1 class="subtitle pt-2 pl-1 p-0 m-0">Dinner</h1>
 					{#each dinnerMembers as members}
 						<div class="column p-1 is-narrow">
 							<figure class="image is-32x32">

@@ -38,6 +38,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@creativebulma/bulma-divider": "^1.1.0",
 		"@fontsource/fira-mono": "^4.5.0",
 		"@lukeed/uuid": "^2.0.0",
 		"bulma-o-steps": "^1.1.0",
