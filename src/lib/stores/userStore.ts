@@ -399,8 +399,7 @@ export const fetchMeals = async (): Promise<Database['public']['Tables']['meals'
 
 export const joinLunch = async (
 	lunch: Database['public']['Tables']['lunchs']['Row'],
-	startTime?: string,
-	endTime?: string
+	meal_type: string
 ): Promise<PostgrestError | Error | null> => {
 	// ALTER TABLE table ADD UNIQUE (book_id, author_id)
 	const { error } = await supabase.from('lunch_members').insert({
@@ -408,8 +407,7 @@ export const joinLunch = async (
 		user_id: await getUserAsync(),
 		lunch_id: lunch.id,
 		username: userName,
-		StartTime: startTime,
-		EndTime: endTime
+		meal_type: meal_type
 	});
 	if (error) {
 		return error;
@@ -419,14 +417,12 @@ export const joinLunch = async (
 
 export const editLunchTime = async (
 	lunch: Database['public']['Tables']['lunchs']['Row'],
-	startTime?: string,
-	endTime?: string
+	meal_type: string
 ): Promise<PostgrestError | Error | null> => {
 	const { error } = await supabase
 		.from('lunch_members')
 		.update({
-			StartTime: startTime,
-			EndTime: endTime
+			meal_type: meal_type
 		})
 		.eq('lunch_id', lunch.id)
 		.eq('user_id', await getUserAsync());
@@ -543,7 +539,6 @@ export const mountFamily = async (): Promise<boolean> => {
 	}
 	return true;
 };
-
 
 const fetchFamilyIdForUser = async (): Promise<string | null> => {
 	const { data, error } = await supabase

@@ -2,6 +2,7 @@
 	import type { Database } from '$lib/DatabaseDefinitions';
 	import { t } from '$lib/helpers/i18n';
 	import { GetDateMonthYear, GetDay, renderTime } from '$lib/helpers/time';
+	import { ErrorToast } from '$lib/helpers/toast';
 	import {
 		lunchMembers,
 		joinLunch,
@@ -13,10 +14,22 @@
 
 	export let lunch: Database['public']['Tables']['lunchs']['Row'];
 	let localLunchMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
+	let breakfastMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
+	let lunchfoodMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
+	let dinnerMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
 	let hasJoinedlunch = false;
 	let isShowingJoinModal = false;
 	$: lunchMembers.subscribe((members) => {
 		localLunchMembers = members.filter((member) => member.lunch_id === lunch.id);
+		breakfastMembers = localLunchMembers.filter((member) =>
+			member.meal_type?.toLowerCase().includes('breakfast')
+		);
+		lunchfoodMembers = localLunchMembers.filter((member) =>
+			member.meal_type?.toLowerCase().includes('lunch')
+		);
+		dinnerMembers = localLunchMembers.filter((member) =>
+			member.meal_type?.toLowerCase().includes('dinner')
+		);
 	});
 
 	$: lunchMembers.subscribe(async (members) => {
@@ -36,22 +49,25 @@
 		}
 	});
 
-	const handleJoinLunch = async (e: CustomEvent<{ startTime: string; endTime: string }>) => {
-		const error = await joinLunch(lunch, e.detail.startTime, e.detail.endTime);
+	const handleJoinLunch = async (e: CustomEvent<{ meal_type: string }>) => {
+		const error = await joinLunch(lunch, e.detail.meal_type);
 		isShowingJoinModal = false;
+		if (error) {
+			ErrorToast(error.message);
+		}
 		await initalFetchLunchMembers();
 	};
 	const handleLeaveLunch = async (lunch: any) => {
 		const error = await leaveLunch(lunch);
+		if (error) {
+			ErrorToast(error.message);
+		}
 		await initalFetchLunchMembers();
 	};
 </script>
 
 <div class="column is-4-desktop is-half-tablet is-4-widescreen is-3-fullhd">
-	<JoinTimeModal
-		bind:isShowingJoinModal
-		on:joinLunch={handleJoinLunch}
-		currentDate={lunch.created_at} />
+	<JoinTimeModal bind:isShowingJoinModal on:joinMeal={handleJoinLunch} />
 	<div class="card pt-4 pb-4 pl-3 pr-2">
 		<div class="columns is-mobile">
 			<!-- Left side -->
@@ -66,44 +82,73 @@
 		</div>
 
 		<div class="p-2">
-			<div class="columns is-multiline is-mobile">
+			{#if breakfastMembers.length > 0}
+				<div class="columns is-multiline is-mobile">
+					<h1 class="subtitle pt-2 pl-1">Breakfast:</h1>
+					{#each breakfastMembers as members}
+						<div class="column p-1 is-narrow">
+							<figure class="image is-32x32">
+								<img
+									class="is-rounded"
+									src={`https://avatars.dicebear.com/api/initials/${members.username}.svg`}
+									alt="avatar" />
+							</figure>
+						</div>
+					{/each}
+				</div>
+			{/if}
+			{#if lunchfoodMembers.length > 0}
+				<div class="columns is-multiline is-mobile">
+					<h1 class="subtitle pt-2 pl-1">Lunch:</h1>
+					{#each lunchfoodMembers as members}
+						<div class="column p-1 is-narrow">
+							<figure class="image is-32x32">
+								<img
+									class="is-rounded"
+									src={`https://avatars.dicebear.com/api/initials/${members.username}.svg`}
+									alt="avatar" />
+							</figure>
+						</div>
+					{/each}
+				</div>
+			{/if}
+			{#if dinnerMembers.length > 0}
+				<div class="columns is-multiline is-mobile">
+					<h1 class="subtitle pt-2 pl-1">Dinner:</h1>
+					{#each dinnerMembers as members}
+						<div class="column p-1 is-narrow">
+							<figure class="image is-32x32">
+								<img
+									class="is-rounded"
+									src={`https://avatars.dicebear.com/api/initials/${members.username}.svg`}
+									alt="avatar" />
+							</figure>
+						</div>
+					{/each}
+				</div>
+			{/if}
+		</div>
+		<div class="columns">
+			<div class="column">
+				<a
+					class="button is-fullwidth is-warning is-rounded mt-3"
+					sveltekit:prefetch
+					href="/lunch/{lunch.id}/">
+					{$t('open-lunch')}</a>
+			</div>
+			<div class="column">
 				{#if !hasJoinedlunch}
-					<div class="column p-1 is-narrow">
-						<button
-							class="button is-rounded is-outlined"
-							on:click={() => (isShowingJoinModal = true)}>
-							{$t('join-lunch')}</button>
-					</div>
+					<button
+						class="button is-fullwidth is-rounded is-outlined mt-3"
+						on:click={() => (isShowingJoinModal = true)}>
+						{$t('join-lunch')}</button>
 				{:else}
-					<div class="column p-1 is-narrow">
-						<button class="button is-rounded is-danger" on:click={() => handleLeaveLunch(lunch)}>
-							{$t('leave-lunch')}</button>
-					</div>
+					<button
+						class="button is-fullwidth is-rounded is-danger mt-3"
+						on:click={() => handleLeaveLunch(lunch)}>
+						{$t('leave-lunch')}</button>
 				{/if}
-				{#each localLunchMembers as members}
-					<div class="column p-1 is-narrow">
-						<!-- <button class=" button is-success is-rounded is-outlined" disabled>
-							{members.username}
-							{#if members.StartTime}
-								<div class="tag flex is-warning ml-2">
-									{renderTime(members.StartTime, members.EndTime)}
-								</div>
-							{/if}
-						</button> -->
-						<figure class="image is-32x32">
-							<img
-								class="is-rounded"
-								src={`https://avatars.dicebear.com/api/initials/${members.username}.svg`}
-								alt="avatar" />
-						</figure>
-					</div>
-				{/each}
 			</div>
 		</div>
-		<a
-			class="button is-fullwidth is-warning is-rounded mt-3"
-			sveltekit:prefetch
-			href="/lunch/{lunch.id}/">
-			{$t('open-lunch')}</a>
 	</div>
 </div>

@@ -9,23 +9,6 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      users_to_families: {
-        Row: {
-          user_id: string;
-          name: string | null;
-          families_id: string | null;
-        };
-        Insert: {
-          user_id: string;
-          name?: string | null;
-          families_id?: string | null;
-        };
-        Update: {
-          user_id?: string;
-          name?: string | null;
-          families_id?: string | null;
-        };
-      };
       lunch_proposal_vote: {
         Row: {
           upvote: boolean;
@@ -55,96 +38,24 @@ export interface Database {
           lunch_id?: string | null;
         };
       };
-      todos: {
+      users_to_families: {
         Row: {
-          id: number;
+          options: Json | null;
           user_id: string;
-          task: string | null;
-          is_complete: boolean | null;
-          inserted_at: string;
+          name: string | null;
+          families_id: string | null;
         };
         Insert: {
-          id?: number;
+          options?: Json | null;
           user_id: string;
-          task?: string | null;
-          is_complete?: boolean | null;
-          inserted_at?: string;
+          name?: string | null;
+          families_id?: string | null;
         };
         Update: {
-          id?: number;
+          options?: Json | null;
           user_id?: string;
-          task?: string | null;
-          is_complete?: boolean | null;
-          inserted_at?: string;
-        };
-      };
-      test: {
-        Row: {
-          id: number;
-          created_at: string | null;
-          userID: string | null;
-        };
-        Insert: {
-          id?: number;
-          created_at?: string | null;
-          userID?: string | null;
-        };
-        Update: {
-          id?: number;
-          created_at?: string | null;
-          userID?: string | null;
-        };
-      };
-      lunch_proposal_comments: {
-        Row: {
-          id: string;
-          created_at: string;
-          family_id: string;
-          user_id: string;
-          text: string;
-          lunch_id: string;
-        };
-        Insert: {
-          id?: string;
-          created_at?: string;
-          family_id: string;
-          user_id: string;
-          text: string;
-          lunch_id: string;
-        };
-        Update: {
-          id?: string;
-          created_at?: string;
-          family_id?: string;
-          user_id?: string;
-          text?: string;
-          lunch_id?: string;
-        };
-      };
-      meals: {
-        Row: {
-          id: string;
-          created_at: string | null;
-          lunch_id: string;
-          family_id: string;
-          name: string;
-          created_by: string | null;
-        };
-        Insert: {
-          id?: string;
-          created_at?: string | null;
-          lunch_id: string;
-          family_id: string;
-          name: string;
-          created_by?: string | null;
-        };
-        Update: {
-          id?: string;
-          created_at?: string | null;
-          lunch_id?: string;
-          family_id?: string;
-          name?: string;
-          created_by?: string | null;
+          name?: string | null;
+          families_id?: string | null;
         };
       };
       lunch_proposal: {
@@ -208,6 +119,93 @@ export interface Database {
           created_at?: string;
         };
       };
+      meals: {
+        Row: {
+          id: string;
+          created_at: string | null;
+          lunch_id: string;
+          family_id: string;
+          name: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string | null;
+          lunch_id: string;
+          family_id: string;
+          name: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          created_at?: string | null;
+          lunch_id?: string;
+          family_id?: string;
+          name?: string;
+          created_by?: string | null;
+        };
+      };
+      lunch_proposal_comments: {
+        Row: {
+          id: string;
+          created_at: string;
+          family_id: string;
+          user_id: string;
+          text: string;
+          lunch_id: string;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          family_id: string;
+          user_id: string;
+          text: string;
+          lunch_id: string;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          family_id?: string;
+          user_id?: string;
+          text?: string;
+          lunch_id?: string;
+        };
+      };
+      lunch_members: {
+        Row: {
+          family_id: string | null;
+          lunch_id: string | null;
+          user_id: string | null;
+          username: string | null;
+          id: string;
+          StartTime: string | null;
+          EndTime: string | null;
+          created_at: string | null;
+          meal_type: string | null;
+        };
+        Insert: {
+          family_id?: string | null;
+          lunch_id?: string | null;
+          user_id?: string | null;
+          username?: string | null;
+          id?: string;
+          StartTime?: string | null;
+          EndTime?: string | null;
+          created_at?: string | null;
+          meal_type?: string | null;
+        };
+        Update: {
+          family_id?: string | null;
+          lunch_id?: string | null;
+          user_id?: string | null;
+          username?: string | null;
+          id?: string;
+          StartTime?: string | null;
+          EndTime?: string | null;
+          created_at?: string | null;
+          meal_type?: string | null;
+        };
+      };
       families: {
         Row: {
           id: string;
@@ -226,38 +224,6 @@ export interface Database {
           created_at?: string | null;
           creator_id?: string;
           name?: string;
-        };
-      };
-      lunch_members: {
-        Row: {
-          family_id: string | null;
-          lunch_id: string | null;
-          user_id: string | null;
-          username: string | null;
-          id: string;
-          StartTime: string | null;
-          created_at: string | null;
-          EndTime: string | null;
-        };
-        Insert: {
-          family_id?: string | null;
-          lunch_id?: string | null;
-          user_id?: string | null;
-          username?: string | null;
-          id?: string;
-          StartTime?: string | null;
-          created_at?: string | null;
-          EndTime?: string | null;
-        };
-        Update: {
-          family_id?: string | null;
-          lunch_id?: string | null;
-          user_id?: string | null;
-          username?: string | null;
-          id?: string;
-          StartTime?: string | null;
-          created_at?: string | null;
-          EndTime?: string | null;
         };
       };
     };

@@ -15,6 +15,7 @@
 	} from '$lib/stores/userStore';
 	import { onMount } from 'svelte';
 	import JoinTimeModal from './JoinTimeModal.svelte';
+	import Icon from '@iconify/svelte';
 
 	export let lunch: Database['public']['Tables']['lunchs']['Row'];
 	export let hasJoinedlunch = false;
@@ -24,6 +25,9 @@
 	let isShowingJoinModal = false;
 	let userId: string | undefined;
 	let localLunchMember: Database['public']['Tables']['lunch_members']['Row'];
+	let breakfastMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
+	let lunchfoodMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
+	let dinnerMembers: Database['public']['Tables']['lunch_members']['Row'][] = [];
 
 	onMount(async () => {
 		userId = await getUserAsync();
@@ -36,14 +40,14 @@
 		const error = await removeCookForLunch(lunch);
 	};
 
-	const handleJoinLunch = async (e: CustomEvent<{ startTime: string; endTime: string }>) => {
-		const error = await joinLunch(lunch, e.detail.startTime, e.detail.endTime);
+	const handleJoinMeals = async (e: CustomEvent<{ meal_type: string }>) => {
+		const error = await joinLunch(lunch, e.detail.meal_type);
 		isShowingJoinModal = false;
 		await initalFetchLunchMembers();
 	};
 
-	const handleEditLunchTime = async (e: CustomEvent<{ startTime: string; endTime: string }>) => {
-		const error = await editLunchTime(lunch, e.detail.startTime, e.detail.endTime);
+	const handleEditMeals = async (e: CustomEvent<{ meal_type: string }>) => {
+		const error = await editLunchTime(lunch, e.detail.meal_type);
 		isShowingJoinModal = false;
 		await initalFetchLunchMembers();
 	};
@@ -78,23 +82,35 @@
 			hasJoinedlunch = false;
 		}
 		localLunchMembers = members.filter((member) => member.lunch_id === lunch.id);
+		breakfastMembers = localLunchMembers.filter((member) =>
+			member.meal_type?.toLowerCase().includes('breakfast')
+		);
+		lunchfoodMembers = localLunchMembers.filter((member) =>
+			member.meal_type?.toLowerCase().includes('lunch')
+		);
+		dinnerMembers = localLunchMembers.filter((member) =>
+			member.meal_type?.toLowerCase().includes('dinner')
+		);
 	});
 </script>
 
 <div>
 	<JoinTimeModal
 		bind:isShowingJoinModal
-		on:joinLunch={handleJoinLunch}
-		currentDate={lunch.created_at}
+		on:joinMeal={handleJoinMeals}
 		{hasJoinedlunch}
-		on:editLunchTime={handleEditLunchTime}
-		startTime={localLunchMember?.StartTime}
-		endTime={localLunchMember?.EndTime} />
+		on:editMeal={handleEditMeals} />
 	<div class="card p-5 mb-3">
 		<h2 class="title is-4">{$t(GetDay(lunch.created_at))}{$t('s-lunch')}</h2>
 		<p class="subtitle is-6">
-			{ToLocalTime(lunch.created_at)} {$t("created-by")} {getUserByID(lunch.created_by)?.name}
+			{ToLocalTime(lunch.created_at)}
+			{$t('created-by')}
+			{getUserByID(lunch.created_by)?.name}
 		</p>
+		<Icon icon="fluent:food-egg-16-regular" width="32" />
+		<Icon icon="ic:outline-no-food" width="32" />
+		<Icon icon="cil:dinner" width="32" />
+
 		<div>
 			<div class="columns is-multiline is-mobile p-2">
 				{#each localLunchMembers as members}
@@ -143,12 +159,12 @@
 								on:mouseover={() => (isMouseOnLunch = true)}
 								on:mouseout={() => (isMouseOnLunch = false)}
 								on:click={() => handleImNotTheCook(lunch)}
-								class="m-1 button is-rounded is-outlined">{$t("im-cook")}</button>
+								class="m-1 button is-rounded is-outlined">{$t('im-cook')}</button>
 						{/if}
 					{:else}
 						<button
 							class="m-1 button is-warning is-rounded is-responsive"
-							on:click|once={() => handleImTheCook(lunch)}>{$t("im-cook-2")}</button>
+							on:click|once={() => handleImTheCook(lunch)}>{$t('im-cook-2')}</button>
 						<!-- else content here -->
 					{/if}
 				{/if}
