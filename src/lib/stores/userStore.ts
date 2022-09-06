@@ -43,7 +43,7 @@ export const getFamilyId = async () => {
 	}
 	localFamilyId = await fetchFamilyIdForUser();
 	if (!localFamilyId) {
-		throw new Error('No family found');
+		console.log('no family found');
 	}
 	return localFamilyId;
 };

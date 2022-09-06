@@ -10,7 +10,6 @@
 		//TODO check if family id exists
 		await createLunchesForWeek();
 	});
-
 	let isShareModalOpen = false;
 </script>
 
